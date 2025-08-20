@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/20 13:00:59 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/20 16:03:18 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,44 @@ void	getworkindir(char *buf, size_t size)
 		perror("getwcd FAILED");
 }
 
-int	main(int argc, char *argv[])
+char	**find_from_path(char *cmd, char *envp[])
+{
+	char	*path;
+	char	**paths;
+	size_t	counter;
+	(void)cmd;
+	
+	path = NULL;
+	counter = 0;
+	while(envp[counter])
+	{
+	 if (strncmp(envp[counter], "PATH=", 5) == 0)
+	 {
+    	printf("%s\n", envp[counter]); //Printing the envpath
+		path = &envp[counter][5]; //skipping the word "path="
+		break;
+	 }
+	counter++;
+	}
+	printf("Printing path variable: %s\n", path); //printing the path
+	
+	//Now we need to split the path ---> **paths (ft_split':')
+	paths = ft_split(path, ':');
+	if (!paths)
+		return (NULL);
+	
+	counter = 0; 
+	while(paths[counter]) //testing paths
+	{
+		printf("path n%zu, %s\n", counter, paths[counter]);
+		counter++;
+	}
+	return (paths);
+	// workiing so far
+	
+}
+
+int	main(int argc, char *argv[], char *envp[])
 {
 	(void)	argc;
 	(void) (argv);
@@ -26,6 +63,7 @@ int	main(int argc, char *argv[])
 	char	*input;
 	char	cwd[BUFSIZ];
 	char	*buf;
+	char	**paths;
 
 	printf(
 "         #             #           #             ###    ###   \n"
@@ -43,7 +81,6 @@ int	main(int argc, char *argv[])
 	
 	// REPL
 	// READ->EVALUATE->PRINT/EXECUTE->LOOP
-
 	// Configure readline to auto-complete paths when the tab key is hit.
     rl_bind_key('\t', rl_complete);
 
@@ -59,11 +96,15 @@ int	main(int argc, char *argv[])
 		 // Display prompt and read input
         char* input = readline(buf); // add ":~$" with strjoin or smthng
 		printf("The input is: %s\n", input);
+		paths = find_from_path(input, envp); //Now we have all the paths here in an array
 
+		//TODO Now we need to find the "ABSOLUTEPATH", so we need to append to each
+		//path "/+command_name". for example /usr/bin ---> /usr/bin/ls. 
+		//Then we need to check with access that we have permission to execute it (as an example with ls)
+		
         // Check for EOF.
         if (!input)
             break;
-
         // Add input to readline history.
         add_history(input);
 
@@ -80,9 +121,6 @@ int	main(int argc, char *argv[])
 		free (input);
 	}
 	
-	//if (fork() == 0)
-	//	execvp(argv[1], argv + 1);
-	//wait(&status);
 	
 	return (EXIT_SUCCESS);
 }
