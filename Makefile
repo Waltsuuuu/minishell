@@ -1,0 +1,103 @@
+# =========================
+# Project
+# =========================
+NAME        := minishell
+CC          := cc
+CFLAGS      := -Wall -Wextra -Werror
+INCS        := -I include -I libft
+SRC         := main.c
+OBJ         := $(SRC:.c=.o)
+
+# =========================
+# Libft
+# =========================
+LIBFT_DIR   := libft
+LIBFT       := $(LIBFT_DIR)/libft.a
+
+# =========================
+# Readline (Linux / macOS)
+# =========================
+UNAME_S     := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+  RL_INC    ?= -I/usr/include -I/usr/include/readline
+  RL_LIB    ?= -lreadline -lncurses
+else
+  RL_PREFIX ?= /opt/homebrew   # /usr/local for Intel mac if needed
+  RL_INC    ?= -I$(RL_PREFIX)/opt/readline/include
+  RL_LIB    ?= -L$(RL_PREFIX)/opt/readline/lib -lreadline
+endif
+
+# =========================
+# Pretty printing
+# =========================
+OK   := \033[1;32m
+ERR  := \033[1;31m
+MUT  := \033[2m
+ACC  := \033[1;36m
+RST  := \033[0m
+
+ICON_OK   := ✔
+ICON_FAIL := ✖
+ICON_BLD  := 🔧
+ICON_LNK  := 🔗
+ICON_CLS  := 🧹
+ICON_TRS  := 🗑️
+ICON_RE   := ♻️
+
+# Silence sub-make directory spam
+MAKEFLAGS += --no-print-directory
+
+.PHONY: all clean fclean re libft
+
+# =========================
+# Default: build everything
+# =========================
+all: $(LIBFT) $(NAME)
+	@printf "$(OK)$(ICON_OK) Done.$(RST)\n"
+
+# Link step with a nice line
+$(NAME): $(OBJ) $(LIBFT)
+	@printf "$(ACC)$(ICON_LNK) Linking $(NAME)...$(RST)\n"
+	@$(CC) $(CFLAGS) $(OBJ) $(INCS) $(RL_INC) -L$(LIBFT_DIR) -lft $(RL_LIB) -o $@
+	@printf "$(OK)$(ICON_OK) Built $(NAME)$(RST)\n"
+
+# Objects with muted stdout but visible errors
+%.o: %.c
+	@printf "$(ACC)$(ICON_BLD) Compiling %-30s$(MUT) [cc]$(RST)\n" "$<"
+	@$(CC) $(CFLAGS) $(INCS) $(RL_INC) -c $< -o $@
+
+# Build libft (muted)
+$(LIBFT):
+	@printf "$(ACC)$(ICON_BLD) Building libft$(RST)\n"
+	@$(MAKE) -C $(LIBFT_DIR) >/dev/null
+
+# =========================
+# Cleaning
+# =========================
+clean:
+	@objs="$(OBJ) $(DEP)"; \
+	if [ -n "$$(printf "%s" $$objs | xargs -r ls 2>/dev/null)" ]; then \
+		printf "$(ACC)$(ICON_CLS) Cleaning objects$(RST)\n"; \
+		rm -f $(OBJ) $(DEP); \
+	else \
+		printf "$(MUT)$(ICON_CLS) Already clean (no objects)$(RST)\n"; \
+	fi
+	@printf "$(MUT)$(ICON_CLS) Cleaning libft objects$(RST)\n"
+	@$(MAKE) -C $(LIBFT_DIR) clean >/dev/null
+
+fclean: clean
+	@if [ -f "$(NAME)" ]; then \
+		printf "$(ACC)$(ICON_TRS) Removing $(NAME)$(RST)\n"; \
+		rm -f $(NAME); \
+	else \
+		printf "$(MUT)$(ICON_TRS) Already clean (no binary)$(RST)\n"; \
+	fi
+	@printf "$(MUT)$(ICON_TRS) Removing libft.a$(RST)\n"
+	@$(MAKE) -C $(LIBFT_DIR) fclean >/dev/null
+
+re:
+	@printf "$(ACC)$(ICON_RE) Rebuilding$(RST)\n"
+	@$(MAKE) fclean
+	@$(MAKE) all
+
+
