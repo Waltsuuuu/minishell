@@ -5,7 +5,7 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-SRC         := main.c
+SRC         :=	src/main.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================
