@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
 /*   Updated: 2025/08/21 12:38:32 by mhirvasm         ###   ########.fr       */
@@ -22,6 +22,7 @@
 # include <sys/wait.h>
 # include <sys/stat.h> // access
 
+
 //TODO move to executor.h
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
@@ -30,5 +31,13 @@ void	exec_ext_func(char **absolute_paths, char **words, char *envp[]);
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
+
+typedef struct s_input {
+	char	*raw;		// Original line the user typed in.
+	char	**words;		// Array of words (split from the original line).
+	int		count;		// Number of words.
+}		t_input;
+
+void	getworkindir(char *buf, size_t size);
 
 #endif
