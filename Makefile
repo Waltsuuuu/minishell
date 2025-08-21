@@ -5,7 +5,7 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-SRC         :=	src/main.c
+SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/executor/execute_external_f.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================
@@ -63,6 +63,7 @@ $(NAME): $(OBJ) $(LIBFT)
 
 # Objects with muted stdout but visible errors
 %.o: %.c
+	@mkdir -p $(dir $@)
 	@printf "$(ACC)$(ICON_BLD) Compiling %-30s$(MUT) [cc]$(RST)\n" "$<"
 	@$(CC) $(CFLAGS) $(INCS) $(RL_INC) -c $< -o $@
 
@@ -75,13 +76,9 @@ $(LIBFT):
 # Cleaning
 # =========================
 clean:
-	@objs="$(OBJ) $(DEP)"; \
-	if [ -n "$$(printf "%s" $$objs | xargs -r ls 2>/dev/null)" ]; then \
-		printf "$(ACC)$(ICON_CLS) Cleaning objects$(RST)\n"; \
-		rm -f $(OBJ) $(DEP); \
-	else \
-		printf "$(MUT)$(ICON_CLS) Already clean (no objects)$(RST)\n"; \
-	fi
+	@printf "$(ACC)$(ICON_CLS) Cleaning objects$(RST)\n"
+	@rm -f $(OBJ)
+	@find . -type f -name '*.o' -not -path './$(LIBFT_DIR)/*' -delete || true
 	@printf "$(MUT)$(ICON_CLS) Cleaning libft objects$(RST)\n"
 	@$(MAKE) -C $(LIBFT_DIR) clean >/dev/null
 
