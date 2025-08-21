@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 12:39:13 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:02:19 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ int	main(int argc, char *argv[], char *envp[])
 	(void)	argc;
 	(void) (argv);
 	//int		status;
-	char	*input;
-	char	**words;
+	char	*line;
+	t_input	input;
 	char	cwd[BUFSIZ];
 	char	*buf;
 	char	**paths;
@@ -33,7 +33,7 @@ int	main(int argc, char *argv[], char *envp[])
 
 	absolute_paths = NULL;
 
-	printf(
+	printf( 
 "         #             #           #             ###    ###   \n"
 "                                    #               #      #   \n"
 "                                    #               #      #   \n"
@@ -51,7 +51,7 @@ int	main(int argc, char *argv[], char *envp[])
 	// READ->EVALUATE->PRINT/EXECUTE->LOOP
     rl_bind_key('\t', rl_complete);
 
-	input = NULL;
+	line = NULL;
 	while (1337)
 	{
 		
@@ -60,30 +60,31 @@ int	main(int argc, char *argv[], char *envp[])
 		if (!buf)
 			break;
 
-        input = readline(buf);
-		if (!input)
+        line = readline(buf);
+		if (!line)
 		{
 			free(buf);
 			break;
 		}
-		add_history(input);
-		words = ft_split(input, ' ');
-		if (!words || !*words)
+		add_history(line);
+		if (parse_input_line(line, &input) == -1)
+			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
+		if (!input.words || input.count == 0)
 		{
-			free_split(words);
+			clear_struct_on_failure(&input);
 			free(buf);
-			free(input);
+			free(line);
 			continue;
 		}
 		paths = find_from_path(envp);
-		absolute_paths = build_absolute_paths(paths, words[0]);
-		exec_ext_func(absolute_paths, words, envp);
+		absolute_paths = build_absolute_paths(paths, input.words[0]);
+		exec_ext_func(absolute_paths, input.words, envp);
 
 		free_split(absolute_paths);
 		free_split(paths);
-		free_split(words);
 		free(buf);
-		free (input);
+		free (line);
+		clear_struct_on_failure(&input);
 	}
 	
 	

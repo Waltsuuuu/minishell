@@ -5,7 +5,7 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/executor/execute_external_f.c
+SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/executor/execute_external_f.c src/parser/simple_parse.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================
