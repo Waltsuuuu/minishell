@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 13:02:19 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/21 15:15:42 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
+	
+	setup_signal_handlers_for_prompt();
+	
 
 	absolute_paths = NULL;
 
@@ -59,13 +62,26 @@ int	main(int argc, char *argv[], char *envp[])
 		buf = ft_strjoin(cwd, "~:$");
 		if (!buf)
 			break;
-
+			
         line = readline(buf);
-		if (!line)
-		{
-			free(buf);
-			break;
-		}
+		if (!line) { //TODO signals not working properly, also check the child
+            if (g_signal == SIGINT) {
+                // Interrupted line editing by Ctrl-C -> just refresh prompt
+                write(1, "\n", 1);
+                g_signal = 0;
+				free (buf);
+				free(line);
+				continue;
+            }
+            // Real EOF -> exit (subject requirement)
+            printf("exit\n");
+            break;
+        }
+		
+    	else if (g_signal == SIGQUIT)  // Ctrl-\"
+    	{
+        g_signal = 0;
+    	}
 		add_history(line);
 		if (parse_input_line(line, &input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 13:03:52 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/21 14:34:56 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,12 @@
 # include "colors.h"
 # include <sys/wait.h>
 # include <sys/stat.h> // access
+# include <signal.h>
+
+//TODO move signals.h
+extern volatile sig_atomic_t g_signal;
+void	setup_signal_handlers_for_prompt();
+void	handle_sig(int signum);
 
 typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
@@ -37,12 +43,11 @@ void	exec_ext_func(char **absolute_paths, char **words, char *envp[]);
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
 
-
 //Parser
-int	parse_input_line(const char *line, t_input *input);
+int		parse_input_line(const char *line, t_input *input);
 void	input_struct_init(t_input *input);
-int	clear_struct_on_failure(t_input *input);
+int		clear_struct_on_failure(t_input *input);
 char	*normalize_tabs(const char *line);
-int	count_words(char **words);
+int		count_words(char **words);
 
 #endif
