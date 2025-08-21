@@ -1,0 +1,80 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   resolve_path.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 10:15:43 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/08/21 11:33:54 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+/*
+	@param 
+	@return 
+*/
+char	**find_from_path(char *envp[])
+{
+	char	*path;
+	size_t	counter;
+	
+	path = NULL;
+	counter = 0;
+	while(envp[counter])
+	{
+	 if (strncmp(envp[counter], "PATH=", 5) == 0)
+	 {
+		path = &envp[counter][5];
+		break;
+	 }
+	counter++;
+	}
+	if (!path || !*path)
+		return (NULL);
+	return (ft_split(path, ':'));
+}
+
+char	*join_cmd_to_path(const char *path, const char *cmd)
+{
+	char	*temp;
+	char	*absolute_path;
+	
+	if (!path || !cmd)
+		return (NULL);
+	
+	temp = ft_strjoin(path, "/");
+	if (!temp)
+		return (NULL);
+	absolute_path = ft_strjoin(temp, cmd);
+	free (temp);
+	return (absolute_path); 
+}
+
+char	**build_absolute_paths(char **paths, const char *cmd)
+{
+	size_t	counter;
+	size_t	len;
+	char	**absolute_paths;
+
+	if (!paths || !cmd || !*cmd)
+		return (NULL);
+	
+	len = 0;
+	while (paths[len])
+		len++;
+	absolute_paths = malloc(sizeof(char *) *(len + 1));
+	if (!absolute_paths)
+		return (NULL);
+	counter = 0;
+	while(paths[counter])
+	{
+		absolute_paths[counter] = join_cmd_to_path(paths[counter], cmd);
+		if (!absolute_paths[counter])
+			return (free_partial(absolute_paths, counter), NULL);
+		counter++;
+	}
+	absolute_paths[counter] = NULL;
+	return (absolute_paths);
+}
