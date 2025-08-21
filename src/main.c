@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 11:59:13 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/21 12:39:13 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,6 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
-	int		counter;
-	__pid_t	pid;
-	int		status;
 
 	absolute_paths = NULL;
 
@@ -80,26 +77,8 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, words[0]);
-		
-		counter = 0;
-		while (absolute_paths && absolute_paths[counter])
-		{
-			if (access(absolute_paths[counter], X_OK) == 0)
-			{
-				pid = fork();
-				if (pid == 0)
-				{
-					execve(absolute_paths[counter], words, envp);
-					perror("execve");
-					_exit(127);
-				}
-				waitpid(pid, &status, 0);
-				break;
-			}
-			counter++;
-		}
-		if (!absolute_paths || !absolute_paths[counter])
-			write(2, "minishell: command not found\n", 29);
+		exec_ext_func(absolute_paths, words, envp);
+
 		free_split(absolute_paths);
 		free_split(paths);
 		free_split(words);
