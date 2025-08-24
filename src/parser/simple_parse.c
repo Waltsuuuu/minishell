@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 17:14:50 by wheino            #+#    #+#             */
-/*   Updated: 2025/08/21 12:36:58 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:12:34 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ int	parse_input_line(const char *line, t_input *input)
  * - `raw`   = NULL
  * - `words` = NULL
  * - `count` = 0
+ * - `tokens` = NULL
+ * - `n_token` = 0
  *
  * This ensures the structure is ready to be safely used by parsing 
  * functions and prevents undefined behavior when freeing or accessing
@@ -93,6 +95,8 @@ void	input_struct_init(t_input *input)
 	input->raw = NULL;
 	input->words = NULL;
 	input->count = 0;
+	input->tokens = NULL;
+	input->n_tokens = 0;
 }
 
 /**
