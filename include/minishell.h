@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 13:03:52 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:03:39 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,15 @@
 # include "colors.h"
 # include <sys/wait.h>
 # include <sys/stat.h> // access
+
+typedef enum {
+	TOK_WORD,		// text
+	TOK_PIPE,		// |
+	TOK_REDIR_IN,	// <
+	TOK_REDIT_OUT,	// >
+	TOK_REDIT_APP,	// >>
+	TOK_HEREDOC		// <<
+}	TokType;
 
 typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
