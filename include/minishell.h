@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/24 16:06:25 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:09:55 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
 	char	**words;	// Array of words (split from the original line).
 	int		count;		// Number of words.
+	t_token	*tokens;	// Array of tokens.
+	int		n_tokens;	// Number of tokens.
 }		t_input;
 
 //TODO move to executor.h
