@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/24 16:03:39 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:06:25 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,15 @@ typedef enum {
 	TOK_HEREDOC		// <<
 }	TokType;
 
+typedef struct s_token {
+	TokType type;	// Token type
+	char	*text;	// The "word"
+	int		pos;	// Start index of token in *raw string.
+}		t_token;
+
 typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
-	char	**words;		// Array of words (split from the original line).
+	char	**words;	// Array of words (split from the original line).
 	int		count;		// Number of words.
 }		t_input;
 
