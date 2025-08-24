@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/24 16:09:55 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:30:33 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ void	free_partial(char **arr, size_t n);
 
 //Parser
 int	parse_input_line(const char *line, t_input *input);
-void	input_struct_init(t_input *input);
+void	input_struct_zero(t_input *input);
 int	clear_struct_on_failure(t_input *input);
+void	free_tokens(t_input *input);
 char	*normalize_tabs(const char *line);
 int	count_words(char **words);
 

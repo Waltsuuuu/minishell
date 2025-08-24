@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 17:14:50 by wheino            #+#    #+#             */
-/*   Updated: 2025/08/24 16:12:34 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/24 16:31:03 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
  * - On failure, all allocated memory inside `input` is freed.
  * - If no words are found, `input->words` is set to NULL and `count` is 0.
  *
- * @see input_struct_init(), ft_strdup(), normalize_tabs(), ft_split(), 
+ * @see input_struct_zero(), ft_strdup(), normalize_tabs(), ft_split(), 
  *      count_words(), clear_struct_on_failure()
  */
 int	parse_input_line(const char *line, t_input *input)
@@ -43,7 +43,7 @@ int	parse_input_line(const char *line, t_input *input)
 
 	if (!line || !input)
 		return (-1);
-	input_struct_init(input);
+	input_struct_zero(input);
 	input->raw = ft_strdup(line);
 	if (!input->raw)
 		return (-1);
@@ -75,7 +75,7 @@ int	parse_input_line(const char *line, t_input *input)
  * - `words` = NULL
  * - `count` = 0
  * - `tokens` = NULL
- * - `n_token` = 0
+ * - `n_tokens` = 0
  *
  * This ensures the structure is ready to be safely used by parsing 
  * functions and prevents undefined behavior when freeing or accessing
@@ -88,7 +88,7 @@ int	parse_input_line(const char *line, t_input *input)
  *
  * @note Always call this before populating a `t_input` structure.
  */
-void	input_struct_init(t_input *input)
+void	input_struct_zero(t_input *input)
 {
 	if (!input)
 		return ;
@@ -108,6 +108,8 @@ void	input_struct_init(t_input *input)
  * - `raw`   = NULL
  * - `words` = NULL
  * - `count` = 0
+ * - `tokens` = NULL
+ * - `n_tokens` = 0
  *
  * @param input  Pointer to a `t_input` struct to clear. 
  *               If NULL, no action is taken and -1 is returned.
@@ -139,10 +141,46 @@ int	clear_struct_on_failure(t_input *input)
 		}
 		free(input->words);
 	}
-	input->raw = NULL;
-	input->words = NULL;
-	input->count = 0;
+	free_tokens(input);
+	input_struct_zero(input);
 	return (-1);
+}
+/**
+ * Frees all tokens stored in a `t_input` structure.
+ *
+ * This function frees each token's `text` string in the `input->tokens`
+ * array, then frees the token array itself. After freeing, it resets
+ * `input->tokens` to NULL and `input->n_tokens` to 0 to prevent
+ * dangling pointers and double-free errors.
+ *
+ * @param input  Pointer to the `t_input` whose tokens will be freed.
+ *               If NULL, or if `input->tokens` is NULL, the function does nothing.
+ *
+ * @return void
+ *
+ * @note
+ * - This function does not free other fields (`raw`, `words`) or the `input`
+ *   struct itself. Use your broader cleanup (e.g., `clear_struct_on_failure()`)
+ *   when needed.
+ * - It is safe to call this multiple times; subsequent calls are no-ops.
+ *
+ * @see clear_struct_on_failure(), input_struct_zero()
+ */
+void	free_tokens(t_input *input)
+{
+	int i;
+	
+	if (!input || !input->tokens)
+		return ;
+	i = 0;
+	while (i < input->n_tokens)
+	{
+		free(input->tokens[i].text);
+		i++;
+	}
+	free(input->tokens);
+	input->tokens = NULL;
+	input->n_tokens = 0;
 }
 
 /**
