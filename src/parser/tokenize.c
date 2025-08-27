@@ -1,26 +1,5 @@
 #include "minishell.h"
 
-/* Temporary linked list of TOKENS, once all tokens extracted, allocate space for t_token *tokens array */
-typedef struct s_toknode
-{
-	t_token             tok;
-	struct s_toknode    *next;
-}		t_toknode;
-
-typedef struct s_tokenizer_state
-{
-	const char	*line;		// Raw input string
-	int			index;		// Current index
-	int			in_single;	// Bool flag to declare if token is inside single quotes
-	int			in_double;	// Bool flag to declate if token is inside double quotes
-	int			word_start;	// Start index of the current WORD
-	t_token		*tokens;	// Array of tokens
-	int			n_tokens;	// Number of tokens
-	t_toknode	*head;		// Head of token linked list
-	t_toknode	*tail;		// Tail of token linked list
-	int			list_count;	// Number of nodes (tokens);
-}		t_tokenizer_state;
-
 int	tokenize_line(const char *line, t_token **out, int *out_count)
 {
 	t_tokenizer_state state;
