@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 17:14:50 by wheino            #+#    #+#             */
-/*   Updated: 2025/08/25 14:32:11 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/27 14:52:31 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,31 @@
  */
 int	parse_input_line(const char *line, t_input *input)
 {
-	char	*norm;
-
 	if (!line || !input)
 		return (-1);
 	input_struct_zero(input);
 	input->raw = ft_strdup(line);
 	if (!input->raw)
 		return (-1);
+	if (fill_words_from_line(input, line) == -1)
+		return (clear_struct_on_failure(input));
+	if (tokenize_line(input->raw, &input->tokens, &input->n_tokens) == -1)
+		return (clear_struct_on_failure(input));
+	return (0);
+}
+
+int	fill_words_from_line(t_input *input, const char *line)
+{
+	char	*norm;
+
 	norm = normalize_tabs(line);
 	if (!norm)
-		return (clear_struct_on_failure(input));
+		return (-1);
 	input->words = ft_split(norm, ' ');
 	if (!input->words)
 	{
 		free(norm);
-		return (clear_struct_on_failure(input));
+		return (-1);
 	}
 	free(norm);
 	input->count = count_words(input->words);
