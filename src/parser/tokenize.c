@@ -46,11 +46,8 @@ int	init_tokenizer_state(t_tokenizer_state *state, const char *line)
 
 int	clear_tokenizer_state(t_tokenizer_state *state)
 {
-	int	i;
-
 	if (!state)
 		return (-1);
-	i = 0;
 	if (state->tokens)
 		free_token_array(state);
 	if (state->head)
@@ -146,8 +143,8 @@ int	run_tokenizer(t_tokenizer_state *state)
 int	skip_blanks(const char *string, int i)
 {
 	if (!string)
-		return (0);
-	while (string[i] == ' ')
+		return (i);
+	while (string[i] == ' ' || string[i] == '\t')
 		i++;
 	return (i);
 }
@@ -244,7 +241,8 @@ int	scan_word_end(const char *string, int i, int *in_single, int *in_double)
 	{
 		if (!*in_single && !*in_double)									// When NOT inside quotes
 		{
-			if (string[i] == ' ' || get_operator_len(&string[i]) > 0)	// If the current char is space OR operator char is found
+			if (string[i] == ' ' || string[i] == '\t'
+				|| get_operator_len(&string[i]) > 0)	// If the current char is space OR operator char is found
 				break ;													// 	- En of word / Operator found
 			if (string[i] == '\'') 										// If the current char is a single quote opener '
 				*in_single = 1;											//	- Set the in_single flag to true
