@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/27 14:46:45 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/27 15:38:32 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
+//#include <editline/readline.h>
 # include <readline/history.h>
 # include "colors.h"
 # include <sys/wait.h>
@@ -31,18 +32,18 @@ typedef enum {
 	TOK_HEREDOC		// <<
 }	TokType;
 
+typedef struct s_token {
+	TokType type;	// Token type
+	char	*text;	// The token as a string
+	int		pos;	// Start index of token in *raw string.
+}		t_token;
+
 /* Temporary linked list of TOKENS, once all tokens extracted, allocate space for t_token *tokens array */
 typedef struct s_toknode
 {
 	t_token             tok;
 	struct s_toknode    *next;
 }		t_toknode;
-
-typedef struct s_token {
-	TokType type;	// Token type
-	char	*text;	// The token as a string
-	int		pos;	// Start index of token in *raw string.
-}		t_token;
 
 typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
