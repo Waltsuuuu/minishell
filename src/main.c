@@ -6,7 +6,7 @@ static void	getworkindir(char *buf, size_t size)
 		perror("getwcd FAILED");
 }
 // Tokenizer test. Prints tokens
-static void print_tokens(const t_input *in)
+/*static void print_tokens(const t_input *in)
 {
 	int i;
 
@@ -20,7 +20,7 @@ static void print_tokens(const t_input *in)
 			in->tokens[i].text ? in->tokens[i].text : "(null)");
 		i++;
 	}
-}
+}*/
 
 
 int	main(int argc, char *argv[], char *envp[])
@@ -29,13 +29,16 @@ int	main(int argc, char *argv[], char *envp[])
 	(void) (argv);
 	//int		status;
 	char	*line;
-	t_input	input;
+	t_shell	shell = {0};
+	//ft_memset(shell.input, 0, sizeof(t_input));
 	char	cwd[BUFSIZ];
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
 	
 	setup_signal_handlers_for_prompt();
+	//shell = malloc(sizeof(shell));
+
 	
 
 	absolute_paths = NULL;
@@ -84,19 +87,19 @@ int	main(int argc, char *argv[], char *envp[])
 				continue;
         }
 		add_history(line);
-		if (parse_input_line(line, &input) == -1)
+		if (parse_input_line(line, &shell.input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
-		print_tokens(&input);		// Testing tokenizer
-		if (!input.words || input.count == 0)
+		//print_tokens(&shell->input);		// Testing tokenizer
+		if (!shell.input.words || shell.input.count == 0)
 		{
-			clear_struct_on_failure(&input);
+			clear_struct_on_failure(&shell.input);
 			free(buf);
 			free(line);
 			continue;
 		}
 		paths = find_from_path(envp);
-		absolute_paths = build_absolute_paths(paths, input.words[0]);
-		exec_ext_func(absolute_paths, input.words, envp);
+		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
+		exec_ext_func(absolute_paths, &shell, envp);
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
@@ -105,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 		free_split(paths);
 		free(buf);
 		free (line);
-		clear_struct_on_failure(&input);
+		clear_struct_on_failure(&shell.input);
 	}
 	
 	
