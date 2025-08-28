@@ -9,6 +9,8 @@
 # include <readline/history.h>
 # include "colors.h"
 # include <sys/stat.h> // access and macros
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <signal.h>
 # include "tokenizer.h"
 
@@ -17,7 +19,7 @@ typedef struct s_shell
     int     last_status;   // for $?
     char  **env;           // environment variables (array)
     // or: t_env *env_list; if we manage as a linked list
-    //t_input	input; //TODO open after conflicts
+    t_input	input;
     char 	**argv;          // arguments for current command
     // parsing / tokens
     char   *cwd;
@@ -28,12 +30,6 @@ extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
-
-typedef struct s_input {
-	char	*raw;		// Original line the user typed in.
-	char	**words;		// Array of words (split from the original line).
-	int		count;		// Number of words.
-}		t_input;
 
 //TODO move to executor.h
 char	*join_cmd_to_path(const char *path, const char *cmd);
