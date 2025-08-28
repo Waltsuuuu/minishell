@@ -6,21 +6,21 @@ static void	getworkindir(char *buf, size_t size)
 		perror("getwcd FAILED");
 }
 // Tokenizer test. Prints tokens
-/*static void print_tokens(const t_input *in)
-{
-	int i;
+// static void print_tokens(const t_input *in)
+// {
+// 	int i;
 
-	if (!in || !in->tokens)
-		return ;
-	i = 0;
-	while (i < in->n_tokens)
-	{
-		printf("[%d] kind=%d pos=%d text=\"%s\"\n",
-			i, in->tokens[i].type, in->tokens[i].pos,
-			in->tokens[i].text ? in->tokens[i].text : "(null)");
-		i++;
-	}
-}*/
+// 	if (!in || !in->tokens)
+// 		return ;
+// 	i = 0;
+// 	while (i < in->n_tokens)
+// 	{
+// 		printf("[%d] kind=%d pos=%d text=\"%s\"\n",
+// 			i, in->tokens[i].type, in->tokens[i].pos,
+// 			in->tokens[i].text ? in->tokens[i].text : "(null)");
+// 		i++;
+// 	}
+// }
 
 
 int	main(int argc, char *argv[], char *envp[])
@@ -86,10 +86,15 @@ int	main(int argc, char *argv[], char *envp[])
 				free(line);
 				continue;
         }
+		if (check_quote_balance(&line) == -1) // Makes sure quotes are closed before sending input to tokenizer
+		{
+			free(buf);
+			continue ;
+		}
 		add_history(line);
 		if (parse_input_line(line, &shell.input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
-		//print_tokens(&shell->input);		// Testing tokenizer
+		//print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
