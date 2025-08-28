@@ -29,13 +29,16 @@ int	main(int argc, char *argv[], char *envp[])
 	(void) (argv);
 	//int		status;
 	char	*line;
-	t_shell	*shell = NULL;
+	t_shell	shell = {0};
+	//ft_memset(shell.input, 0, sizeof(t_input));
 	char	cwd[BUFSIZ];
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
 	
 	setup_signal_handlers_for_prompt();
+	//shell = malloc(sizeof(shell));
+
 	
 
 	absolute_paths = NULL;
@@ -84,19 +87,19 @@ int	main(int argc, char *argv[], char *envp[])
 				continue;
         }
 		add_history(line);
-		if (parse_input_line(line, &shell->input) == -1)
+		if (parse_input_line(line, &shell.input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
 		//print_tokens(&shell->input);		// Testing tokenizer
-		if (!shell->input.words || shell->input.count == 0)
+		if (!shell.input.words || shell.input.count == 0)
 		{
-			clear_struct_on_failure(&shell->input);
+			clear_struct_on_failure(&shell.input);
 			free(buf);
 			free(line);
 			continue;
 		}
 		paths = find_from_path(envp);
-		absolute_paths = build_absolute_paths(paths, shell->input.words[0]);
-		exec_ext_func(absolute_paths, shell->input.words, envp);
+		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
+		exec_ext_func(absolute_paths, &shell, envp);
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
@@ -105,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 		free_split(paths);
 		free(buf);
 		free (line);
-		clear_struct_on_failure(&shell->input);
+		clear_struct_on_failure(&shell.input);
 	}
 	
 	

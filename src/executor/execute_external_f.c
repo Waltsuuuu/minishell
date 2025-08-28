@@ -10,7 +10,7 @@ int	status_from_wait(int wstatus)
 	return (1);
 }
 
-void	exec_ext_func(char **absolute_paths, char **words, char **envp)
+void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[])
 {
 	size_t	counter;
 	pid_t	pid;
@@ -25,12 +25,12 @@ void	exec_ext_func(char **absolute_paths, char **words, char **envp)
 				if (pid == 0)
 				{
 					setup_signal_handlers_for_child();
-					execve(absolute_paths[counter], words, envp);
+					execve(absolute_paths[counter], shell->input.words, envp);
 					perror("execve");
 					_exit(127);
 				}
 				waitpid(pid, &wstatus, 0);
-				//shell->last_status = status_from_wait(wstatus);	//TODO add after we get the struct
+				shell->last_status = status_from_wait(wstatus);	//TODO add after we get the struct
 				break;
 			}
 			counter++;

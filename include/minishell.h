@@ -21,7 +21,6 @@ typedef struct s_shell
     // or: t_env *env_list; if we manage as a linked list
     t_input	input;
     char 	**argv;          // arguments for current command
-    // parsing / tokens
     char   *cwd;
 }   t_shell;
 
@@ -35,7 +34,7 @@ void	handle_sig(int signum);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
-void	exec_ext_func(char **absolute_paths, char **words, char *envp[]);
+void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[]);
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
