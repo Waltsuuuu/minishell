@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/27 15:33:31 by wheino           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 static void	getworkindir(char *buf, size_t size)
@@ -46,6 +34,9 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
+	
+	setup_signal_handlers_for_prompt();
+	
 
 	absolute_paths = NULL;
 
@@ -75,13 +66,23 @@ int	main(int argc, char *argv[], char *envp[])
 		buf = ft_strjoin(cwd, "~:$");
 		if (!buf)
 			break;
-
+		
         line = readline(buf);
-		if (!line)
-		{
+		if (!line) // CTR:+D
+		{   
 			free(buf);
-			break;
-		}
+			free (line);  
+            printf("exit\n");
+            break;
+        }
+		if (g_signal == SIGINT)
+		{
+				write(STDOUT_FILENO, "\n", 1);
+                g_signal = 0;
+				free (buf);
+				free(line);
+				continue;
+        }
 		add_history(line);
 		if (parse_input_line(line, &input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
@@ -96,7 +97,10 @@ int	main(int argc, char *argv[], char *envp[])
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, input.words[0]);
 		exec_ext_func(absolute_paths, input.words, envp);
-
+		////////////////////////////////////////////////////////////////////////////////////
+		//TODO we should be able to open a minishell on minishell. 
+		//TODO I head there is environment variable called level, which should be increased!
+		////////////////////////////////////////////////////////////////////////////////////
 		free_split(absolute_paths);
 		free_split(paths);
 		free(buf);

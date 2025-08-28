@@ -1,22 +1,20 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execute_external_f.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 12:35:45 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 12:37:52 by mhirvasm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "minishell.h"
+
+int	status_from_wait(int wstatus)
+{
+	if (WIFEXITED(wstatus))
+		return (WEXITSTATUS(wstatus));
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
+	return (1);
+}
 
 void	exec_ext_func(char **absolute_paths, char **words, char **envp)
 {
 	size_t	counter;
 	pid_t	pid;
-	int 	status;
+	int 	wstatus;
 	
 	counter = 0;
 		while (absolute_paths && absolute_paths[counter])
@@ -26,11 +24,13 @@ void	exec_ext_func(char **absolute_paths, char **words, char **envp)
 				pid = fork();
 				if (pid == 0)
 				{
+					setup_signal_handlers_for_child();
 					execve(absolute_paths[counter], words, envp);
 					perror("execve");
 					_exit(127);
 				}
-				waitpid(pid, &status, 0);
+				waitpid(pid, &wstatus, 0);
+				//shell->last_status = status_from_wait(wstatus);	//TODO add after we get the struct
 				break;
 			}
 			counter++;

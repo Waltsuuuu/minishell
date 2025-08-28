@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/28 15:07:17 by wheino           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -20,9 +8,32 @@
 //#include <editline/readline.h>
 # include <readline/history.h>
 # include "colors.h"
-# include <sys/wait.h>
-# include <sys/stat.h> // access
+# include <sys/stat.h> // access and macros
+# include <signal.h>
 # include "tokenizer.h"
+
+typedef struct s_shell
+{
+    int     last_status;   // for $?
+    char  **env;           // environment variables (array)
+    // or: t_env *env_list; if we manage as a linked list
+    //t_input	input; //TODO open after conflicts
+    char 	**argv;          // arguments for current command
+    // parsing / tokens
+    char   *cwd;
+}   t_shell;
+
+//TODO move signals.h
+extern volatile sig_atomic_t g_signal;
+void	setup_signal_handlers_for_prompt();
+void	setup_signal_handlers_for_child();
+void	handle_sig(int signum);
+
+typedef struct s_input {
+	char	*raw;		// Original line the user typed in.
+	char	**words;		// Array of words (split from the original line).
+	int		count;		// Number of words.
+}		t_input;
 
 //TODO move to executor.h
 char	*join_cmd_to_path(const char *path, const char *cmd);

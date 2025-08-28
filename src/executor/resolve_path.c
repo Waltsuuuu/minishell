@@ -1,20 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   resolve_path.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 10:15:43 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 11:33:54 by mhirvasm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "minishell.h"
-/*
-	@param 
-	@return 
-*/
+/**
+ * @brief Extracts PATH directories from environment.
+ *
+ * @param envp environment variables array
+ * @returns Array of PATH directories split by ':' or NULL on failure.
+ */
 char	**find_from_path(char *envp[])
 {
 	char	*path;
@@ -24,7 +15,7 @@ char	**find_from_path(char *envp[])
 	counter = 0;
 	while(envp[counter])
 	{
-	 if (strncmp(envp[counter], "PATH=", 5) == 0)
+	 if (ft_strncmp(envp[counter], "PATH=", 5) == 0)
 	 {
 		path = &envp[counter][5];
 		break;
@@ -35,7 +26,13 @@ char	**find_from_path(char *envp[])
 		return (NULL);
 	return (ft_split(path, ':'));
 }
-
+/**
+ * @brief Joins a directory path with a command name.
+ *
+ * @param path Directory under PATH variable.
+ * @param cmd Command to append.
+ * @return Newly allocated absolute path string or NULL on failure.
+ */
 char	*join_cmd_to_path(const char *path, const char *cmd)
 {
 	char	*temp;
@@ -51,7 +48,13 @@ char	*join_cmd_to_path(const char *path, const char *cmd)
 	free (temp);
 	return (absolute_path); 
 }
-
+/**
+ * @brief Builds an array of absolute paths for a command.
+ *
+ * @param paths Array of PATH directories.
+ * @param cmd Command to resolve.
+ * @return Array of absolute paths or NULL on failure.
+ */
 char	**build_absolute_paths(char **paths, const char *cmd)
 {
 	size_t	counter;

@@ -1,17 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_split.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/21 10:13:11 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 11:12:06 by mhirvasm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "minishell.h"
-
+/**
+ * Frees null terminated array of strings
+ */
 void	free_split(char **arr)
 {
 	size_t	i;
@@ -24,7 +15,11 @@ void	free_split(char **arr)
 	}
 	free(arr);
 }
-
+/**
+ * Frees non-NULL terminated array of strings in case of error.
+ * @param arr Array of strings.
+ * @param n index number where we failed.
+ */
 void	free_partial(char **arr, size_t n)
 {
 	size_t i;
