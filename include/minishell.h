@@ -5,7 +5,6 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
-//#include <editline/readline.h>
 # include <readline/history.h>
 # include "colors.h"
 # include <sys/stat.h> // access and macros
@@ -38,5 +37,10 @@ void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[]);
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
+
+int check_quote_balance(char **line);
+int	quotes_unbalanced(const char *string);
+int	append_new_input(char **line, char *new_input);
+
 
 #endif
