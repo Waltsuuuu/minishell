@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 14:34:56 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/28 12:20:32 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 //TODO move signals.h
 extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
+void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
 
 typedef struct s_input {

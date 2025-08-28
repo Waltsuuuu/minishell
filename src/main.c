@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 10:08:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/22 14:36:11 by mhirvasm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -64,8 +53,10 @@ int	main(int argc, char *argv[], char *envp[])
 			break;
 		
         line = readline(buf);
-		if (!line) 
-		{        
+		if (!line) // CTR:+D
+		{   
+			free(buf);
+			free (line);  
             printf("exit\n");
             break;
         }
