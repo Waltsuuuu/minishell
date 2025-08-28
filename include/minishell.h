@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/21 13:03:52 by wheino           ###   ########.fr       */
+/*   Updated: 2025/08/28 15:07:17 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,12 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
+//#include <editline/readline.h>
 # include <readline/history.h>
 # include "colors.h"
 # include <sys/wait.h>
 # include <sys/stat.h> // access
-
-typedef struct s_input {
-	char	*raw;		// Original line the user typed in.
-	char	**words;		// Array of words (split from the original line).
-	int		count;		// Number of words.
-}		t_input;
+# include "tokenizer.h"
 
 //TODO move to executor.h
 char	*join_cmd_to_path(const char *path, const char *cmd);
@@ -36,13 +32,5 @@ void	exec_ext_func(char **absolute_paths, char **words, char *envp[]);
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
-
-
-//Parser
-int	parse_input_line(const char *line, t_input *input);
-void	input_struct_init(t_input *input);
-int	clear_struct_on_failure(t_input *input);
-char	*normalize_tabs(const char *line);
-int	count_words(char **words);
 
 #endif
