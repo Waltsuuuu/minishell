@@ -1,10 +1,25 @@
-
 #include "minishell.h"
 
 static void	getworkindir(char *buf, size_t size)
 {
 	if (NULL == getcwd(buf, size))
 		perror("getwcd FAILED");
+}
+// Tokenizer test. Prints tokens
+static void print_tokens(const t_input *in)
+{
+	int i;
+
+	if (!in || !in->tokens)
+		return ;
+	i = 0;
+	while (i < in->n_tokens)
+	{
+		printf("[%d] kind=%d pos=%d text=\"%s\"\n",
+			i, in->tokens[i].type, in->tokens[i].pos,
+			in->tokens[i].text ? in->tokens[i].text : "(null)");
+		i++;
+	}
 }
 
 
@@ -71,6 +86,7 @@ int	main(int argc, char *argv[], char *envp[])
 		add_history(line);
 		if (parse_input_line(line, &input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
+		print_tokens(&input);		// Testing tokenizer
 		if (!input.words || input.count == 0)
 		{
 			clear_struct_on_failure(&input);

@@ -1,4 +1,3 @@
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -6,11 +5,12 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
+//#include <editline/readline.h>
 # include <readline/history.h>
 # include "colors.h"
-# include <sys/wait.h>
 # include <sys/stat.h> // access and macros
 # include <signal.h>
+# include "tokenizer.h"
 
 typedef struct s_shell
 {
@@ -43,12 +43,5 @@ void	exec_ext_func(char **absolute_paths, char **words, char *envp[]);
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
-
-//Parser
-int		parse_input_line(const char *line, t_input *input);
-void	input_struct_init(t_input *input);
-int		clear_struct_on_failure(t_input *input);
-char	*normalize_tabs(const char *line);
-int		count_words(char **words);
 
 #endif
