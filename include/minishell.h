@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/19 10:08:48 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/28 12:20:32 by mhirvasm         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -20,8 +9,19 @@
 # include <readline/history.h>
 # include "colors.h"
 # include <sys/wait.h>
-# include <sys/stat.h> // access
+# include <sys/stat.h> // access and macros
 # include <signal.h>
+
+typedef struct s_shell
+{
+    int     last_status;   // for $?
+    char  **env;           // environment variables (array)
+    // or: t_env *env_list; if we manage as a linked list
+    //t_input	input; //TODO open after conflicts
+    char 	**argv;          // arguments for current command
+    // parsing / tokens
+    char   *cwd;
+}   t_shell;
 
 //TODO move signals.h
 extern volatile sig_atomic_t g_signal;

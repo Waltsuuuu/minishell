@@ -1,11 +1,20 @@
 
 #include "minishell.h"
 
+int	status_from_wait(int wstatus)
+{
+	if (WIFEXITED(wstatus))
+		return (WEXITSTATUS(wstatus));
+	if (WIFSIGNALED(wstatus))
+		return (128 + WTERMSIG(wstatus));
+	return (1);
+}
+
 void	exec_ext_func(char **absolute_paths, char **words, char **envp)
 {
 	size_t	counter;
 	pid_t	pid;
-	int 	status;
+	int 	wstatus;
 	
 	counter = 0;
 		while (absolute_paths && absolute_paths[counter])
@@ -20,7 +29,8 @@ void	exec_ext_func(char **absolute_paths, char **words, char **envp)
 					perror("execve");
 					_exit(127);
 				}
-				waitpid(pid, &status, 0);
+				waitpid(pid, &wstatus, 0);
+				//shell->last_status = status_from_wait(wstatus);	//TODO add after we get the struct
 				break;
 			}
 			counter++;
