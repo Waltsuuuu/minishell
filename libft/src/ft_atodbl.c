@@ -6,11 +6,9 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 13:47:19 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/14 09:01:44 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:55:52 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "fractol.h"
 
 double	ft_atodbl(char *str)
 {
