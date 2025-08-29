@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:10:30 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/04/29 14:07:42 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/08/29 10:56:08 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ size_t	ft_strlcat(char *dst, const char *src, size_t size);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strrchr(const char *s, int c);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+int		ft_strcmp(char *s1, char *s2);
 char	*ft_strnstr(const char *big, const char *little, size_t len);
 char	*ft_strdup(const char *s1);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -60,6 +61,7 @@ void	ft_striteri(char *s, void (*f)(unsigned int, char *));
  * ──────────────── */
 int		ft_atoi(const char *nptr);
 char	*ft_itoa(int n);
+double	ft_atodbl(char *str);
 
 /* ────────────────
  * Output to fd

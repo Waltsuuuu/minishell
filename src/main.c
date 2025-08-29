@@ -80,7 +80,7 @@ int	main(int argc, char *argv[], char *envp[])
         }
 		if (g_signal == SIGINT)
 		{
-				write(STDOUT_FILENO, "\n", 1);
+				shell.last_status = 130;
                 g_signal = 0;
 				free (buf);
 				free(line);
@@ -100,6 +100,7 @@ int	main(int argc, char *argv[], char *envp[])
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
 		exec_ext_func(absolute_paths, &shell, envp);
+		printf("Last status: %d\n", shell.last_status); //TESTING
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!

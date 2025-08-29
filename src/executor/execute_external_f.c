@@ -36,5 +36,8 @@ void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[])
 			counter++;
 		}
 		if (!absolute_paths || !absolute_paths[counter])
+		{
 			write(2, "minishell: command not found\n", 29);
+			shell->last_status = 127; //TODO Signal hardcoded here for now
+		}
 }
