@@ -35,6 +35,8 @@ char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
 void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[]);
+void	exec_direct(t_shell *shell, char *envp[]);
+int	    has_slash(char *input); // helper in exec
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);

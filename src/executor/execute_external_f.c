@@ -15,7 +15,14 @@ void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[])
 	size_t	counter;
 	pid_t	pid;
 	int 	wstatus;
-	
+	//Checking for direct exec
+	if (shell->input.words && shell->input.words[0]
+		&& has_slash(shell->input.words[0]))
+	{
+		exec_direct(shell, envp);
+		return;
+	}
+
 	counter = 0;
 		while (absolute_paths && absolute_paths[counter])
 		{
@@ -40,4 +47,32 @@ void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[])
 			write(2, "minishell: command not found\n", 29);
 			shell->last_status = 127; //TODO Signal hardcoded here for now
 		}
+}
+
+int	has_slash(char *input)
+{
+	while (*input)
+		if (*input++ == '/')
+			return (1);
+	return (0);
+}
+
+void	exec_direct(t_shell *shell, char *envp[])
+{
+	pid_t	pid;
+	int		wstatus;
+	char	*path;
+
+	path = shell->input.words[0];
+
+	pid = fork();
+	if (pid == 0)
+	{
+		setup_signal_handlers_for_child();
+		execve(path, &shell->input.words[0] , envp);
+		perror("execve");
+		_exit(127);
+	}
+	waitpid(pid, &wstatus, 0);
+		shell->last_status = status_from_wait(wstatus);
 }
