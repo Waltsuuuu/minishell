@@ -40,9 +40,17 @@ int	    has_slash(char *input); // helper in exec
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
 
+// quote_check.c
 int check_quote_balance(char **line);
 int	quotes_unbalanced(const char *string);
 int	append_new_input(char **line, char *new_input);
 
+// expansion.c 
+int expand_tokens(t_input *input, int last_status);
+char *expand_status(char *text, int last_status);
+int	create_exp_status_text(char *text, char **exp_text, char *status_str);
+int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
+int	process_status_str(char **exp_text, const char *status_str);
+int	process_char(char **exp_text, char c);
 
 #endif
