@@ -53,48 +53,48 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 
 int	process_var_expansion(char *text, char **exp_text, int *i, char **envp)
 {
-	char	*var_name;
-	int		var_name_len;
-	char	*expanded_var;
-	int		expanded_var_len;
+	char	*key;
+	int		key_len;
+	char	*value;
+	int		value_len;
 	int		start_i;
 	int		env_i;
 
 	start_i = *i;
-	var_name_len = 0;
+	key_len = 0;
 	while (valid_cont_char(text[*i]) == 1)
 	{
 		(*i)++;
-		var_name_len++;
+		key_len++;
 	}
-	var_name = malloc(var_name_len + 2);
-	if (!var_name)
+	key = malloc(key_len + 2);
+	if (!key)
 		return (-1);
-	copy_n_chars(var_name, &text[start_i], var_name_len);
-	var_name[var_name_len] = '=';
-	var_name[var_name_len + 1] = '\0';
+	copy_n_chars(key, &text[start_i], key_len);
+	key[key_len] = '=';
+	key[key_len + 1] = '\0';
 	env_i = 0;
 	while (envp[env_i])
 	{
-		if (ft_strncmp(envp[env_i], var_name, var_name_len + 1) == 0)           // Var is declared and gets expanded to var value
+		if (ft_strncmp(envp[env_i], key, key_len + 1) == 0)           // Var is declared and gets expanded to var value
 		{
-			expanded_var_len = ft_strlen(envp[env_i]) - (var_name_len + 1);
-			expanded_var = malloc(expanded_var_len + 1);
-			if (!expanded_var)
+			value_len = ft_strlen(envp[env_i]) - (key_len + 1);
+			value = malloc(value_len + 1);
+			if (!value)
 			{
-				free(var_name);
+				free(key);
 				return (-1);
 			}
-			copy_n_chars(expanded_var, &envp[env_i][var_name_len + 1], expanded_var_len);
-			process_expanded_str(exp_text, expanded_var);
-			free(var_name);
-			free(expanded_var);
+			copy_n_chars(value, &envp[env_i][key_len + 1], value_len);
+			process_expanded_str(exp_text, value);
+			free(key);
+			free(value);
 			return (1);
 		}
 		else
 			env_i++;
 	}
-	free(var_name);
+	free(key);
 	return (0);
 }
 
