@@ -1,8 +1,6 @@
 #include "minishell.h"
+#include <bsd/string.h>
 
-// Only handle $? expansion.
-// Does not expand if inside single quotes.
-// Quotes are preserved, removal later.
 int expand_tokens(t_input *input, int last_status, char **envp)
 {
 	int			i;
@@ -20,6 +18,7 @@ int expand_tokens(t_input *input, int last_status, char **envp)
 				return (-1);
 			free(input->tokens[i].text);
 			input->tokens[i].text = exp_text;								// Replace token text with expanded text
+			printf("Status expanded OK\n");
 			exp_text = expand_variable(input->tokens[i].text, envp);		// Expands the $VAR
 			if (!exp_text)
 				return (-1);
@@ -34,10 +33,9 @@ int expand_tokens(t_input *input, int last_status, char **envp)
 char *expand_variable(char *text, char **envp)
 {
 	char	*exp_text;
-	int		i;
 
 	if (!text)
-		return (ft_strup(""));
+		return (ft_strdup(""));
 	exp_text = ft_strdup("");
 	if (!exp_text)
 		return (NULL);
@@ -69,7 +67,7 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 			i++;
 			continue ;
 		}
-		if (!in_single && text[i] == '$' && valid_start_char(text[i]) == 1)
+		if (!in_single && text[i] == '$' && valid_start_char(text[i + 1]) == 1)
 		{
 			i++;
 			if (process_var_expansion(text, exp_text, &i, envp) == -1)
@@ -86,46 +84,79 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 int	process_var_expansion(char *text, char **exp_text, int *i, char **envp)
 {
 	char	*var_name;
-	int		start_i;
 	int		var_name_len;
-	int		env_i;
 	char	*expanded_var;
+	int		expanded_var_len;
+	int		start_i;
+	int		env_i;
 
 	start_i = *i;
 	var_name_len = 0;
-	var_name = ft_strdup("");
-	if (!var_name)
-		return (-1);
 	while (valid_cont_char(text[*i]) == 1)
 	{
-		i++;
+		(*i)++;
 		var_name_len++;
 	}
 	var_name = malloc(var_name_len + 2);
-	ft_strlcpy(var_name, &text[start_i], var_name_len);
+	if (!var_name)
+		return (-1);
+	copy_n_chars(var_name, &text[start_i], var_name_len);
 	var_name[var_name_len] = '=';
 	var_name[var_name_len + 1] = '\0';
+	env_i = 0;
 	while (envp[env_i])
 	{
-		if (ft_strncmp(envp[env_i], var_name, var_name_len) == 0)
+		if (ft_strncmp(envp[env_i], var_name, var_name_len + 1) == 0)           // Var is declared and gets expanded to var value
 		{
-			expanded_var = malloc(ft_strlen(envp[env_i]) - (var_name_len + 1));
-			
+			expanded_var_len = ft_strlen(envp[env_i]) - (var_name_len + 1);
+			expanded_var = malloc(expanded_var_len + 1);
+			if (!expanded_var)
+			{
+				free(var_name);
+				return (-1);
+			}
+			copy_n_chars(expanded_var, &envp[env_i][var_name_len + 1], expanded_var_len);
+			process_expanded_str(exp_text, expanded_var);
+			free(var_name);
+			free(expanded_var);
+			return (1);
 		}
+		else
+			env_i++;
 	}
-	// continue....
+	free(var_name);
+	return (0);
+}
+
+size_t	copy_n_chars(char *dst, const char *src, size_t size)
+{
+	size_t	counter;
+	size_t	src_len;
+
+	src_len = ft_strlen(src);
+	if (size != 0)
+	{
+		counter = 0;
+		while ((src[counter] != '\0') && (counter < size))
+		{
+			dst[counter] = src[counter];
+			counter++;
+		}
+		dst[counter] = '\0';
+	}
+	return (src_len);
 }
 
 int	valid_cont_char(char c)
 {
-	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c == '_') || (c >= '0' && c <= '9'))
+	if (ft_isalpha(c) || (c == '_') || ft_isdigit(c))
 		return (1);
 	return (0);
 }
 
 int	valid_start_char(char c)
 {
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_')
+	if (ft_isalpha(c) == 1024|| (c == '_'))
 		return (1);
 	return (0);
 }
@@ -179,7 +210,7 @@ int	create_exp_status_text(char *text, char **exp_text, char *status_str)
 		}
 		if (!in_single && text[i] == '$' && text[i + 1] == '?')		// If not inside single quotes and status marker ($?) found,
 		{
-			if (process_status_str(exp_text, status_str) == -1)		// Append the status string to the expanded_text string.
+			if (process_expanded_str(exp_text, status_str) == -1)		// Append the status string to the expanded_text string.
 				return (-1);
 			i += 2;													// Skips over the $ and ? chars
 			continue ;
@@ -212,7 +243,7 @@ int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text)
 }
 
 // Appends the status string to the current exp_text
-int	process_status_str(char **exp_text, const char *status_str)
+int	process_expanded_str(char **exp_text, const char *status_str)
 {
 	char	*joined;
 

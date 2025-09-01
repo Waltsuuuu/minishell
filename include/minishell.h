@@ -43,12 +43,22 @@ int check_quote_balance(char **line);
 int	quotes_unbalanced(const char *string);
 int	append_new_input(char **line, char *new_input);
 
-// expansion.c 
+// expansion.c - STATUS EXPANSION
 int expand_tokens(t_input *input, int last_status, char **envp);
 char *expand_status(char *text, int last_status);
 int	create_exp_status_text(char *text, char **exp_text, char *status_str);
 int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
-int	process_status_str(char **exp_text, const char *status_str);
+int	process_expanded_str(char **exp_text, const char *status_str);
 int	process_char(char **exp_text, char c);
+
+// expansion.c - VAR EXPANSION
+char *expand_variable(char *text, char **envp);
+int	create_exp_var_text(char *text, char **exp_text, char **envp);
+int	process_var_expansion(char *text, char **exp_text, int *i, char **envp);
+int	valid_cont_char(char c);
+int	valid_start_char(char c);
+size_t	copy_n_chars(char *dst, const char *src, size_t size);
+
+
 
 #endif
