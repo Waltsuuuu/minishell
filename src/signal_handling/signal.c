@@ -13,8 +13,8 @@ void	handle_sig(int signum)
 {
 	g_signal = signum;
 	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();
 	rl_replace_line("", 0);
+	rl_on_new_line();
 	rl_redisplay();
 	
 }

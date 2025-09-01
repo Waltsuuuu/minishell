@@ -25,26 +25,35 @@ typedef struct s_cmd
 
 /* ---------- Environment as linked list ---------- */
 
-typedef struct s_env
+/* --- Environment as a dynamic NULL-terminated array --- */
+typedef struct s_envarr
 {
-	char			*key;
-	char			*val;
-	struct s_env	*next;
-}	t_env;
+	char	**v;   /* array of "KEY=VALUE", always NULL-terminated */
+	int		len;  /* number of entries (excluding the final NULL) */
+	int		cap;  /* allocated capacity (excluding space for final NULL) */
+}	t_envarr;
 
 /* ---------- Shell state ---------- */
 
+/* One node = one environment variable */
+typedef struct s_env
+{
+	char           *key;   /* e.g. "PATH" (malloc'd, no '=')            */
+	char           *val;   /* e.g. "/usr/bin:/bin" (malloc'd, may be NULL/empty) */
+	struct s_env   *next;  /* next node                                  */
+}	t_env;
+
 typedef struct s_shell
 {
-    int     last_status;   // for $?
-    char  **env;           // environment variables (array)
-    // or: t_env *env_list; if we manage as a linked list
-    t_input	input;
-    char 	**argv;          // arguments for current command
-    char   *cwd;
+    int         last_status;   // for $?
+    t_env       *env_link; // linked list for env
+    char        **env; // demoing
+    t_input     input;
+    char        **argv;          // arguments for current command
 }   t_shell;
 
-
+//SHELL 
+int	shell_init(t_shell *shell, char *envp[]);
 
 //TODO move signals.h
 extern volatile sig_atomic_t g_signal;
@@ -56,8 +65,8 @@ void	handle_sig(int signum);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
-void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell, char *envp[]);
-void	exec_direct(t_shell *shell, char *envp[]);
+void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell);
+void	exec_direct(t_shell *shell);
 int	    has_slash(char *input); // helper in exec
 int	    exec_pipe2(char **left_argv, char **right_argv, char *envp[]);
 int	    run_line_minipipe(char *line, t_shell *shell, char *envp[]);

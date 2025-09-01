@@ -5,7 +5,7 @@ static void	getworkindir(char *buf, size_t size)
 	if (NULL == getcwd(buf, size))
 		perror("getwcd FAILED");
 }
-// Tokenizer test. Prints tokens
+/*// Tokenizer test. Prints tokens
 static void print_tokens(const t_input *in)
 {
 	int i;
@@ -20,7 +20,7 @@ static void print_tokens(const t_input *in)
 			in->tokens[i].text ? in->tokens[i].text : "(null)");
 		i++;
 	}
-}
+}*/
 
 
 int	main(int argc, char *argv[], char *envp[])
@@ -35,11 +35,10 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
-	
-	setup_signal_handlers_for_prompt();
-	//shell = malloc(sizeof(shell));
 
-	
+	shell_init(&shell, envp); //TODO shell init
+
+	//setup_signal_handlers_for_prompt(); //TODO delete after shell init works
 
 	absolute_paths = NULL;
 
@@ -102,7 +101,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		print_tokens(&shell.input);		// Testing tokenizer
+		//print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
