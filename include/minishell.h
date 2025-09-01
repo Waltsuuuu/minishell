@@ -65,7 +65,7 @@ void	handle_sig(int signum);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
-void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell, char *envp[]);
+void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell);
 void	exec_direct(t_shell *shell);
 int	    has_slash(char *input); // helper in exec
 int	    exec_pipe2(char **left_argv, char **right_argv, char *envp[]);

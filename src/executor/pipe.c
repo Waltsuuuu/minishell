@@ -169,7 +169,7 @@ int run_line_minipipe(char *line, t_shell *shell, char *envp[])     // Run eithe
         shell->input.words = left_argv;                            // point shell->input.words to this argv (used by exec_ext_func)
         paths = find_from_path(envp);                           // extract PATH= value and split by ':'
         abs_paths = build_absolute_paths(paths, left_argv[0]);  // join each dir with argv[0] -> "dir/argv0"
-        exec_ext_func_and_direct(abs_paths, shell, envp);                     // your single-cmd exec path; forks, waits, sets sh->last_status
+        exec_ext_func_and_direct(abs_paths, shell);                     // your single-cmd exec path; forks, waits, sets sh->last_status
 
         free_split(abs_paths);                                  // free "dir/argv0" candidates
         free_split(paths);                                      // free PATH directories array

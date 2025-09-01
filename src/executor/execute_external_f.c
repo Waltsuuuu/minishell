@@ -10,7 +10,7 @@ int	status_from_wait(int wstatus)
 	return (1);
 }
 
-void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell, char *envp[])
+void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell)
 {
 	size_t	counter;
 	pid_t	pid;
@@ -32,7 +32,7 @@ void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell, char *envp[
 				if (pid == 0)
 				{
 					setup_signal_handlers_for_child();
-					execve(absolute_paths[counter], shell->input.words, envp);
+					execve(absolute_paths[counter], shell->input.words, shell->env);
 					perror("execve");
 					_exit(127);
 				}
