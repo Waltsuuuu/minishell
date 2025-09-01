@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include <bsd/string.h>
 
 int expand_tokens(t_input *input, int last_status, char **envp)
 {

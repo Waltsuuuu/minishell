@@ -9,7 +9,7 @@ int	valid_cont_char(char c)
 
 int	valid_start_char(char c)
 {
-	if (ft_isalpha(c) == 1024|| (c == '_'))
+	if (ft_isalpha(c) || (c == '_'))
 		return (1);
 	return (0);
 }

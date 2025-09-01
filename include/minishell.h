@@ -23,6 +23,15 @@ typedef struct s_shell
     char   *cwd;
 }   t_shell;
 
+typedef struct s_expand_var_state
+{
+	int	i;
+	int	in_single;
+	int	in_double;
+	int	quote_handled;
+	int	expanded;
+}	t_expand_var_state;
+
 //TODO move signals.h
 extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
@@ -54,7 +63,11 @@ int	process_char(char **exp_text, char c);
 // expansion.c - VAR EXPANSION
 char *expand_variable(char *text, char **envp);
 int	create_exp_var_text(char *text, char **exp_text, char **envp);
+void	init_expand_state(t_expand_var_state *st);
+int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
 int	process_var_expansion(char *text, char **exp_text, int *i, char **envp);
+int	extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
+int	find_env_index(char **envp, char *key, int key_len);
 int	valid_cont_char(char c);
 int	valid_start_char(char c);
 size_t	copy_n_chars(char *dst, const char *src, size_t size);
