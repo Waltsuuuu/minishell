@@ -19,7 +19,7 @@ void	exec_ext_func_and_direct(char **absolute_paths, t_shell *shell, char *envp[
 	if (shell->input.words && shell->input.words[0]
 		&& has_slash(shell->input.words[0]))
 	{
-		exec_direct(shell, envp);
+		exec_direct(shell);
 		return;
 	}
 
@@ -57,7 +57,7 @@ int	has_slash(char *input)
 	return (0);
 }
 
-void	exec_direct(t_shell *shell, char *envp[])
+void	exec_direct(t_shell *shell)
 {
 	pid_t	pid;
 	int		wstatus;
@@ -69,7 +69,7 @@ void	exec_direct(t_shell *shell, char *envp[])
 	if (pid == 0)
 	{
 		setup_signal_handlers_for_child();
-		execve(path, &shell->input.words[0] , envp);
+		execve(path, &shell->input.words[0] , shell->env);
 		perror("execve");
 		_exit(127);
 	}
