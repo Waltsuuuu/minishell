@@ -6,7 +6,8 @@ CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
 SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/executor/execute_external_f.c src/parser/simple_parse.c \
-				src/signal_handling/signal.c src/parser/tokenize.c src/parser/tok_init_free.c src/parser/tok_utils.c src/utils/quote_check.c src/utils/expansion.c
+				src/signal_handling/signal.c src/parser/tokenize.c src/parser/tok_init_free.c src/parser/tok_utils.c src/utils/quote_check.c \
+				src/expander/expansion.c src/expander/expand_status.c src/expander/expand_variable.c src/expander/expand_utils.c 
 OBJ         := $(SRC:.c=.o)
 
 # =========================
