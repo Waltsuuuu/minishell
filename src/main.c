@@ -94,7 +94,7 @@ int	main(int argc, char *argv[], char *envp[])
 		add_history(line);
 		if (parse_input_line(line, &shell.input) == -1)
 			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
-		if (expand_tokens(&shell.input, shell.last_status) == -1)
+		if (expand_tokens(&shell.input, shell.last_status, envp) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
 			free(buf);
