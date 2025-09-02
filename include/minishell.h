@@ -57,7 +57,7 @@ int expand_tokens(t_input *input, int last_status, char **envp);
 char *expand_status(char *text, int last_status);
 int	create_exp_status_text(char *text, char **exp_text, char *status_str);
 int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
-int	process_expanded_str(char **exp_text, const char *status_str);
+int	process_expanded_str(char **exp_text, const char *str);
 int	process_char(char **exp_text, char c);
 
 // expansion.c - VAR EXPANSION
