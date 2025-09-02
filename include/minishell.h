@@ -52,25 +52,32 @@ int check_quote_balance(char **line);
 int	quotes_unbalanced(const char *string);
 int	append_new_input(char **line, char *new_input);
 
-// expansion.c - STATUS EXPANSION
-int expand_tokens(t_input *input, int last_status, char **envp);
-char *expand_status(char *text, int last_status);
-int	create_exp_status_text(char *text, char **exp_text, char *status_str);
-int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
-int	process_expanded_str(char **exp_text, const char *str);
-int	process_char(char **exp_text, char c);
+// 01_expansion.c
+int	expand_tokens(t_input *input, int last_status, char **envp);
 
-// expansion.c - VAR EXPANSION
-char *expand_variable(char *text, char **envp);
-int	create_exp_var_text(char *text, char **exp_text, char **envp);
-void	init_expand_state(t_expand_state *st);
-int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
-int	process_var_expansion(char *text, char **exp_text, int *i, char **envp);
-int	extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
-int	find_env_index(char **envp, char *key, int key_len);
+// 02_expand_status.c
+char	*expand_status(char *text, int last_status);
+int		create_exp_status_text(char *text, char **exp_text, char *status_str);
+
+// 03_expand_variable.c
+char	*expand_variable(char *text, char **envp);
+int		create_exp_var_text(char *text, char **exp_text, char **envp);
+int		handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
+int		process_var_expansion(char *text, char **exp_text, int *i, char **envp);
+
+// 04_expand_utils.c
 int	valid_cont_char(char c);
 int	valid_start_char(char c);
+int	process_expanded_str(char **exp_text, const char *str);
+int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
+int	process_char(char **exp_text, char c);
+
+// 05_expand_utils_2.c
+void	init_expand_state(t_expand_state *st);
 size_t	copy_n_chars(char *dst, const char *src, size_t size);
+int		extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
+int		find_env_index(char **envp, char *key, int key_len);
+
 
 
 

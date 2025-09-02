@@ -14,13 +14,6 @@ int	valid_start_char(char c)
 	return (0);
 }
 
-void	init_expand_state(t_expand_state *st)
-{
-	st->i = 0;
-	st->in_single = 0;
-	st->in_double = 0;
-}
-
 /**
  * @brief Append the status_string to exp_text.
  * @param exp_text Destination string pointer.

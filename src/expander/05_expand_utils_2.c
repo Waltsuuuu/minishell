@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+void	init_expand_state(t_expand_state *st)
+{
+	st->i = 0;
+	st->in_single = 0;
+	st->in_double = 0;
+}
+
 size_t	copy_n_chars(char *dst, const char *src, size_t size)
 {
 	size_t	counter;
