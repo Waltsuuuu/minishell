@@ -19,7 +19,7 @@ char *expand_variable(char *text, char **envp)
 
 int	create_exp_var_text(char *text, char **exp_text, char **envp)
 {
-	t_expand_var_state st;
+	t_expand_state st;
 
 	init_expand_state(&st);
 	while (text[st.i] != '\0')
@@ -44,7 +44,7 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 	return (0);
 }
 
-void	init_expand_state(t_expand_var_state *st)
+void	init_expand_state(t_expand_state *st)
 {
 	st->i = 0;
 	st->in_single = 0;

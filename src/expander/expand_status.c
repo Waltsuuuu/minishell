@@ -29,34 +29,29 @@ char *expand_status(char *text, int last_status)
 // Rebuilds token.text character by character, if $? is found, it is replaced by the status number.  
 int	create_exp_status_text(char *text, char **exp_text, char *status_str)
 {
-	int	i;
-	int in_single;
-	int	in_double;
-	int quote_handled;
+	t_expand_state st;
 
-	i = 0;
-	in_single = 0;
-	in_double = 0;
-	while (text[i] != '\0')
+	init_expand_state(&st);
+	while (text[st.i] != '\0')
 	{
-		quote_handled = process_quote_char(text[i], &in_single, &in_double, exp_text); // Appends quote characters to the expaneded_text string.
-		if (quote_handled == -1)
+		st.quote_handled = process_quote_char(text[st.i], &st.in_single, &st.in_double, exp_text); // Appends quote characters to the expaneded_text string.
+		if (st.quote_handled == -1)
 			return (-1);
-		if (quote_handled == 1)
+		if (st.quote_handled == 1)
 		{
-			i++;
+			st.i++;
 			continue ;
 		}
-		if (!in_single && text[i] == '$' && text[i + 1] == '?')		// If not inside single quotes and status marker ($?) found,
+		if (!st.in_single && text[st.i] == '$' && text[st.i + 1] == '?')		// If not inside single quotes and status marker ($?) found,
 		{
 			if (process_expanded_str(exp_text, status_str) == -1)		// Append the status string to the expanded_text string.
 				return (-1);
-			i += 2;													// Skips over the $ and ? chars
+			st.i += 2;													// Skips over the $ and ? chars
 			continue ;
 		}
-		if (process_char(exp_text, text[i]) == -1)					// Append normal char to expanded_text string.
+		if (process_char(exp_text, text[st.i]) == -1)					// Append normal char to expanded_text string.
 			return (-1);
-		i++;
+		st.i++;
 	}
 	return (0);
 }
