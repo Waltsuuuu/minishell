@@ -54,6 +54,12 @@ int check_quote_balance(char **line);
 int	quotes_unbalanced(const char *string);
 int	append_new_input(char **line, char *new_input);
 
+// quote_removal.c
+int		remove_quotes(t_input *input);
+char	*handle_quote_removal(char *text);
+int		create_unquoted_text(char *text, char **unquoted_text);
+int		remove_outer_quote(char c, int *in_single, int *in_double);
+
 // 01_expansion.c
 int	expand_tokens(t_input *input, int last_status, char **envp);
 
