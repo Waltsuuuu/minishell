@@ -56,8 +56,8 @@ int	append_new_input(char **line, char *new_input);
 
 // quote_removal.c
 int		remove_quotes(t_input *input);
-char	*handle_quote_removal(char *text);
-int		create_unquoted_text(char *text, char **unquoted_text);
+char	*handle_quote_removal(char *text, int *was_quoted);
+int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
 int		remove_outer_quote(char c, int *in_single, int *in_double);
 
 // 01_expansion.c
@@ -85,8 +85,5 @@ void	init_expand_state(t_expand_state *st);
 size_t	copy_n_chars(char *dst, const char *src, size_t size);
 int		extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
 int		find_env_index(char **envp, char *key, int key_len);
-
-
-
 
 #endif

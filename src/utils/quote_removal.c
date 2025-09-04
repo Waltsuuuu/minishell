@@ -17,7 +17,7 @@ int	remove_quotes(t_input *input)
 	{
 		if (input->tokens[i].type == TOK_WORD)							// Only remove quotes on WORD tokens
 		{
-			unquoted_text = handle_quote_removal(input->tokens[i].text); // Rebuilds token.text with quotes removed.
+			unquoted_text = handle_quote_removal(input->tokens[i].text, &input->tokens[i].was_quoted); // Rebuilds token.text with quotes removed.
 			if (!unquoted_text)
 				return (-1);
 			free(input->tokens[i].text);								// Free the old token.text
@@ -33,7 +33,7 @@ int	remove_quotes(t_input *input)
  * @param text Source string (may be NULL).
  * @return Newly allocated unquoted string, or NULL on error.
  */
-char *handle_quote_removal(char *text)
+char *handle_quote_removal(char *text, int *was_quoted)
 {
 	char	*unquoted_text;
 
@@ -42,7 +42,7 @@ char *handle_quote_removal(char *text)
 	unquoted_text = ft_strdup("");							// Init unquoted_text as an empty string
 	if (!unquoted_text)
 		return (NULL);
-	if (create_unquoted_text(text, &unquoted_text) == -1)	// Rebuilds the unquoted_text.
+	if (create_unquoted_text(text, &unquoted_text, was_quoted) == -1)	// Rebuilds the unquoted_text.
 	{
 		free(unquoted_text);
 		return (NULL);
@@ -56,7 +56,7 @@ char *handle_quote_removal(char *text)
  * @param unquoted_text  Unquoted text buffer.
  * @return 0 on success, -1 on error.
  */
-int	create_unquoted_text(char *text, char **unquoted_text)
+int	create_unquoted_text(char *text, char **unquoted_text, int *was_quoted)
 {
 	int	i;
 	int in_single;
@@ -71,6 +71,7 @@ int	create_unquoted_text(char *text, char **unquoted_text)
 		quote_removed = remove_outer_quote(text[i], &in_single, &in_double);	// Checks if the char is a quote char and an "outer quote"
 		if (quote_removed == 1)		// 1 == quote removed (not appended to unquoted_text)
 		{
+			*was_quoted = 1;		// Sets the token->was_quoted flag to true.
 			i++;
 			continue ;
 		}							// 0 ==  not a quote char / nested quote.
