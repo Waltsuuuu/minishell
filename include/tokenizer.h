@@ -14,6 +14,7 @@ typedef struct s_token {
 	TokType type;	// Token type
 	char	*text;	// The token as a string
 	int		pos;	// Start index of token in *raw string.
+	int		was_quoted; // Flag to signal if token had quotes (WORD TOKENS ONLY)  
 }		t_token;
 
 // Temporary linked list of TOKENS,
