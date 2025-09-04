@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+/**
+ * @brief Remove outer quotes from WORD tokens in-place.
+ * @param input Input struct (for token array).
+ * @return 0 on success, -1 on error or invalid input.
+ */
 int	remove_quotes(t_input *input)
 {
 	int		i;
@@ -23,6 +28,11 @@ int	remove_quotes(t_input *input)
 	return (0);
 }
 
+/**
+ * @brief Creates a new string with outer quotes stripped.
+ * @param text Source string (may be NULL).
+ * @return Newly allocated unquoted string, or NULL on error.
+ */
 char *handle_quote_removal(char *text)
 {
 	char	*unquoted_text;
@@ -40,6 +50,12 @@ char *handle_quote_removal(char *text)
 	return (unquoted_text);									// Return the text with quotes removed
 }
 
+/**
+ * @brief Build unquoted_text by iterating over text and skipping outer quotes.
+ * @param text           Source string.
+ * @param unquoted_text  Unquoted text buffer.
+ * @return 0 on success, -1 on error.
+ */
 int	create_unquoted_text(char *text, char **unquoted_text)
 {
 	int	i;
@@ -65,6 +81,13 @@ int	create_unquoted_text(char *text, char **unquoted_text)
 	return (0);
 }
 
+/**
+ * @brief If c is an outer quote, toggle state and skip it.
+ * @param c         Current character.
+ * @param in_single Single-quote state.
+ * @param in_double Double-quote state.
+ * @return 1 if an outer quote was removed, 0 otherwise.
+ */
 int	remove_outer_quote(char c, int *in_single, int *in_double)
 {
 	if (c == '\'' && !*in_double)		// If char is single quote and we are not inside double quotes
