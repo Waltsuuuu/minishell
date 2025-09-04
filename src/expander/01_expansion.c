@@ -20,7 +20,8 @@ int expand_tokens(t_input *input, int last_status, char **envp)
 	i = 0;
 	while (i < input->n_tokens)												// Loop through all tokens
 	{
-		if (input->tokens[i].type == TOK_WORD)								// Only WORD tokens are expanded
+		if ((input->tokens[i].type == TOK_WORD)								// Only WORD tokens are expanded	
+				&& (i == 0 || input->tokens[i - 1].type != TOK_HEREDOC))	// WORD tokens preceeded by HEREDOC tokens are not expanded. (heredoc delimiter)
 		{
 			exp_text = expand_status(input->tokens[i].text, last_status);	// Rebuilds token.text with the status expanded.
 			if (!exp_text)
