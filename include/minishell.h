@@ -12,6 +12,7 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include "tokenizer.h"
+# include "pipeline.h"
 
 typedef struct s_shell
 {
