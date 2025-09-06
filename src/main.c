@@ -5,6 +5,71 @@ static void	getworkindir(char *buf, size_t size)
 	if (NULL == getcwd(buf, size))
 		perror("getwcd FAILED");
 }
+
+static char **make_argv_simple(const char *segment)
+{
+    char *trimmed;
+    char **argv;
+
+    if (!segment)
+        return (NULL);
+    trimmed = ft_strtrim(segment, " \t");
+    if (!trimmed)
+        return (NULL);
+    argv = ft_split(trimmed, ' ');
+    free(trimmed);
+    return (argv);
+}
+
+static char ***build_argvv_from_line(const char *line, int *out_stage_count)
+{
+    char **segments;
+    char ***argvv;
+    int count;
+    int idx;
+
+    if (!line || !out_stage_count)
+        return (NULL);
+    segments = ft_split(line, '|');
+    if (!segments)
+        return (NULL);
+    count = 0;
+    while (segments[count])
+        count++;
+    if (count == 0)
+        return (free_split(segments), NULL);
+    argvv = (char ***)malloc(sizeof(char **) * count);
+    if (!argvv)
+        return (free_split(segments), NULL);
+    idx = 0;
+    while (idx < count)
+    {
+        argvv[idx] = make_argv_simple(segments[idx]);
+        if (!argvv[idx] || !argvv[idx][0])
+        {
+            while (idx > 0)
+                free_split(argvv[--idx]);
+            free(argvv);
+            free_split(segments);
+            return (NULL);
+        }
+        idx++;
+    }
+    free_split(segments);
+    *out_stage_count = count;
+    return (argvv);
+}
+/*
+static void free_argvv(char ***argvv, int stage_count)
+{
+    int i = 0;
+    if (!argvv)
+        return ;
+    while (i < stage_count)
+        free_split(argvv[i++]);
+    free(argvv);
+}
+*/
 /*// Tokenizer test. Prints tokens
 static void print_tokens(const t_input *in)
 {
@@ -35,6 +100,8 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*buf;
 	char	**paths;
 	char	**absolute_paths;
+	char ***argvv;//testing pipe
+	int stage_count;
 
 	shell_init(&shell, envp); //TODO shell init
 
@@ -77,7 +144,9 @@ int	main(int argc, char *argv[], char *envp[])
             printf("exit\n");
             break;
         }
-		run_line_minipipe(line, &shell, envp);
+
+		argvv = build_argvv_from_line(line, &stage_count);
+		exec_pipeline(argvv, stage_count, envp);
 		if (g_signal == SIGINT)
 		{
 				shell.last_status = 130;

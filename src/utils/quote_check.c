@@ -17,7 +17,7 @@ int check_quote_balance(char **line)
 		new_input = readline("> ");
 		if (!new_input)
 		{
-			write(2, "minishell: unexpected EOF while looking for matching quote\n", 64);
+			write(2, "minishell: unexpected EOF while looking for matching quote\n", 60);
 			free(*line);
 			*line = NULL;
 			return (-1);
