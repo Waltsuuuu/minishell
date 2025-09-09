@@ -1,5 +1,27 @@
 #include "minishell.h"
-// Remember to init t_pipeline *pipeline to 0 / NULL before passing it to this func
+// // Remember to init t_pipeline *pipeline to 0 / NULL before passing it to this func
+
+// int	exit_free_seg(t_seg *seg, t_pipeline *pipeline, int cmd_i)
+// {
+// 	int i;
+
+// 	if (seg->args)
+// 		ft_lstclear(seg->args, free);
+// 	if (seg->redirs)
+// 		ft_lstclear(seg->redirs, free);
+// 	if (pipeline)
+// 	{
+// 		i = 0;
+// 		while (i <= cmd_i)
+// 		{
+// 			while ()
+// 			pipeline->cmds[cmd_i].argv
+// 		}
+// 	}
+// 	// loop and free args ll
+// 	// loop and free redirs ll
+// 	// free pipeline->cmds and set to NULL. OR do this in main if build_pipeline() returns -1
+// }
 
 int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 {

@@ -71,11 +71,12 @@ void	print_cmds(const t_pipeline *pipeline)
 		printf("(pipeline empty)\n");
 		return ;
 	}
-	printf("\n=== pipeline: %d command(s) ===\n", pipeline->n_cmds);
+	printf("\n\n=== pipeline: %d command(s) ===\n\n", pipeline->n_cmds);
 	i = 0;
 	while (i < pipeline->n_cmds)
 	{
 		print_one_cmd(&pipeline->cmds[i], i);
 		i++;
 	}
+	printf("\n\n");
 }
