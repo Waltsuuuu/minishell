@@ -7,7 +7,7 @@ CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
 SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/parser/simple_parse.c \
 				src/signal_handling/signal.c src/parser/tokenize.c src/parser/tok_init_free.c src/parser/tok_utils.c src/utils/quote_check.c src/utils/expansion.c	\
-				src/shell/shell_init.c src/executor/exec_pipeline.c src/executor/pipe_utils.c src/executor/spawn_cmd.c src/executor/wait_utils.c 
+				src/shell/shell_init.c src/executor/exec_pipeline.c src/executor/pipe_utils.c src/executor/spawn_cmd.c src/executor/wait_utils.c src/build_commands/build_pipeline.c src/build_commands/debugger.c
 # objects
 OBJ := $(SRC:.c=.o)
 # =========================
@@ -98,5 +98,3 @@ re:
 	@printf "$(ACC)$(ICON_RE) Rebuilding$(RST)\n"
 	@$(MAKE) fclean
 	@$(MAKE) all
-
-

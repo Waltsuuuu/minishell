@@ -78,15 +78,15 @@ static void print_tokens(const t_input *in)
 	if (!in || !in->tokens)
 		return ;
 	i = 0;
+	printf("\n TOKENS \n");
 	while (i < in->n_tokens)
 	{
-		printf("[%d] kind=%d pos=%d text=\"%s\"\n",
+		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
 			i, in->tokens[i].type, in->tokens[i].pos,
-			in->tokens[i].text ? in->tokens[i].text : "(null)");
+			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
 		i++;
 	}
 }*/
-
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -162,8 +162,20 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		add_history(line);
 		if (parse_input_line(line, &shell.input) == -1)
-			printf("Something went wrong in parsing, probably gotta add clean up here?\n");
-		if (expand_tokens(&shell.input, shell.last_status) == -1)
+		{
+			clear_struct_on_failure(&shell.input);
+			free(buf);
+			free(line);
+			continue;
+		}
+		if (expand_tokens(&shell.input, shell.last_status, envp) == -1)
+		{
+			clear_struct_on_failure(&shell.input);
+			free(buf);
+			free(line);
+			continue;
+		}
+		if (remove_quotes(&shell.input) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
 			free(buf);
@@ -178,6 +190,8 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
+		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
+		print_cmds(&shell.pipeline);
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
 		//exec_ext_func(absolute_paths, &shell, envp);

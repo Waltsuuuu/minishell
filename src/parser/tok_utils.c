@@ -81,6 +81,7 @@ int	append_token_node(t_tokenizer_state *state, TokType type, char *text, int po
 	node->tok.type = type;			// Set the type.
 	node->tok.text = text;			// Set the text (takes ownership of the malloced string), now in charge of freeing it.
 	node->tok.pos = pos;			// Set the index in the raw string.
+	node->tok.was_quoted = 0;		// set to default. Real value will be set during quote removal
 	node->next = NULL;				// Current node becomes the tail, so node->next = NULL.
 	if (!state->head)				// If there is no head node.
 		state->head = node;			// 	- Set the node as the head.
