@@ -13,6 +13,7 @@ static void print_tokens(const t_input *in)
 	if (!in || !in->tokens)
 		return ;
 	i = 0;
+	printf("\n TOKENS \n");
 	while (i < in->n_tokens)
 	{
 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
@@ -21,7 +22,6 @@ static void print_tokens(const t_input *in)
 		i++;
 	}
 }
-
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -121,6 +121,8 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
+		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
+		print_cmds(&shell.pipeline);
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
 		exec_ext_func(absolute_paths, &shell, envp);

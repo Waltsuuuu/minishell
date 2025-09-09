@@ -22,6 +22,7 @@ typedef struct s_shell
     t_input	input;
     char 	**argv;          // arguments for current command
     char   *cwd;
+	t_pipeline pipeline;
 }   t_shell;
 
 typedef struct s_expand_state
