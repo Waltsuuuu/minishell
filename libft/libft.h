@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:10:30 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/29 10:56:08 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/09/05 16:05:51 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,12 @@
 
 # include <unistd.h>
 # include <stdlib.h>
+
+typedef struct s_list
+{
+	void			*content;
+	struct s_list	*next;
+}				t_list;
 
 /* ────────────────
  * Character Checks
@@ -75,5 +81,18 @@ void	ft_putnbr_fd(int n, int fd);
  * Memory Allocation
  * ──────────────── */
 void	*ft_calloc(size_t nmemb, size_t size);
+
+/* ────────────────
+ * Linked Lists
+ * ──────────────── */
+void	ft_lstadd_back(t_list **lst, t_list *new);
+void	ft_lstadd_front(t_list **lst, t_list *new);
+void	ft_lstclear(t_list **lst, void (*del)(void *));
+void	ft_lstdelone(t_list *lst, void (*del) (void *));
+void	ft_lstiter(t_list *lst, void (*f)(void *));
+t_list	*ft_lstlast(t_list *lst);
+t_list	*ft_lstmap(t_list *lst, void *(f)(void *), void (*del)(void *));
+t_list	*ft_lstnew(void *content);
+int	ft_lstsize(t_list *lst);
 
 #endif

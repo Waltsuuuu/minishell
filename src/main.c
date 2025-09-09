@@ -5,23 +5,24 @@ static void	getworkindir(char *buf, size_t size)
 	if (NULL == getcwd(buf, size))
 		perror("getwcd FAILED");
 }
+
 // Tokenizer test. Prints tokens
-static void print_tokens(const t_input *in)
-{
-	int i;
+// static void print_tokens(const t_input *in)
+// {
+// 	int i;
 
-	if (!in || !in->tokens)
-		return ;
-	i = 0;
-	while (i < in->n_tokens)
-	{
-		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
-			i, in->tokens[i].type, in->tokens[i].pos,
-			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
-		i++;
-	}
-}
-
+// 	if (!in || !in->tokens)
+// 		return ;
+// 	i = 0;
+// 	printf("\n TOKENS \n");
+// 	while (i < in->n_tokens)
+// 	{
+// 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
+// 			i, in->tokens[i].type, in->tokens[i].pos,
+// 			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
+// 		i++;
+// 	}
+// }
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -33,15 +34,9 @@ int	main(int argc, char *argv[], char *envp[])
 	//ft_memset(shell.input, 0, sizeof(t_input));
 	char	cwd[BUFSIZ];
 	char	*buf;
-	char	**paths;
-	char	**absolute_paths;
 	
 	setup_signal_handlers_for_prompt();
 	//shell = malloc(sizeof(shell));
-
-	
-
-	absolute_paths = NULL;
 
 	printf( 
 "         #             #           #             ###    ###   \n"
@@ -113,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		print_tokens(&shell.input);		// Testing tokenizer
+		// print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -121,16 +116,14 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		paths = find_from_path(envp);
-		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
-		exec_ext_func(absolute_paths, &shell, envp);
+		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
+		exec_pipeline(envp, &shell.pipeline);
+		// print_cmds(&shell.pipeline);
 		printf("Last status: %d\n", shell.last_status); //TESTING
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
 		////////////////////////////////////////////////////////////////////////////////////
-		free_split(absolute_paths);
-		free_split(paths);
 		free(buf);
 		free (line);
 		clear_struct_on_failure(&shell.input);
