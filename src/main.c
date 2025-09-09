@@ -5,77 +5,24 @@ static void	getworkindir(char *buf, size_t size)
 	if (NULL == getcwd(buf, size))
 		perror("getwcd FAILED");
 }
-static char **make_argv_simple(const char *segment)
-{
-    char *trimmed;
-    char **argv;
-
-    if (!segment)
-        return (NULL);
-    trimmed = ft_strtrim(segment, " \t");
-    if (!trimmed)
-        return (NULL);
-    argv = ft_split(trimmed, ' ');
-    free(trimmed);
-    return (argv);
-}
-
-static char ***build_argvv_from_line(const char *line, int *out_stage_count)
-{
-    char **segments;
-    char ***argvv;
-    int count;
-    int idx;
-
-    if (!line || !out_stage_count)
-        return (NULL);
-    segments = ft_split(line, '|');
-    if (!segments)
-        return (NULL);
-    count = 0;
-    while (segments[count])
-        count++;
-    if (count == 0)
-        return (free_split(segments), NULL);
-    argvv = (char ***)malloc(sizeof(char **) * count);
-    if (!argvv)
-        return (free_split(segments), NULL);
-    idx = 0;
-    while (idx < count)
-    {
-        argvv[idx] = make_argv_simple(segments[idx]);
-        if (!argvv[idx] || !argvv[idx][0])
-        {
-            while (idx > 0)
-                free_split(argvv[--idx]);
-            free(argvv);
-            free_split(segments);
-            return (NULL);
-        }
-        idx++;
-    }
-    free_split(segments);
-    *out_stage_count = count;
-    return (argvv);
-}
 
 // Tokenizer test. Prints tokens
-static void print_tokens(const t_input *in)
-{
-	int i;
+// static void print_tokens(const t_input *in)
+// {
+// 	int i;
 
-	if (!in || !in->tokens)
-		return ;
-	i = 0;
-	printf("\n TOKENS \n");
-	while (i < in->n_tokens)
-	{
-		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
-			i, in->tokens[i].type, in->tokens[i].pos,
-			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
-		i++;
-	}
-}
+// 	if (!in || !in->tokens)
+// 		return ;
+// 	i = 0;
+// 	printf("\n TOKENS \n");
+// 	while (i < in->n_tokens)
+// 	{
+// 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
+// 			i, in->tokens[i].type, in->tokens[i].pos,
+// 			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
+// 		i++;
+// 	}
+// }
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -87,17 +34,9 @@ int	main(int argc, char *argv[], char *envp[])
 	//ft_memset(shell.input, 0, sizeof(t_input));
 	char	cwd[BUFSIZ];
 	char	*buf;
-	char	**paths;
-	char	**absolute_paths;
-	char	***argvv;
-	int		cmd_count;
 	
 	setup_signal_handlers_for_prompt();
 	//shell = malloc(sizeof(shell));
-
-	
-
-	absolute_paths = NULL;
 
 	printf( 
 "         #             #           #             ###    ###   \n"
@@ -169,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		print_tokens(&shell.input);		// Testing tokenizer
+		// print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -178,18 +117,13 @@ int	main(int argc, char *argv[], char *envp[])
 			continue;
 		}
 		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
-		argvv = build_argvv_from_line(line, &cmd_count); //Testing
-		exec_pipeline(argvv, cmd_count, envp, &shell.pipeline);
-		print_cmds(&shell.pipeline);
-		paths = find_from_path(envp);
-		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);
+		exec_pipeline(envp, &shell.pipeline);
+		// print_cmds(&shell.pipeline);
 		printf("Last status: %d\n", shell.last_status); //TESTING
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
 		////////////////////////////////////////////////////////////////////////////////////
-		free_split(absolute_paths);
-		free_split(paths);
 		free(buf);
 		free (line);
 		clear_struct_on_failure(&shell.input);
