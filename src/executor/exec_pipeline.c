@@ -22,6 +22,7 @@ int	exec_pipeline(char ***argv_per_cmd, int cmd_count, char **envp, t_pipeline *
 	int		in_fd;
 	int		out_fd;
 	int		last_status;
+	(void)pipeline;
 
 	pipe_pairs = allocate_pipes(cmd_count);
 	child_pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);

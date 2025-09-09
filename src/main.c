@@ -179,7 +179,7 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
 		argvv = build_argvv_from_line(line, &cmd_count); //Testing
-		exec_pipeline(argvv, cmd_count, envp);
+		exec_pipeline(argvv, cmd_count, envp, &shell.pipeline);
 		print_cmds(&shell.pipeline);
 		paths = find_from_path(envp);
 		absolute_paths = build_absolute_paths(paths, shell.input.words[0]);

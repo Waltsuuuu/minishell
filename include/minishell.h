@@ -46,7 +46,7 @@ char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
 int	    has_slash(char *input); // helper in exec
-int	exec_pipeline(char ***argv_per_cmd, int cmd_count, char **envp);
+int	exec_pipeline(char ***argv_per_cmd, int cmd_count, char **envp, t_pipeline *pipeline);
 void	close_parent_unused_ends(int stage_index, int cmd_count,
 	int (*pipe_pairs)[2]);
 void	compute_cmd_fds(int cmd_index, int cmd_count, int (*pipe_pairs)[2],
