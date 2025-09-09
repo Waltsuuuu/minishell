@@ -13,6 +13,7 @@
 # include <signal.h>
 # include "tokenizer.h"
 # include "pipeline.h"
+# include <errno.h>
 
 typedef struct s_shell
 {
@@ -44,9 +45,19 @@ void	handle_sig(int signum);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
-void	exec_ext_func(char **absolute_paths, t_shell *shell, char *envp[]);
-void	exec_direct(t_shell *shell, char *envp[]);
 int	    has_slash(char *input); // helper in exec
+int	exec_pipeline(char ***argv_per_cmd, int cmd_count, char **envp);
+void	close_parent_unused_ends(int stage_index, int cmd_count,
+	int (*pipe_pairs)[2]);
+void	compute_cmd_fds(int cmd_index, int cmd_count, int (*pipe_pairs)[2],
+	int *in_fd, int *out_fd);
+void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count);
+int	(*allocate_pipes(int cmd_count))[2];
+pid_t	spawn_cmd(char **argv, char **envp, int in_fd, int out_fd);
+int	wait_for_pid_once(pid_t target_pid, int *out_raw_status);
+int	wait_all_and_last_status(pid_t *child_pids, int child_count,
+	pid_t last_child_pid);
+
 //TODO move to utils.h
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
