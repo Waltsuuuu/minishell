@@ -9,7 +9,7 @@ SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src
 				src/signal_handling/signal.c src/parser/tokenize.c src/parser/tok_init_free.c src/parser/tok_utils.c src/utils/quote_check.c \
 				src/expander/01_expansion.c src/expander/02_expand_status.c src/expander/03_expand_variable.c src/expander/04_expand_utils.c  \
 				src/expander/05_expand_utils_2.c src/utils/quote_removal.c src/build_commands/build_pipeline.c src/build_commands/pipeline_debugger.c \
-				src/executor/exec_pipeline.c src/executor/pipe_utils.c src/executor/spawn_cmd.c src/executor/wait_utils.c src/build_commands/pipeline_exit_free.c src/build_commands/pipeline_utils.c src/build_commands/pipeline_args.c
+				src/executor/exec_pipeline.c src/executor/pipe_utils.c src/executor/spawn_cmd.c src/executor/wait_utils.c src/build_commands/pipeline_exit_free.c src/build_commands/pipeline_utils.c src/build_commands/pipeline_args.c src/build_commands/pipeline_redirs.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================
