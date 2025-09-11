@@ -38,13 +38,26 @@ typedef struct s_seg {
 	int     start;    /* token index at segment start (for “empty” check) */
 } t_seg;
 
-int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline);
+// build_pipeline.c
+int		build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline);
+int		bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline);
+void	bp_seg_init(t_seg *seg, int start);
+int		bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i);
+int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i);
+
+
 int	arg_ll_to_arr(t_seg *seg, t_pipeline *pipeline, int cmd_i);
 int	append_arg(t_token *tokens, int i, t_seg *seg);
 int	build_and_append_redir(t_token *tokens, int i, t_seg *seg);
 int	get_redir_type(TokType type, t_redir_type *t_type);
 int	is_redir_tok(TokType type);
 int	count_pipes(t_input *input);
+
+// exit_build_pipeline.c
+int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count);
+void	free_partial_seg(t_seg *seg);
+void	del_redir(void *content);
+void	free_partial_pipeline(t_pipeline *pipeline, int	built_count);
 
 // printer - debugger
 void	print_cmds(const t_pipeline *pipeline);

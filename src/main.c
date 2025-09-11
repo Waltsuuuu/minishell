@@ -116,7 +116,13 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
+		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
+		{
+			clear_struct_on_failure(&shell.input);
+			free(buf);
+			free(line);
+			continue;
+		}
 		exec_pipeline(envp, &shell.pipeline);
 		// print_cmds(&shell.pipeline);
 		printf("Last status: %d\n", shell.last_status); //TESTING
@@ -126,6 +132,9 @@ int	main(int argc, char *argv[], char *envp[])
 		////////////////////////////////////////////////////////////////////////////////////
 		free(buf);
 		free (line);
+		free_partial_pipeline(&shell.pipeline, shell.pipeline.n_cmds);
+		free(shell.pipeline.cmds);
+		shell.pipeline.cmds = NULL;
 		clear_struct_on_failure(&shell.input);
 	}
 	

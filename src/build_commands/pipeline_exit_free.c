@@ -3,9 +3,9 @@
 int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count)
 {
 	free_partial_seg(seg);
-	free_partial_pipeline();
 	if (pipeline && pipeline->cmds)
 	{
+		free_partial_pipeline(pipeline, built_count);
 		free(pipeline->cmds);
 		pipeline->cmds = NULL;
 	}
@@ -14,14 +14,49 @@ int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count)
 	return (-1);
 }
 
+void	free_partial_pipeline(t_pipeline *pipeline, int	built_count)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < built_count)
+	{
+		if (pipeline->cmds[i].argv)
+		{
+			j = 0;
+			while (pipeline->cmds[i].argv[j])
+			{
+				free(pipeline->cmds[i].argv[j]);
+				j++;
+			}
+			free(pipeline->cmds[i].argv);
+			pipeline->cmds[i].argv = NULL;
+		}
+		if (pipeline->cmds[i].redirs)
+		{
+			ft_lstclear(&pipeline->cmds[i].redirs, del_redir);
+			pipeline->cmds[i].redirs = NULL;
+		}
+		pipeline->cmds[i].argc = 0;
+		i++;
+	}
+}
+
 void	free_partial_seg(t_seg *seg)
 {
 	if (!seg)
 		return ;
 	if (seg->args)
+	{
 		ft_lstclear(&seg->args, free);
+		seg->args = NULL;
+	}
 	if (seg->redirs)
+	{
 		ft_lstclear(&seg->redirs, del_redir);
+		seg->redirs = NULL;
+	}
 	seg->argc = 0;
 }
 
