@@ -45,13 +45,14 @@ void	bp_seg_init(t_seg *seg, int start);
 int		bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i);
 int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i);
 
+// pipeline_utils.c
+int	get_redir_type(TokType type, t_redir_type *t_type);
+int	is_redir_tok(TokType type);
+int	count_pipes(t_input *input);
 
 int	arg_ll_to_arr(t_seg *seg, t_pipeline *pipeline, int cmd_i);
 int	append_arg(t_token *tokens, int i, t_seg *seg);
 int	build_and_append_redir(t_token *tokens, int i, t_seg *seg);
-int	get_redir_type(TokType type, t_redir_type *t_type);
-int	is_redir_tok(TokType type);
-int	count_pipes(t_input *input);
 
 // exit_build_pipeline.c
 int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count);
