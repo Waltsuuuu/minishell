@@ -5,7 +5,7 @@ int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count)
 	free_partial_seg(seg);
 	if (pipeline && pipeline->cmds)
 	{
-		free_partial_pipeline(pipeline, built_count);
+		free_pipeline(pipeline, built_count);
 		free(pipeline->cmds);
 		pipeline->cmds = NULL;
 	}
@@ -14,13 +14,13 @@ int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count)
 	return (-1);
 }
 
-void	free_partial_pipeline(t_pipeline *pipeline, int	built_count)
+void	free_pipeline(t_pipeline *pipeline, int cmd_count)
 {
 	int	i;
 	int	j;
 
 	i = 0;
-	while (i < built_count)
+	while (i < cmd_count)
 	{
 		if (pipeline->cmds[i].argv)
 		{

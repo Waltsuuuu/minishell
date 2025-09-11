@@ -132,7 +132,7 @@ int	main(int argc, char *argv[], char *envp[])
 		////////////////////////////////////////////////////////////////////////////////////
 		free(buf);
 		free (line);
-		free_partial_pipeline(&shell.pipeline, shell.pipeline.n_cmds);
+		free_pipeline(&shell.pipeline, shell.pipeline.n_cmds);
 		free(shell.pipeline.cmds);
 		shell.pipeline.cmds = NULL;
 		clear_struct_on_failure(&shell.input);

@@ -1,12 +1,10 @@
 #include "minishell.h"
 
-// Refactor plan
-// Split build_pipeline() into 4 helpers
-// 1. Prepare        - Setup pipeline, alloc cmds, handle empty/leading pipe
-// 2. Init segment   - Reset t_seg fields before building next command
-// 3. Fill segment   - Walk tokens until '|' and build argv/redirs
-// 4. Finalize cmd   - Transfer seg data into pipeline->cmds
-
+/**
+ * Parses tokens into structured commands (executable pipeline).
+ * Modifies t_pipeline *pipeline in place.
+ * @return 0 on success, -1 on syntax/alloc error.
+ */
 int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 {
 	int		n_cmds;

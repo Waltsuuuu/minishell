@@ -1,5 +1,9 @@
 #include "minishell.h"
 
+/**
+ * Fills a t_redir, stores it in a node and pushes it to seg->redirs linked list.
+ * @return 0 on success, -1 on syntax/alloc error.
+ */
 int	build_and_append_redir(t_token *tokens, int i, t_seg *seg)
 {
 	t_redir			*redir;
@@ -26,6 +30,11 @@ int	build_and_append_redir(t_token *tokens, int i, t_seg *seg)
 	return (0);
 }
 
+/**
+ * Set type/target/no_expand from tokens[i] and tokens[i+1].
+ * Allows empty target for HEREDOC.
+ * @return 0 on success, -1 on error.
+ */
 int	fill_redir_fields(t_redir *redir, t_token *tokens, int i)
 {
 	if (get_redir_type(tokens[i].type, &redir->type) == -1)	// set type

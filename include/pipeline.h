@@ -62,7 +62,7 @@ int	fill_redir_fields(t_redir *redir, t_token *tokens, int i);
 int		err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count);
 void	free_partial_seg(t_seg *seg);
 void	del_redir(void *content);
-void	free_partial_pipeline(t_pipeline *pipeline, int	built_count);
+void	free_pipeline(t_pipeline *pipeline, int	built_count);
 
 // // printer - debugger
 // void	print_cmds(const t_pipeline *pipeline);

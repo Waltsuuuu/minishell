@@ -22,13 +22,18 @@ LIBFT       := $(LIBFT_DIR)/libft.a
 # Readline (Linux / macOS)
 # =========================
 UNAME_S     := $(shell uname -s)
+
 ifeq ($(UNAME_S),Linux)
   RL_INC    ?= -I/usr/include -I/usr/include/readline
   RL_LIB    ?= -lreadline -lncurses
 else
-  RL_PREFIX ?= /opt/homebrew   # /usr/local for Intel mac if needed
-  RL_INC    ?= -I$(RL_PREFIX)/opt/readline/include
-  RL_LIB    ?= -L$(RL_PREFIX)/opt/readline/lib -lreadline
+  # macOS: try Homebrew prefixes (Apple Silicon first, then Intel)
+  BREW_PREFIX ?= $(shell if [ -d /opt/homebrew ]; then echo /opt/homebrew; \
+                           elif [ -d /usr/local ]; then echo /usr/local; fi)
+  RL_INC    ?= -I$(BREW_PREFIX)/opt/readline/include
+  RL_LIB    ?= -L$(BREW_PREFIX)/opt/readline/lib -lreadline
+  # Silence readline deprecation warnings on macOS (optional)
+  CFLAGS    += -Wno-deprecated-declarations
 endif
 
 # =========================
@@ -48,7 +53,6 @@ ICON_CLS  := 🧹
 ICON_TRS  := 🗑️
 ICON_RE   := ♻️
 
-# Silence sub-make directory spam
 MAKEFLAGS += --no-print-directory
 
 .PHONY: all clean fclean re libft
@@ -59,19 +63,22 @@ MAKEFLAGS += --no-print-directory
 all: $(LIBFT) $(NAME)
 	@printf "$(OK)$(ICON_OK) Done.$(RST)\n"
 
-# Link step with a nice line
 $(NAME): $(OBJ) $(LIBFT)
 	@printf "$(ACC)$(ICON_LNK) Linking $(NAME)...$(RST)\n"
 	@$(CC) $(CFLAGS) $(OBJ) $(INCS) $(RL_INC) -L$(LIBFT_DIR) -lft $(RL_LIB) -o $@
 	@printf "$(OK)$(ICON_OK) Built $(NAME)$(RST)\n"
 
-# Objects with muted stdout but visible errors
+# =========================
+# Compilation
+# =========================
 %.o: %.c
 	@mkdir -p $(dir $@)
-	@printf "$(ACC)$(ICON_BLD) Compiling %-30s$(MUT) [cc]$(RST)\n" "$<"
+	@printf "$(ACC)$(ICON_BLD) Compiling %-40s$(MUT)[cc]$(RST)\n" "$<"
 	@$(CC) $(CFLAGS) $(INCS) $(RL_INC) -c $< -o $@
 
-# Build libft (muted)
+# =========================
+# Libft
+# =========================
 $(LIBFT):
 	@printf "$(ACC)$(ICON_BLD) Building libft$(RST)\n"
 	@$(MAKE) -C $(LIBFT_DIR) >/dev/null
@@ -82,7 +89,7 @@ $(LIBFT):
 clean:
 	@printf "$(ACC)$(ICON_CLS) Cleaning objects$(RST)\n"
 	@rm -f $(OBJ)
-	@find . -type f -name '*.o' -not -path './$(LIBFT_DIR)/*' -delete || true
+	@find . -type f -name '*.o' -not -path './$(LIBFT_DIR)/*' -delete 2>/dev/null || true
 	@printf "$(MUT)$(ICON_CLS) Cleaning libft objects$(RST)\n"
 	@$(MAKE) -C $(LIBFT_DIR) clean >/dev/null
 
