@@ -87,7 +87,7 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 			if ((*i + 1 >= input->n_tokens) || tokens[*i + 1].type != TOK_WORD)
 			{
 				printf("Syntax error near '%s' at position %d\n", tokens[*i].text, tokens[*i].pos);
-				return(1);
+				return(-1);
 			}
 			if (build_and_append_redir(tokens, *i, seg) == -1)
 				return (-1);
