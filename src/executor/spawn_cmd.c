@@ -60,7 +60,7 @@ static void	exec_with_path_search(char **argv, char **envp)
  * @param in_fd file descriptor to use as STDIN (pass -1 to keep current)
  * @param out_fd file descriptor to use as STDOUT (pass -1 to keep current)
  * @return PID of the child in the parent process; 0 in the child; -1 on fork error
- */
+ *
 pid_t	spawn_cmd(char **argv, char **envp, int in_fd, int out_fd)
 {
 	pid_t	child_pid;
@@ -76,7 +76,109 @@ pid_t	spawn_cmd(char **argv, char **envp, int in_fd, int out_fd)
 		exec_with_path_search(argv, envp);
 	}
 	return (child_pid);
+}*/
+
+pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out)
+{
+	pid_t	pid;
+	int		final_in;
+	int		final_out;
+	t_list	*node;
+	t_redir	*redir;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		setup_signal_handlers_for_child();
+
+		// 1. Aloitus oletuksilla (putkista jos on, muuten stdin/stdout)
+		final_in = STDIN_FILENO;
+		if (pipe_in >= 0)
+			final_in = pipe_in;
+		final_out = STDOUT_FILENO;
+		if (pipe_out >= 0)
+			final_out = pipe_out;
+
+		// 2. Käy läpi redirit: tässä vaiheessa vain '>'
+		node = cmd->redirs;
+		while (node)
+		{
+			redir = (t_redir *)node->content;
+
+			if (redir && redir->type == REDIR_OUT) 
+			{
+				if (apply_redir_out(redir, &final_out) < 0)  // Tarkistetaan onnnistuisko avaus
+				{
+    				if (redir->target) // Tarkistetaan onko kohdenimi olemassa 
+        				perror(redir->target);
+    				else
+        				perror("redir");
+    				_exit(1);
+				}
+
+			}
+			node = node->next;
+		}
+
+		/* 3. Tee dup2 lopullisille fd:ille ja sulje ylimääräiset */
+		if (final_in != STDIN_FILENO)
+		{
+			if (dup2(final_in, STDIN_FILENO) < 0)
+				_exit(1);
+			close(final_in);
+		}
+		if (final_out != STDOUT_FILENO)
+		{
+			if (dup2(final_out, STDOUT_FILENO) < 0)
+				_exit(1);
+			close(final_out);
+		}
+
+		/* 4. Aja komento */
+		exec_with_path_search(cmd->argv, envp);
+		if (cmd->argv && cmd->argv[0])
+    		perror(cmd->argv[0]);
+		else
+    		perror("execve");
+		_exit(127);
+	}
+	return (pid);
 }
+/*
+static int  open_one_redir(const t_redir *redir)
+{
+    int fd;
+
+    fd = -1;
+    if (redir->type == REDIR_IN)
+        fd = open(redir->target, O_RDONLY);
+    else if (redir->type == REDIR_OUT)
+        fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    else if (redir->type == REDIR_APPEND)
+        fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	//heredoc here too?
+    return (fd);
+}
+*/
+
+int	apply_redir_out(const t_redir *redir, int *final_out)
+{
+	int	fd;
+
+	if (!redir || !redir->target || !final_out)
+		return (-1);
+	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0)
+		return (-1);
+		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
+	   ja se ei ole sama kuin juuri avattu fd,
+	   sulje se, ettei jää fd-vuotoa. */
+	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
+		close(*final_out);
+	*final_out = fd;
+	return (0);
+}
+
 
 /**
  * Checks whether a string contains a '/' character.

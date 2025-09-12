@@ -6,23 +6,23 @@ static void	getworkindir(char *buf, size_t size)
 		perror("getwcd FAILED");
 }
 
-// Tokenizer test. Prints tokens
-// static void print_tokens(const t_input *in)
-// {
-// 	int i;
+ //Tokenizer test. Prints tokens
+ static void print_tokens(const t_input *in)
+ {
+ 	int i;
 
-// 	if (!in || !in->tokens)
-// 		return ;
-// 	i = 0;
-// 	printf("\n TOKENS \n");
-// 	while (i < in->n_tokens)
-// 	{
-// 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
-// 			i, in->tokens[i].type, in->tokens[i].pos,
-// 			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
-// 		i++;
-// 	}
-// }
+ 	if (!in || !in->tokens)
+ 		return ;
+ 	i = 0;
+ 	printf("\n TOKENS \n");
+ 	while (i < in->n_tokens)
+ 	{
+ 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
+ 			i, in->tokens[i].type, in->tokens[i].pos,
+ 			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
+ 		i++;
+ 	}
+ }
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -108,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		// print_tokens(&shell.input);		// Testing tokenizer
+		print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -118,7 +118,7 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
 		exec_pipeline(envp, &shell.pipeline);
-		// print_cmds(&shell.pipeline);
+		print_cmds(&shell.pipeline);
 		printf("Last status: %d\n", shell.last_status); //TESTING
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
