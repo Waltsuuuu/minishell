@@ -43,7 +43,7 @@ int		build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline);
 int		bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline);
 void	bp_seg_init(t_seg *seg, int start);
 int		bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i);
-int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i);
+int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *tokens, int i);
 
 // pipeline_utils.c
 int	get_redir_type(TokType type, t_redir_type *t_type);
@@ -65,10 +65,10 @@ void	del_redir(void *content);
 void	free_pipeline(t_pipeline *pipeline, int	built_count);
 
 // // printer - debugger
-// void	print_cmds(const t_pipeline *pipeline);
-// void	print_one_cmd(const t_command *cmd, int idx);
-// void	print_redirs(const t_list *lst);
-// const char	*redir_type_name(t_redir_type t);
+void	print_cmds(const t_pipeline *pipeline);
+void	print_one_cmd(const t_command *cmd, int idx);
+void	print_redirs(const t_list *lst);
+const char	*redir_type_name(t_redir_type t);
 
 
 #endif

@@ -15,6 +15,7 @@ int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 	n_cmds = bp_prepare(input, tokens, pipeline);
 	if (n_cmds <= 0)
 		return (n_cmds);
+	pipeline->n_cmds = n_cmds;
 	i = 0;
 	cmd_i = 0;
 	while (cmd_i < n_cmds)
@@ -22,7 +23,7 @@ int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 		bp_seg_init(&seg, i);
 		if (bp_fill_segment(input, tokens, &seg, &i) == -1)
 			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
-		if (bp_finalize_command(&seg, pipeline, cmd_i) == -1)
+		if (bp_finalize_command(&seg, pipeline, cmd_i, tokens, i) == -1)
 			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
 		if (i < input->n_tokens && tokens[i].type == TOK_PIPE)
 			i++;
@@ -30,7 +31,6 @@ int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 	}
 	if (i != input->n_tokens)
 		return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
-	pipeline->n_cmds = n_cmds;
 	return (0);
 }
 
@@ -106,8 +106,16 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 	return (0);
 }
 
-int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i)
+int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *tokens, int i)
 {
+	if (seg->argc == 0 && seg->redirs == NULL)		// Empty command
+	{
+		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
+			printf("Syntax error near newline\n");
+		else										// Between pipes
+			printf("Syntax error near '%s' at position %d\n", tokens[i].text, tokens[i].pos);
+		return (-1);
+	}
 	if (arg_ll_to_arr(seg, pipeline, cmd_i) == -1)
 		return (-1);
 	pipeline->cmds[cmd_i].argc = seg->argc;
