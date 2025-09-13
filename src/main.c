@@ -108,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		// print_tokens(&shell.input);		// Testing tokenizer
+		print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -116,10 +116,18 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline);
-		exec_pipeline(envp, &shell.pipeline, &shell);
 		// print_cmds(&shell.pipeline);
 		// printf("Last status: %d\n", shell.last_status); //TESTING
+
+		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
+		{
+			clear_struct_on_failure(&shell.input);
+			free(buf);
+			free(line);
+			continue;
+		}
+		exec_pipeline(envp, &shell.pipeline);
+
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
