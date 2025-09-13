@@ -19,8 +19,8 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline)
 	int		(*pipe_pairs)[2]; //Osoitin taulukko pareista ns putket
 	pid_t	*child_pids;
 	int		cmd_index;
-	int		in_fd;
-	int		out_fd;
+	int		pipe_in;
+	int		pipe_out;
 	int		last_status;
 
 	pipe_pairs = allocate_pipes(pipeline->n_cmds);
@@ -31,9 +31,9 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline)
 	cmd_index = 0;
 	while (cmd_index < pipeline->n_cmds)
 	{
-		compute_cmd_fds(cmd_index, pipeline->n_cmds, pipe_pairs, &in_fd, &out_fd);
-		child_pids[cmd_index] = spawn_cmd(pipeline->cmds[cmd_index].argv,					
-				envp, in_fd, out_fd);
+		compute_cmd_fds(cmd_index, pipeline->n_cmds, pipe_pairs, &pipe_in, &pipe_out);
+		child_pids[cmd_index] = spawn_cmd(&pipeline->cmds[cmd_index],					
+				envp, pipe_in, pipe_out);
 		close_parent_unused_ends(cmd_index, pipeline->n_cmds, pipe_pairs);
 		cmd_index++;
 	}
