@@ -108,7 +108,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		print_tokens(&shell.input);		// Testing tokenizer
+		// print_tokens(&shell.input);		// Testing tokenizer
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -122,11 +122,11 @@ int	main(int argc, char *argv[], char *envp[])
 		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
-			free(buf);
+			free(shell.buf);
 			free(line);
 			continue;
 		}
-		exec_pipeline(envp, &shell.pipeline);
+		exec_pipeline(envp, &shell.pipeline, &shell);
 
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
