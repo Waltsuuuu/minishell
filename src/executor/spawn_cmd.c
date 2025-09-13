@@ -13,12 +13,14 @@
  * @note Exits with 127 for ENOENT/ENOTDIR when using a direct path,
  *       126 for other execve errors, and 127 if not found in PATH.
  */
-static void	exec_with_path_search(char **argv, char **envp)
+static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
 {
 	char	**path_directories;
 	char	*candidate_path;
 	int		path_index;
 
+	(void)shell;
+	(void)child_pids;
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
 		execve(argv[0], argv, envp);
@@ -35,6 +37,13 @@ static void	exec_with_path_search(char **argv, char **envp)
 			if (!candidate_path)
 			{
 				free_split(path_directories);
+				clear_struct_on_failure(&shell->input);
+				free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
+				free(shell->pipeline.cmds);
+				shell->pipeline.cmds = NULL;
+				free(child_pids);
+				free(shell->buf);
+				free(pipe_pairs);
 				_exit(1);
 			}
 			execve(candidate_path, argv, envp);
@@ -47,6 +56,16 @@ static void	exec_with_path_search(char **argv, char **envp)
 	if (argv && argv[0])
 		write(2, argv[0], (int)strlen(argv[0]));
 	write(2, ": command not found\n", 20);
+	clear_struct_on_failure(&shell->input);
+	free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
+	free(shell->pipeline.cmds);
+	shell->pipeline.cmds = NULL;
+	free(child_pids);
+	free(pipe_pairs);
+	free(shell->buf);
+	// Refactor the stuff above to the stuff below
+	// free_shell(shell); // free pipeline, input, buf. (shell memory)
+	// free_exec_pipeline(pipe_pairs, child_pids); // free exec_pipeline internal mallocs
 	_exit(127);
 }
 
@@ -78,7 +97,7 @@ pid_t	spawn_cmd(char **argv, char **envp, int in_fd, int out_fd)
 	return (child_pid);
 }*/
 
-pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out)
+pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
 {
 	pid_t	pid;
 	int		final_in;
@@ -135,7 +154,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out)
 		}
 
 		/* 4. Aja komento */
-		exec_with_path_search(cmd->argv, envp);
+		exec_with_path_search(cmd->argv, envp, shell, child_pids, pipe_pairs);
 		if (cmd->argv && cmd->argv[0])
     		perror(cmd->argv[0]);
 		else

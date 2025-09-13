@@ -14,7 +14,7 @@
  * @note On failure to allocate/create pipes or PIDs, cleans up and returns 1.
  *       Caller owns argv_per_cmd contents; this function does not free them.
  */
-int	exec_pipeline(char **envp, t_pipeline *pipeline)
+int	exec_pipeline(char **envp, t_pipeline *pipeline, t_shell *shell)
 {
 	int		(*pipe_pairs)[2]; //Osoitin taulukko pareista ns putket
 	pid_t	*child_pids;
@@ -33,7 +33,7 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline)
 	{
 		compute_cmd_fds(cmd_index, pipeline->n_cmds, pipe_pairs, &pipe_in, &pipe_out);
 		child_pids[cmd_index] = spawn_cmd(&pipeline->cmds[cmd_index],					
-				envp, pipe_in, pipe_out);
+				envp, pipe_in, pipe_out, shell, child_pids, pipe_pairs);
 		close_parent_unused_ends(cmd_index, pipeline->n_cmds, pipe_pairs);
 		cmd_index++;
 	}
@@ -42,6 +42,11 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline)
 	last_status = wait_all_and_last_status(child_pids, pipeline->n_cmds,
 			child_pids[pipeline->n_cmds - 1]);
 	free(child_pids);
+	clear_struct_on_failure(&shell->input);
+	free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
+	free(shell->pipeline.cmds);
+	shell->pipeline.cmds = NULL;
+	free(shell->buf);
 	return (last_status);
 }
 

@@ -25,6 +25,7 @@ typedef struct s_shell
     char 	**argv;          // arguments for current command
     char   *cwd;
 	t_pipeline pipeline;
+	char *buf;
 }   t_shell;
 
 typedef struct s_expand_state
@@ -47,14 +48,14 @@ char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
 int	    has_slash(char *input); // helper in exec
-int		exec_pipeline(char **envp, t_pipeline *pipeline);
+int		exec_pipeline(char **envp, t_pipeline *pipeline, t_shell *shell);
 void	close_parent_unused_ends(int stage_index, int cmd_count,
 int		(*pipe_pairs)[2]);
 void	compute_cmd_fds(int cmd_index, int cmd_count, int (*pipe_pairs)[2],
 int 	*in_fd, int *out_fd);
 void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count);
 int		(*allocate_pipes(int cmd_count))[2];
-pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out);
+pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2]);
 int		apply_redir_out(const t_redir *r, int *final_out);
 
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
