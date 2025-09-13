@@ -16,6 +16,7 @@ typedef struct s_redir
 	t_redir_type	type;
 	char 			*target;	// Filename OR heredoc delimiter
 	int				no_expand;	// heredoc: 1 if delimiter was quoted.
+	int				hd_fd; 		
 }	t_redir;
 
 typedef struct s_command

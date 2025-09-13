@@ -7,22 +7,22 @@ static void	getworkindir(char *buf, size_t size)
 }
 
  //Tokenizer test. Prints tokens
- static void print_tokens(const t_input *in)
- {
- 	int i;
+//  static void print_tokens(const t_input *in)
+//  {
+//  	int i;
 
- 	if (!in || !in->tokens)
- 		return ;
- 	i = 0;
- 	printf("\n TOKENS \n");
- 	while (i < in->n_tokens)
- 	{
- 		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
- 			i, in->tokens[i].type, in->tokens[i].pos,
- 			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
- 		i++;
- 	}
- }
+//  	if (!in || !in->tokens)
+//  		return ;
+//  	i = 0;
+//  	printf("\n TOKENS \n");
+//  	while (i < in->n_tokens)
+//  	{
+//  		printf("[%d] type=%d pos=%d text=\"%s\" was_quoted = \"%d\"\n",
+//  			i, in->tokens[i].type, in->tokens[i].pos,
+//  			in->tokens[i].text ? in->tokens[i].text : "(null)", in->tokens[i].was_quoted);
+//  		i++;
+//  	}
+//  }
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -33,7 +33,7 @@ int	main(int argc, char *argv[], char *envp[])
 	t_shell	shell = {0};
 	//ft_memset(shell.input, 0, sizeof(t_input));
 	char	cwd[BUFSIZ];
-	char	*buf;
+	// char	*buf;
 	
 	setup_signal_handlers_for_prompt();
 	//shell = malloc(sizeof(shell));
@@ -61,14 +61,14 @@ int	main(int argc, char *argv[], char *envp[])
 	{
 		
 		getworkindir(cwd, sizeof(cwd));
-		buf = ft_strjoin(cwd, "~:$");
-		if (!buf)
+		shell.buf = ft_strjoin(cwd, "~:$");
+		if (!shell.buf)
 			break;
 		
-        line = readline(buf);
+        line = readline(shell.buf);
 		if (!line) // CTR:+D
 		{   
-			free(buf);
+			free(shell.buf);
 			free (line);  
             printf("exit\n");
             break;
@@ -77,34 +77,34 @@ int	main(int argc, char *argv[], char *envp[])
 		{
 				shell.last_status = 130;
                 g_signal = 0;
-				free (buf);
+				free (shell.buf);
 				free(line);
 				continue;
         }
 		if (check_quote_balance(&line) == -1) // Makes sure quotes are closed before sending input to tokenizer
 		{
-			free(buf);
+			free(shell.buf);
 			continue ;
 		}
 		add_history(line);
 		if (parse_input_line(line, &shell.input) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
-			free(buf);
+			free(shell.buf);
 			free(line);
 			continue;
 		}
 		if (expand_tokens(&shell.input, shell.last_status, envp) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
-			free(buf);
+			free(shell.buf);
 			free(line);
 			continue;
 		}
 		if (remove_quotes(&shell.input) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
-			free(buf);
+			free(shell.buf);
 			free(line);
 			continue;
 		}
@@ -112,10 +112,13 @@ int	main(int argc, char *argv[], char *envp[])
 		if (!shell.input.words || shell.input.count == 0)
 		{
 			clear_struct_on_failure(&shell.input);
-			free(buf);
+			free(shell.buf);
 			free(line);
 			continue;
 		}
+		// print_cmds(&shell.pipeline);
+		// printf("Last status: %d\n", shell.last_status); //TESTING
+
 		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
 		{
 			clear_struct_on_failure(&shell.input);
@@ -124,18 +127,14 @@ int	main(int argc, char *argv[], char *envp[])
 			continue;
 		}
 		exec_pipeline(envp, &shell.pipeline);
-		print_cmds(&shell.pipeline);
-		printf("Last status: %d\n", shell.last_status); //TESTING
+
 		////////////////////////////////////////////////////////////////////////////////////
 		//TODO we should be able to open a minishell on minishell. 
 		//TODO I head there is environment variable called level, which should be increased!
 		////////////////////////////////////////////////////////////////////////////////////
-		free(buf);
+		// free(shell.buf);
 		free (line);
-		free_pipeline(&shell.pipeline, shell.pipeline.n_cmds);
-		free(shell.pipeline.cmds);
-		shell.pipeline.cmds = NULL;
-		clear_struct_on_failure(&shell.input);
+		// clear_struct_on_failure(&shell.input);
 	}
 	
 	
