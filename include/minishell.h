@@ -18,11 +18,9 @@
 
 typedef struct s_shell
 {
-    int     last_status;   // for $?
+    int     last_status;   
     char  **env;           // environment variables (array)
-    // or: t_env *env_list; if we manage as a linked list
     t_input	input;
-    char 	**argv;          // arguments for current command
     char   *cwd;
 	t_pipeline pipeline;
 	char *buf;
@@ -57,11 +55,10 @@ void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count);
 int		(*allocate_pipes(int cmd_count))[2];
 pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2]);
 int		apply_redir_out(const t_redir *r, int *final_out);
-
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
 int		wait_all_and_last_status(pid_t *child_pids, int child_count,
-	pid_t last_child_pid);
-int	apply_redir_out(const t_redir *r, int *final_out);
+		pid_t last_child_pid);
+int		apply_redir_out(const t_redir *r, int *final_out);
 
 //TODO move to utils.h
 void	free_split(char **arr);
@@ -77,6 +74,15 @@ int		remove_quotes(t_input *input);
 char	*handle_quote_removal(char *text, int *was_quoted);
 int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
 int		remove_outer_quote(char c, int *in_single, int *in_double);
+
+// get_working_dir.c
+void	getworkindir(char *buf, size_t size);
+
+// free_allocs.c
+void	free_allocs(t_shell *shell);
+
+// print_msh_banner.c
+void	print_msh_banner(void);
 
 // 01_expansion.c
 int	expand_tokens(t_input *input, int last_status, char **envp);

@@ -76,4 +76,7 @@ int		get_operator_len(const char *string);
 TokType	get_operator_type(const char *string, int len);
 int		append_token_node(t_tokenizer_state *state, TokType type, char *text, int pos);
 
+// TOKEN_DEBUGGER.C
+void print_tokens(const t_input *in);
+
 #endif
