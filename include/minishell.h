@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+#include "libft.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -14,16 +15,16 @@
 # include "tokenizer.h"
 # include "pipeline.h"
 # include <errno.h>
-#include <fcntl.h>
+# include <fcntl.h>
 
 typedef struct s_shell
 {
-    int     last_status;   
-    char  **env;           // environment variables (array)
-    t_input	input;
-    char   *cwd;
-	t_pipeline pipeline;
-	char *buf;
+    int			last_status;   
+    char		**env;
+    t_input		input;
+    char		*cwd;
+	t_pipeline	pipeline;
+	char		*buf;
 }   t_shell;
 
 typedef struct s_expand_state
@@ -35,13 +36,53 @@ typedef struct s_expand_state
 	int	expanded;
 }	t_expand_state;
 
-//TODO move signals.h
-extern volatile sig_atomic_t g_signal;
-void	setup_signal_handlers_for_prompt();
-void	setup_signal_handlers_for_child();
-void	handle_sig(int signum);
+// 00_TOKENIZE
+/*					See tokenizer.h 							*/
 
-//TODO move to executor.h
+// 01_BALANCE_QUOTES
+/* 					quote_check.c								*/
+int check_quote_balance(char **line);
+int	quotes_unbalanced(const char *string);
+int	append_new_input(char **line, char *new_input);
+
+// 02_EXPAND_VARS_AND_STATUS
+/* 					01_expansion.c								*/
+int		expand_tokens(t_input *input, int last_status, char **envp);
+
+/* 					02_expand_status.c							*/
+char	*expand_status(char *text, int last_status);
+int		create_exp_status_text(char *text, char **exp_text, char *status_str);
+
+/* 					03_expand_variable.c						*/
+char	*expand_variable(char *text, char **envp);
+int		create_exp_var_text(char *text, char **exp_text, char **envp);
+int		handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
+int		process_var_expansion(char *text, char **exp_text, int *i, char **envp);
+
+/* 					04_expand_utils.c							*/
+int		valid_cont_char(char c);
+int		valid_start_char(char c);
+int		process_expanded_str(char **exp_text, const char *str);
+int		process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
+int		process_char(char **exp_text, char c);
+
+/* 					05_expand_utils2.c							*/
+void	init_expand_state(t_expand_state *st);
+size_t	copy_n_chars(char *dst, const char *src, size_t size);
+int		extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
+int		find_env_index(char **envp, char *key, int key_len);
+
+// 03_REMOVE_QUOTES
+/*					quote_removal.c								*/
+int		remove_quotes(t_input *input);
+char	*handle_quote_removal(char *text, int *was_quoted);
+int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
+int		remove_outer_quote(char c, int *in_single, int *in_double);
+
+// 04_BUILD_CMD_PIPELINE
+/*					See pipeline.h								*/
+
+// 05_EXECUTE_CMD_PIPELINE
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
@@ -60,54 +101,25 @@ int		wait_all_and_last_status(pid_t *child_pids, int child_count,
 		pid_t last_child_pid);
 int		apply_redir_out(const t_redir *r, int *final_out);
 
-//TODO move to utils.h
+// UTILS
+/*					get_working_dir.c							*/
+void	getworkindir(char *buf, size_t size);
+
+/*					free_allocs.c								*/
+void	free_allocs(t_shell *shell);
+
+/*					print_msh_banner.c							*/
+void	print_msh_banner(void);
+
+/*					free_split.c								*/
 void	free_split(char **arr);
 void	free_partial(char **arr, size_t n);
 
-// quote_check.c
-int check_quote_balance(char **line);
-int	quotes_unbalanced(const char *string);
-int	append_new_input(char **line, char *new_input);
-
-// quote_removal.c
-int		remove_quotes(t_input *input);
-char	*handle_quote_removal(char *text, int *was_quoted);
-int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
-int		remove_outer_quote(char c, int *in_single, int *in_double);
-
-// get_working_dir.c
-void	getworkindir(char *buf, size_t size);
-
-// free_allocs.c
-void	free_allocs(t_shell *shell);
-
-// print_msh_banner.c
-void	print_msh_banner(void);
-
-// 01_expansion.c
-int	expand_tokens(t_input *input, int last_status, char **envp);
-
-// 02_expand_status.c
-char	*expand_status(char *text, int last_status);
-int		create_exp_status_text(char *text, char **exp_text, char *status_str);
-
-// 03_expand_variable.c
-char	*expand_variable(char *text, char **envp);
-int		create_exp_var_text(char *text, char **exp_text, char **envp);
-int		handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
-int		process_var_expansion(char *text, char **exp_text, int *i, char **envp);
-
-// 04_expand_utils.c
-int	valid_cont_char(char c);
-int	valid_start_char(char c);
-int	process_expanded_str(char **exp_text, const char *str);
-int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
-int	process_char(char **exp_text, char c);
-
-// 05_expand_utils_2.c
-void	init_expand_state(t_expand_state *st);
-size_t	copy_n_chars(char *dst, const char *src, size_t size);
-int		extract_key(char *text, int *i, char **key, int *key_len, int *start_i);
-int		find_env_index(char **envp, char *key, int key_len);
+// UTILS - signal_handling
+/*					signal.c									*/
+extern volatile sig_atomic_t g_signal;
+void	setup_signal_handlers_for_prompt();
+void	setup_signal_handlers_for_child();
+void	handle_sig(int signum);
 
 #endif

@@ -11,18 +11,16 @@ typedef enum {
 }	TokType;
 
 typedef struct s_token {
-	TokType type;	// Token type
-	char	*text;	// The token as a string
-	int		pos;	// Start index of token in *raw string.
-	int		was_quoted; // Flag to signal if token had quotes (WORD TOKENS ONLY)  
+	TokType type;			// Token type
+	char	*text;			// The token as a string
+	int		pos;			// Start index of token in *raw string.
+	int		was_quoted; 	// Flag to signal if token had quotes (WORD TOKENS ONLY)  
 }		t_token;
 
-// Temporary linked list of TOKENS,
-// once all tokens extracted, tok is moved to t_token array.
 typedef struct s_toknode
 {
-	t_token             tok;
-	struct s_toknode    *next;
+	t_token				tok;
+	struct s_toknode	*next;
 }		t_toknode;
 
 typedef struct s_input {
@@ -47,7 +45,8 @@ typedef struct s_tokenizer_state
 	int			list_count;	// Number of nodes (tokens);
 }		t_tokenizer_state;
 
-// Parser
+// 00_TOKENIZE
+/*					parse_input.c					*/
 int		parse_input_line(const char *line, t_input *input);
 void	input_struct_zero(t_input *input);
 int		fill_words_from_line(t_input *input, const char *line);
@@ -56,27 +55,27 @@ void	free_tokens(t_input *input);
 char	*normalize_tabs(const char *line);
 int		count_words(char **words);
 
-// TOKENIZE.C
+/*					tokenize.c						*/
 int		tokenize_line(const char *line, t_token **out, int *out_count);
 int		run_tokenizer(t_tokenizer_state *state);
 int		set_operator(t_tokenizer_state *state);
 int		set_word(t_tokenizer_state *state);
 int		convert_lst_to_arr(t_tokenizer_state *state);
 
-// TOK_INIT_FREE.C
+/*					tok_init_free.c					*/
 int		init_tokenizer_state(t_tokenizer_state *state, const char *line);
 int		clear_tokenizer_state(t_tokenizer_state *state);
 int		free_token_array(t_tokenizer_state *state);
 int		free_token_list(t_tokenizer_state *state);
 
-// TOK_UTILS.C
+/*					tok_utils.c						*/
 int		scan_word_end(const char *string, int i, int *in_single, int *in_double);
 int		skip_blanks(const char *string, int i);
 int		get_operator_len(const char *string);
 TokType	get_operator_type(const char *string, int len);
 int		append_token_node(t_tokenizer_state *state, TokType type, char *text, int pos);
 
-// TOKEN_DEBUGGER.C
+/*					tok_debug.c						*/
 void print_tokens(const t_input *in);
 
 #endif
