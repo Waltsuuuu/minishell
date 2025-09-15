@@ -5,11 +5,14 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-SRC         :=	src/main.c	src/executor/resolve_path.c	src/utils/free_split.c src/parser/simple_parse.c \
-				src/signal_handling/signal.c src/parser/tokenize.c src/parser/tok_init_free.c src/parser/tok_utils.c src/utils/quote_check.c \
-				src/expander/01_expansion.c src/expander/02_expand_status.c src/expander/03_expand_variable.c src/expander/04_expand_utils.c  \
-				src/expander/05_expand_utils_2.c src/utils/quote_removal.c src/build_commands/build_pipeline.c src/build_commands/pipeline_debugger.c \
-				src/executor/exec_pipeline.c src/executor/pipe_utils.c src/executor/spawn_cmd.c src/executor/wait_utils.c src/build_commands/pipeline_exit_free.c src/build_commands/pipeline_utils.c src/build_commands/pipeline_args.c src/build_commands/pipeline_redirs.c
+SRC         :=  src/main.c \
+                src/00_tokenize/parse_input.c src/00_tokenize/tokenize.c src/00_tokenize/tok_init_free.c src/00_tokenize/tok_utils.c src/00_tokenize/tok_debug.c \
+                src/01_balance_quotes/quote_check.c \
+                src/02_exapand_vars_and_status/01_expansion.c src/02_exapand_vars_and_status/02_expand_status.c src/02_exapand_vars_and_status/03_expand_variable.c src/02_exapand_vars_and_status/04_expand_utils.c src/02_exapand_vars_and_status/05_expand_utils_2.c \
+                src/03_remove_quotes/quote_removal.c \
+                src/04_build_cmd_pipeline/build_pipeline.c src/04_build_cmd_pipeline/pipeline_args.c src/04_build_cmd_pipeline/pipeline_debugger.c src/04_build_cmd_pipeline/pipeline_exit_free.c src/04_build_cmd_pipeline/pipeline_redirs.c src/04_build_cmd_pipeline/pipeline_utils.c \
+                src/05_execute_cmd_pipeline/exec_pipeline.c src/05_execute_cmd_pipeline/pipe_utils.c src/05_execute_cmd_pipeline/resolve_path.c src/05_execute_cmd_pipeline/spawn_cmd.c src/05_execute_cmd_pipeline/wait_utils.c \
+                src/utils/free_allocs.c src/utils/free_split.c src/utils/get_working_dir.c src/utils/print_msh_banner.c src/utils/signal_handling/signal.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================

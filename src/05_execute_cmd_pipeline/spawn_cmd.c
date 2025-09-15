@@ -37,12 +37,8 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 			if (!candidate_path)
 			{
 				free_split(path_directories);
-				clear_struct_on_failure(&shell->input);
-				free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
-				free(shell->pipeline.cmds);
-				shell->pipeline.cmds = NULL;
+				free_allocs(shell);
 				free(child_pids);
-				free(shell->buf);
 				free(pipe_pairs);
 				_exit(1);
 			}
@@ -56,16 +52,9 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	if (argv && argv[0])
 		write(2, argv[0], (int)strlen(argv[0]));
 	write(2, ": command not found\n", 20);
-	clear_struct_on_failure(&shell->input);
-	free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
-	free(shell->pipeline.cmds);
-	shell->pipeline.cmds = NULL;
+	free_allocs(shell);
 	free(child_pids);
 	free(pipe_pairs);
-	free(shell->buf);
-	// Refactor the stuff above to the stuff below
-	// free_shell(shell); // free pipeline, input, buf. (shell memory)
-	// free_exec_pipeline(pipe_pairs, child_pids); // free exec_pipeline internal mallocs
 	_exit(127);
 }
 

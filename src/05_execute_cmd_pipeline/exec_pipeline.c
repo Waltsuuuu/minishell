@@ -42,11 +42,7 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline, t_shell *shell)
 	last_status = wait_all_and_last_status(child_pids, pipeline->n_cmds,
 			child_pids[pipeline->n_cmds - 1]);
 	free(child_pids);
-	clear_struct_on_failure(&shell->input);
-	free_pipeline(&shell->pipeline, shell->pipeline.n_cmds);
-	free(shell->pipeline.cmds);
-	shell->pipeline.cmds = NULL;
-	free(shell->buf);
+	free_allocs(shell);
 	return (last_status);
 }
 
