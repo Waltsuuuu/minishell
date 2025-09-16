@@ -39,7 +39,7 @@ int	tokenize_line(const char *line, t_token **out, int *out_count)
 /**
  * Iterates through the input line. When NOT inside quotes,
  * skips blanks, then detects operators (|, <, >, <<, >>) and calls
- * set_operator(), otherwise calls set_word(). When INSIDE quotes, creates a WORD token. 
+ * set_operator(), otherwise calls set_word().
  *
  * @param state  Tokenizer state (must have line initialized).
  * @return 0 on success, -1 on error (malloc failure in helpers). 
@@ -48,26 +48,19 @@ int	run_tokenizer(t_tokenizer_state *state)
 {
 	if (!state)
 		return (-1);
-	while (state->line[state->index] != '\0')						// While there are characters to be checked			
+	while (state->line[state->index] != '\0')					// Walk through the input line		
 	{
-		if (!state->in_single && !state->in_double)					// If NOT inside quotes...
+		state->index = skip_blanks(state->line, state->index);	// 	Skip spaces
+		if (state->line[state->index] == '\0')					// 	End of line check after skipping spaces.
+			break ;												//		- If end, exit loop.
+		if (get_operator_len(&state->line[state->index]) > 0)	// 	Checks for if we are dealing with a token (1 or 2 = operator match found, 0 = not an operator)
 		{
-			state->index = skip_blanks(state->line, state->index);	// 	Skip spaces
-			if (state->line[state->index] == '\0')					// 	End of line check after skipping spaces.
-				break ;												//		- If end, exit loop.
-			if (get_operator_len(&state->line[state->index]) > 0)	// 	Checks for if we are dealing with a token (1 or 2 = operator match found, 0 = not an operator)
-			{
-				if (set_operator(state) == -1)						// 		-If operator, create operator token.
-					return (-1);
-			}
-			else if (set_word(state) == -1 )						// 		-If not operator, create word token.
+			if (set_operator(state) == -1)						// 		-If operator, create operator token.
 				return (-1);
 		}
-		else														// If inside quotes...
-		{
-			if (set_word(state) == -1)								// Create word token.
+		else
+			if (set_word(state) == -1 )								// 		-If not operator, create word token.
 				return (-1);
-		}
 	}
 	return (0);
 }
