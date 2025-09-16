@@ -6,8 +6,8 @@ CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
 SRC         :=  src/main.c \
-                src/00_tokenize/parse_input.c src/00_tokenize/tokenize.c src/00_tokenize/tok_init_free.c src/00_tokenize/tok_utils.c src/00_tokenize/tok_debug.c \
-                src/01_balance_quotes/quote_check.c \
+                src/00_check_quote_balance/quote_check.c \
+                src/01_tokenize/parse_input.c src/01_tokenize/tokenize.c src/01_tokenize/tok_init_free.c src/01_tokenize/tok_utils.c src/01_tokenize/tok_debug.c \
                 src/02_exapand_vars_and_status/01_expansion.c src/02_exapand_vars_and_status/02_expand_status.c src/02_exapand_vars_and_status/03_expand_variable.c src/02_exapand_vars_and_status/04_expand_utils.c src/02_exapand_vars_and_status/05_expand_utils_2.c \
                 src/03_remove_quotes/quote_removal.c \
                 src/04_build_cmd_pipeline/build_pipeline.c src/04_build_cmd_pipeline/pipeline_args.c src/04_build_cmd_pipeline/pipeline_debugger.c src/04_build_cmd_pipeline/pipeline_exit_free.c src/04_build_cmd_pipeline/pipeline_redirs.c src/04_build_cmd_pipeline/pipeline_utils.c \
