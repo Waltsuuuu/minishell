@@ -225,7 +225,7 @@ int	apply_redir_in(const t_redir *redir, int *final_in)
 		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
 	   ja se ei ole sama kuin juuri avattu fd,
 	   sulje se, ettei jää fd-vuotoa. */
-	if (*final_in != STDOUT_FILENO && *final_in >= 0 && *final_in != fd)
+	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
 		close(*final_in);
 	*final_in = fd;
 	return (0);
