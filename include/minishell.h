@@ -41,9 +41,8 @@ typedef struct s_expand_state
 
 // 01_BALANCE_QUOTES
 /* 					quote_check.c								*/
-int check_quote_balance(char **line);
+int check_quote_balance(char **line, int *last_status);
 int	quotes_unbalanced(const char *string);
-int	append_new_input(char **line, char *new_input);
 
 // 02_EXPAND_VARS_AND_STATUS
 /* 					01_expansion.c								*/

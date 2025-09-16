@@ -34,7 +34,7 @@ int	main(int argc, char *argv[], char *envp[])
 				free(line);
 				continue ;
         }
-		if (check_quote_balance(&line) == -1)
+		if (check_quote_balance(&line, &shell.last_status) == -1)
 		{
 			free(shell.buf);
 			continue ;
