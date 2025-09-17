@@ -40,6 +40,8 @@ int	extract_key(char *text, int *i, char **key, int *key_len, int *start_i)
 		(*key_len)++;
 	}
 	*key = malloc(*key_len + 2); // +2 for '=' and '\0'
+	if (!*key)
+		return (-1);
 	copy_n_chars(*key, &text[*start_i], *key_len);
 	(*key)[*key_len] = '=';
 	(*key)[*key_len + 1] = '\0';
