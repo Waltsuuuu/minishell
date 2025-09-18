@@ -78,8 +78,8 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue ;
 		}
-		print_cmds(&shell.pipeline);						// Pipeline cmds debug
-		// exec_pipeline(envp, &shell.pipeline, &shell);
+		//print_cmds(&shell.pipeline);						// Pipeline cmds debug
+		exec_pipeline(envp, &shell.pipeline, &shell);
 		free(line);
 	}
 	return (EXIT_SUCCESS);
