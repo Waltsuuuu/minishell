@@ -67,6 +67,8 @@ void	del_redir(void *content)
 	if (!content)
 		return ;
 	redir = (t_redir *)content;
+	if (redir->hd_fd != -1)
+		close(redir->hd_fd);
 	if (redir->target)
 		free(redir->target);
 	free(redir);
