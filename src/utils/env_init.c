@@ -119,4 +119,17 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	return (0); //check if succeeds in env_init_from envp
 }
 
-//need free function too for the env
+void	clean_env(t_env **head)
+{
+	t_env	*current;
+	t_env	*prev_node;
+
+	current = *head;
+	while (current != NULL)
+	{
+		prev_node = current;
+		current = current->next;
+		free(prev_node);
+	}
+	*head = NULL;
+}
