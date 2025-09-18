@@ -1,49 +1,33 @@
 #include "minishell.h"
 
-/*
-	split key and value:
-
-	-First we loop through from start of the envp till '=', now we have our key.
-	-Then we do loop til end of the string '\0', and now we have our VALUE.
-
-	then in our init env function we can check if the key and value split is succesfull,
-	if it is, we create a node with key and value in it.
-	!!!guard against if node creation fails!!!
-	remember to properly free the allocated key and value, before extracting another key and value. 
-
-	
-
-
-
-*/
-
 
 static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
 	int	counter;
+	char *start;
 
+	start = line;
 	counter = 0;
 	//first get the key out.
 	while (*line && *line != '=')
-	{
 		counter++;
-		line++;
-	} //loop til '='
+
 		
-	key_out = malloc(counter + 1);
-	ft_strlcpy(*key_out, line, counter +1); // now we should have the key value, next go for value!
+	*key_out = malloc(counter + 1);
+	ft_strlcpy(*key_out, start, counter +1); // now we should have the key value, next go for value!
 
 	if (line[counter] == '=')
 	{
-		*value_out = ft_strdup(line[counter+1]);
-		if (!value_out)
+		
+		*value_out = ft_strdup(line + counter + 1);
+		if (!*value_out)
 			return (-1);
 	}
 	else
 	{
 		//if there is no value inside return empty string
 		*value_out = ft_strdup("");
-		if (!value_out)
+		if (!*value_out)
 			return (-1);
 	}
 	return (0);
@@ -58,6 +42,7 @@ t_env *env_init_from_envp(char **envp)
 	t_env	*node;
 	t_env	*env_head;
 
+	env_head = NULL;
 	i = 0;
 	while (envp && envp[i])
 	{
@@ -79,6 +64,7 @@ t_env *env_init_from_envp(char **envp)
 		}
 		i++;
 	}
+	return (env_head);
 }
 
 t_env	*create_new_env_node(const char *key, const char *value)
@@ -98,6 +84,7 @@ t_env	*create_new_env_node(const char *key, const char *value)
 		free (env_node->key);
 		free (env_node->value);
 		free (env_node);
+		return (NULL);
 	}
 	return (env_node);
 
@@ -110,7 +97,7 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	if (!*head)
 	{
 		*head = new_env_node;
-		return ;
+		return (0);
 	}
 	temp_node = *head;
 	while (temp_node->next != NULL)

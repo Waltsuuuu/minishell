@@ -12,6 +12,18 @@ int	main(int argc, char *argv[], char *envp[])
 	print_msh_banner();
     rl_bind_key('\t', rl_complete);
 	line = NULL;
+
+	t_env *envlist;
+	shell.env_head = env_init_from_envp(envp); //Initialize envp
+	envlist = shell.env_head;
+	if (shell.env_head == NULL)
+		printf("init FAIL");
+	while (envlist != NULL)
+	{
+		printf("env key: %s env value: %s\n", envlist->key, envlist->value);
+		envlist = envlist->next;
+	}
+
 	while (1337)
 	{
 		getworkindir(cwd, sizeof(cwd));

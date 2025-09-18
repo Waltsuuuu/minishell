@@ -17,10 +17,17 @@
 # include <errno.h>
 # include <fcntl.h>
 
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 typedef struct s_shell
 {
     int			last_status;   
-    char		*env_head;
+    t_env		*env_head;
     t_input		input;
     char		*cwd;
 	t_pipeline	pipeline;
@@ -36,12 +43,6 @@ typedef struct s_expand_state
 	int	expanded;
 }	t_expand_state;
 
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
 
 
 // 00_TOKENIZE
@@ -130,5 +131,12 @@ extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
+/*					ENV											*/
+t_env	*env_init_from_envp(char **envp);
+t_env	*create_new_env_node(const char *key, const char *value);
+int		append_env_node(t_env **head, t_env *new_env_node);
+void	clean_env(t_env **head);
+
+
 
 #endif
