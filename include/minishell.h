@@ -110,6 +110,11 @@ int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 
+// COLLECT_HEREDOCS
+int	collect_heredocs(t_pipeline *pipeline);
+int	collect_cmd_heredocs(t_command *cmd);
+int	collect_heredoc_body(t_redir *redir);
+
 // UTILS
 /*					get_working_dir.c							*/
 void	getworkindir(char *buf, size_t size);
