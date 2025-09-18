@@ -125,8 +125,34 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 				}
 
 			}
+
+			if (redir && redir->type == REDIR_APPEND)
+			{
+				if (apply_redir_append(redir, &final_out) < 0)
+				{
+					if (redir->target)
+						perror(redir->target);
+					else
+						perror("redir");
+					_exit(1);
+				}
+			}
+
+			if (redir && redir->type == REDIR_IN)
+			{
+				if (apply_redir_in(redir, &final_in) < 0)
+				{
+					if (redir->target)
+						perror(redir->target);
+					else
+						perror("redir");
+					_exit(1);
+				}
+			}
+
 			node = node->next;
 		}
+	
 
 		/* 3. Tee dup2 lopullisille fd:ille ja sulje ylimääräiset */
 		if (final_in != STDIN_FILENO)
@@ -187,6 +213,41 @@ int	apply_redir_out(const t_redir *redir, int *final_out)
 	return (0);
 }
 
+int	apply_redir_in(const t_redir *redir, int *final_in)
+{
+		int	fd;
+
+	if (!redir || !redir->target || !final_in)
+		return (-1);
+	fd = open(redir->target, O_RDONLY);
+	if (fd < 0)
+		return (-1);
+		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
+	   ja se ei ole sama kuin juuri avattu fd,
+	   sulje se, ettei jää fd-vuotoa. */
+	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
+		close(*final_in);
+	*final_in = fd;
+	return (0);
+}
+
+int apply_redir_append(const t_redir *redir, int *final_out)
+{
+	int	fd;
+
+	if (!redir || !redir->target || !final_out)
+		return (-1);
+	fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd < 0)
+		return (-1);
+		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
+	   ja se ei ole sama kuin juuri avattu fd,
+	   sulje se, ettei jää fd-vuotoa. */
+	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
+		close(*final_out);
+	*final_out = fd;
+	return (0);
+}
 
 /**
  * Checks whether a string contains a '/' character.
