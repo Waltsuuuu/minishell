@@ -20,7 +20,7 @@
 typedef struct s_shell
 {
     int			last_status;   
-    char		**env;
+    char		*env_head;
     t_input		input;
     char		*cwd;
 	t_pipeline	pipeline;
@@ -35,6 +35,14 @@ typedef struct s_expand_state
 	int	quote_handled;
 	int	expanded;
 }	t_expand_state;
+
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 
 // 00_TOKENIZE
 /*					See tokenizer.h 							*/
