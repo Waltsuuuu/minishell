@@ -31,10 +31,11 @@ void	print_redirs(const t_list *lst)
 	{
 		r = (t_redir *)cur->content;
 		if (r)
-			printf("      - %s  target=\"%s\"  no_expand=%d\n",
+			printf("      - %s  target=\"%s\"  no_expand=%d  hd_fd=%d\n",
 				redir_type_name(r->type),
 				r->target ? r->target : "(null)",
-				r->no_expand);
+				r->no_expand,
+				r->hd_fd);
 		cur = cur->next;
 	}
 }

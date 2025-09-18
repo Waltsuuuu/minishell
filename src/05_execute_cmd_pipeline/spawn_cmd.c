@@ -150,6 +150,18 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 				}
 			}
 
+			if (redir && redir->type == REDIR_HEREDOC)
+			{
+				if (apply_redir_heredoc(redir, &final_in) < 0)
+				{
+					if (redir->target)
+						perror(redir->target);
+					else
+						perror("redir");
+					_exit(1);
+				}
+			}
+
 			node = node->next;
 		}
 	
@@ -247,6 +259,22 @@ int apply_redir_append(const t_redir *redir, int *final_out)
 		close(*final_out);
 	*final_out = fd;
 	return (0);
+}
+
+int	apply_redir_heredoc(const t_redir *redir, int *final_in)
+{
+	int fd;
+
+	if (!redir || !redir->target || !final_in)
+		return (-1);
+	fd = redir->hd_fd;
+	if (fd < 0)
+		return (-1);
+	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
+		close(*final_in);
+	*final_in = fd;
+	return (0);
+	
 }
 
 /**

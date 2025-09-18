@@ -12,6 +12,7 @@ int	build_and_append_redir(t_token *tokens, int i, t_seg *seg)
 	redir = ft_calloc(1, sizeof(t_redir));
 	if (!redir)
 		return (-1);
+	redir->hd_fd = -1;
 	if (fill_redir_fields(redir, tokens, i) == -1)
 	{
 		if (redir->target)
