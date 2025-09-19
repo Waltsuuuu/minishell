@@ -18,12 +18,8 @@ int	main(int argc, char *argv[], char *envp[])
 	envlist = shell.env_head;
 	if (shell.env_head == NULL)
 		printf("init FAIL");
-	while (envlist != NULL)
-	{
-		printf("env key: %s env value: %s\n", envlist->key, envlist->value);
-		envlist = envlist->next;
-	}
-	clean_env(&shell.env_head); //testing cleaning
+	env_list_to_array(envlist);
+
 	while (1337)
 	{
 		getworkindir(cwd, sizeof(cwd));
@@ -88,6 +84,7 @@ int	main(int argc, char *argv[], char *envp[])
 		exec_pipeline(envp, &shell.pipeline, &shell);
 		free(line);
 	}
+	clean_env(&shell.env_head);
 	return (EXIT_SUCCESS);
 }
 

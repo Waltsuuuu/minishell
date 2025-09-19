@@ -95,6 +95,73 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	temp_node->next = new_env_node;
 	return (0);
 }
+char	**env_list_to_array(t_env *head)
+{
+	char	**env_arr;
+	int		counter;
+	t_env	*env_list;
+	char	*test;
+
+	env_arr = NULL;
+	env_list = head;
+	counter = 0;
+
+	while (env_list)
+	{
+		counter++;
+		env_list = env_list->next;
+	}
+	env_arr = malloc((counter + 1) * (sizeof(*env_arr)));
+	if (!env_arr)
+		return (NULL);
+
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		if (env_list->key == NULL)
+		{
+			free_partial(env_arr, counter);
+			return (-1);
+		}
+		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
+		 // if fails, remember to doo the partial free and exit with error status
+		 //Because if join returns NULL, our array is fucked
+		env_arr[counter] = test;
+
+		env_list = env_list->next;
+		printf("%s\n", env_arr[counter]);
+		counter++;
+	}
+	env_arr[counter] = NULL;
+	return (env_arr);
+}
+
+char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
+{
+	size_t	s1_len;
+	size_t	s2_len;
+	char	*result_str;
+	size_t	counter;
+
+	if (!s1)
+		s1 = "";
+	if (!s2)
+		s2 = "";
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	result_str = malloc(s1_len + s2_len + 2);
+	if (result_str == NULL)
+		return (NULL);
+	counter = 0;
+	while (*s1)
+		result_str[counter++] = *s1++;
+	result_str[counter++] = '=';
+	while (*s2)
+		result_str[counter++] = *s2++;
+	result_str[counter] = '\0';
+	return (result_str);
+}
 
 void	clean_env(t_env **head)
 {
