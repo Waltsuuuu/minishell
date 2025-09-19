@@ -144,7 +144,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 	char	*result_str;
 	size_t	counter;
 
-	if (!s1)
+	if (!s1) //if null treat as an empty string
 		s1 = "";
 	if (!s2)
 		s2 = "";
