@@ -23,7 +23,7 @@ int	main(int argc, char *argv[], char *envp[])
 		printf("env key: %s env value: %s\n", envlist->key, envlist->value);
 		envlist = envlist->next;
 	}
-
+	clean_env(&shell.env_head); //testing cleaning
 	while (1337)
 	{
 		getworkindir(cwd, sizeof(cwd));

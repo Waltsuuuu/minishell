@@ -1,24 +1,19 @@
 #include "minishell.h"
 
-
 static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
-	int	counter;
-	char *start;
+	int		counter;
+	char	*start;
 
 	start = line;
 	counter = 0;
-	//first get the key out.
 	while (*line && *line != '=')
 	{
-		counter++; 
+		counter++;
 		line++;
 	}
-
-	
 	*key_out = malloc(counter + 1);
-	ft_strlcpy(*key_out, start, counter +1); // now we should have the key value, next go for value!
-
+	ft_strlcpy(*key_out, start, counter +1);
 	if (*line == '=')
 	{
 		*value_out = ft_strdup(line + 1);
@@ -27,7 +22,6 @@ static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 	}
 	else
 	{
-		//if there is no value inside return empty string
 		*value_out = ft_strdup("");
 		if (!*value_out)
 			return (-1);
@@ -35,9 +29,8 @@ static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 	return (0);
 }
 
-t_env *env_init_from_envp(char **envp)
+t_env	*env_init_from_envp(char **envp)
 {
-	//in here we do the key splitting, node creation and the appending
 	int		i;
 	char	*key;
 	char	*value;
@@ -48,14 +41,10 @@ t_env *env_init_from_envp(char **envp)
 	i = 0;
 	while (envp && envp[i])
 	{
-		//initalize keys every round to null, and free the old keys after everyround.
-		if (split_key_and_value(envp[i], &key, &value) == 0) 
+		if (split_key_and_value(envp[i], &key, &value) == 0)
 		{
-			//so if the split is succesfull, then we do create the node with the parsed key and value.
-			//so here we need a node creation function
-			node = create_new_env_node(key, value); //TODO create this function
-			// then we need to append the node to the list
-			if (!node || append_env_node(&env_head, node) != 0 ) //if node creation fails, or append node fails, we clean and exit.
+			node = create_new_env_node(key, value);
+			if (!node || append_env_node(&env_head, node) != 0)
 			{
 				free (key);
 				free (value);
@@ -89,7 +78,6 @@ t_env	*create_new_env_node(const char *key, const char *value)
 		return (NULL);
 	}
 	return (env_node);
-
 }
 
 int	append_env_node(t_env **head, t_env *new_env_node)
@@ -105,21 +93,23 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	while (temp_node->next != NULL)
 		temp_node = temp_node->next;
 	temp_node->next = new_env_node;
-	return (0); //check if succeeds in env_init_from envp
+	return (0);
 }
 
-void clean_env(t_env **head)
+void	clean_env(t_env **head)
 {
-    t_env *cur, *next;
-    if (!head || !*head) return;
-    cur = *head;
-    while (cur) {
-        next = cur->next;
-        free(cur->key);
-        free(cur->value);
-        free(cur);
-        cur = next;
-    }
-    *head = NULL;
-}
+	t_env	*current;
+	t_env	*next;
 
+	if (!head || !*head)
+		return ;
+	current = *head;
+	while (current)
+	{
+		next = current->next;
+		free (current->key);
+		free (current->value);
+		free (current);
+		current = next;
+	}
+}
