@@ -10,16 +10,18 @@ static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 	counter = 0;
 	//first get the key out.
 	while (*line && *line != '=')
-		counter++;
+	{
+		counter++; 
+		line++;
+	}
 
-		
+	
 	*key_out = malloc(counter + 1);
 	ft_strlcpy(*key_out, start, counter +1); // now we should have the key value, next go for value!
 
-	if (line[counter] == '=')
+	if (*line == '=')
 	{
-		
-		*value_out = ft_strdup(line + counter + 1);
+		*value_out = ft_strdup(line + 1);
 		if (!*value_out)
 			return (-1);
 	}
@@ -106,17 +108,18 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	return (0); //check if succeeds in env_init_from envp
 }
 
-void	clean_env(t_env **head)
+void clean_env(t_env **head)
 {
-	t_env	*current;
-	t_env	*prev_node;
-
-	current = *head;
-	while (current != NULL)
-	{
-		prev_node = current;
-		current = current->next;
-		free(prev_node);
-	}
-	*head = NULL;
+    t_env *cur, *next;
+    if (!head || !*head) return;
+    cur = *head;
+    while (cur) {
+        next = cur->next;
+        free(cur->key);
+        free(cur->value);
+        free(cur);
+        cur = next;
+    }
+    *head = NULL;
 }
+
