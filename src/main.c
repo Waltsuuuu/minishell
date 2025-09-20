@@ -18,7 +18,6 @@ int	main(int argc, char *argv[], char *envp[])
 	envlist = shell.env_head;
 	if (shell.env_head == NULL)
 		printf("init FAIL");
-	env_list_to_array(envlist);
 	print_env(&shell);
 
 	while (1337)

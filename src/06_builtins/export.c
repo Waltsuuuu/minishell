@@ -15,6 +15,10 @@ int	run_export(t_shell *shell)
     continue;
 }
 
+void	sort_env()
+{
+
+}
 
 }
 
@@ -57,5 +61,36 @@ t_env *env_find(t_env *head, const char *key)
 }
 int env_set(t_env **head, const char *key, const char *value)
 {
-	
+
+}
+
+static void *env_sort_and_print(t_shell *shell)
+{
+	char **env;
+	char	*tmp;
+	int	 size;
+	int	i;
+	int	j;
+
+	env = env_list_to_array(shell->env_head, &size);
+	i = 0;
+	while (i < size)
+	{
+		j = i + 1;
+		while (j < size)
+		{
+			if (ft_strcmp(env[i], env[j]) > 0)
+			{
+				tmp = env[i];
+				env[i] = env[j];
+				env[j] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
+	i = 0;
+	while (i < size)
+		ft_printf("declare -x %s\n", env[i++]);
+	free_split(env);
 }

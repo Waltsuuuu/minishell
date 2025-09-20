@@ -95,7 +95,7 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	temp_node->next = new_env_node;
 	return (0);
 }
-char	**env_list_to_array(t_env *head)
+char	**env_list_to_array(t_env *head, int *size)
 {
 	char	**env_arr;
 	int		counter;
@@ -112,6 +112,7 @@ char	**env_list_to_array(t_env *head)
 		env_list = env_list->next;
 	}
 	env_arr = malloc((counter + 1) * (sizeof(*env_arr)));
+	*size = counter;
 	if (!env_arr)
 		return (NULL);
 
@@ -130,10 +131,11 @@ char	**env_list_to_array(t_env *head)
 		env_arr[counter] = test;
 
 		env_list = env_list->next;
-		printf("%s\n", env_arr[counter]);
+		//printf("%s\n", env_arr[counter]);
 		counter++;
 	}
 	env_arr[counter] = NULL;
+
 	return (env_arr);
 }
 
