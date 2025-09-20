@@ -13,20 +13,20 @@ static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 		line++;
 	}
 	*key_out = malloc(counter + 1);
-	if (!key_out)
+	if (!*key_out)
 		return (1);
 	ft_strlcpy(*key_out, start, counter +1);
 	if (*line == '=')
 	{
 		*value_out = ft_strdup(line + 1);
 		if (!*value_out)
-			return (free (key_out),1);
+			return (free (*key_out),1);
 	}
 	else
 	{
 		*value_out = ft_strdup("");
 		if (!*value_out)
-			return (free (key_out), 1);
+			return (free (*key_out), 1);
 	}
 	return (0);
 }
@@ -65,16 +65,16 @@ t_env	*create_new_env_node(const char *key, const char *value)
 {
 	t_env	*env_node;
 
+	if (!key)
+		return (NULL);
 	env_node = malloc(sizeof(*env_node));
 	if (!env_node)
 		return (NULL);
-	if (!key || !value)
-	{
-		free (env_node);
-		return (NULL);
-	}
 	env_node->key = ft_strdup(key);
-	env_node->value = ft_strdup(value);
+	if (value)
+		env_node->value = ft_strdup(value);
+	else if (!value)
+		env_node->value =ft_strdup("");
 	env_node->next = NULL;
 	if (!env_node->key || !env_node->value)
 	{
@@ -101,6 +101,7 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	temp_node->next = new_env_node;
 	return (0);
 }
+
 char	**env_list_to_array(t_env *head, int *size)
 {
 	char	**env_arr;

@@ -28,7 +28,7 @@ int		is_builtin_valid(const char *key) // this is used in both export and unset
 	if (ft_isalpha(key[0]) || key[0] == '_')
 	{
 		counter++;
-		while (key[counter])
+		while (key[counter] && key[counter] != '=')
 		{
 			if (!ft_isalnum(key[counter]) && key[counter] != '_')
 			{
