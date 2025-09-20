@@ -5,19 +5,11 @@
 
 //Arrange in alphabetical order if not already CHECK THIS 
 //KEY=VALUE, if key is already in the list -> update it, if not create a new node 
-/*
-int	run_export(t_shell *shell)
-{
-	if (!is_builtin_valid(arg))
-{
-    print_invalid_identifier("export", arg);
-    shell->last_status = 1;
-    continue;
-}
 
-
+int	builtin_export(char **argv, t_shell *shell)
+{
+	
 }
-*/
 
 int		is_builtin_valid(const char *key) // this is used in both export and unset
 {
