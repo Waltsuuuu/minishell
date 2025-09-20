@@ -73,18 +73,30 @@ t_env *env_find(t_env *head, const char *key)
 
 int env_set(t_env **head, const char *key, const char *value)
 {
-	t_env	*envlist;
+	t_env	*node;
+	char	*new_value;
 
-	envlist = NULL;
-	envlist = env_find(head, key);
-	if (!envlist)
+	if (!head || !key || !*key)
+		return (1);
+	node = NULL;
+	node = env_find(*head, key);
+	if (node)
 	{
-		//we didnt find key
+		if (value)
+			new_value = ft_strdup(value);
+		else
+			new_value = ft_strdup("");
+		if (!new_value)
+			return (1);
+		free (node->value);
+		node->value = new_value;
+		return (0);
 	}
-
-	//if no key found, we create key and put value if given, or empty string and we just create the value 
-	// check if builtin is valid, i
-
+		node = create_new_env_node(key, value);
+		if (!node)
+			return (1);
+		append_env_node(head, node);
+		return (0);
 }
 
 

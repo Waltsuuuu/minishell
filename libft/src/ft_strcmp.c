@@ -6,11 +6,11 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 11:08:54 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/08/29 10:48:15 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/09/20 18:05:02 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_strcmp(char *s1, char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
 	while (*s1 != '\0' || *s2 != '\0')
 	{
