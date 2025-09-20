@@ -5,7 +5,7 @@
 
 //Arrange in alphabetical order if not already CHECK THIS 
 //KEY=VALUE, if key is already in the list -> update it, if not create a new node 
-
+/*
 int	run_export(t_shell *shell)
 {
 	if (!is_builtin_valid(arg))
@@ -15,12 +15,9 @@ int	run_export(t_shell *shell)
     continue;
 }
 
-void	sort_env()
-{
 
 }
-
-}
+*/
 
 int		is_builtin_valid(const char *key) // this is used in both export and unset
 {
@@ -49,7 +46,7 @@ int		is_builtin_valid(const char *key) // this is used in both export and unset
 	}
 
 }
-
+/*
 void	print_invalid_identifier(const char *builtin, const char *key)
 {
 	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
@@ -59,18 +56,20 @@ t_env *env_find(t_env *head, const char *key)
 {
 
 }
+*/
 int env_set(t_env **head, const char *key, const char *value)
 {
-
+	
 }
 
-static void *env_sort_and_print(t_shell *shell)
+
+void env_sort_and_print(t_shell *shell)
 {
-	char **env;
+	char	**env;
 	char	*tmp;
-	int	 size;
-	int	i;
-	int	j;
+	int		size;
+	int		i;
+	int		j;
 
 	env = env_list_to_array(shell->env_head, &size);
 	i = 0;

@@ -18,8 +18,8 @@ int	main(int argc, char *argv[], char *envp[])
 	envlist = shell.env_head;
 	if (shell.env_head == NULL)
 		printf("init FAIL");
-	print_env(&shell);
-
+	//print_env(&shell);
+	//env_sort_and_print(&shell);
 	while (1337)
 	{
 		getworkindir(cwd, sizeof(cwd));

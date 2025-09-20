@@ -140,6 +140,7 @@ void	clean_env(t_env **head);
 char	**env_list_to_array(t_env *head, int *size);
 char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
 void	print_env(t_shell *shell);
+void	env_sort_and_print(t_shell *shell);
 
 
 
