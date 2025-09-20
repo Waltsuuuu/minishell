@@ -48,8 +48,14 @@ int		is_builtin_valid(const char *key) // this is used in both export and unset
 
 void	print_invalid_identifier(const char *builtin, const char *key)
 {
-	write(2, builtin, ft_strlen(builtin));
-	write(2, ": `", 3);
-	write(2, key, ft_strlen(key));
-	write(2, "': not a valid identifier\n", 26);
+	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
+
+}
+t_env *env_find(t_env *head, const char *key)
+{
+
+}
+int env_set(t_env **head, const char *key, const char *value)
+{
+	
 }

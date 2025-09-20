@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 #include "libft.h"
+# include "printf/ft_printf.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -138,6 +139,7 @@ int		append_env_node(t_env **head, t_env *new_env_node);
 void	clean_env(t_env **head);
 char	**env_list_to_array(t_env *head);
 char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
+void	print_env(t_shell *shell);
 
 
 

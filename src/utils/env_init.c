@@ -122,7 +122,7 @@ char	**env_list_to_array(t_env *head)
 		if (env_list->key == NULL)
 		{
 			free_partial(env_arr, counter);
-			return (-1);
+			return (NULL);
 		}
 		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
 		 // if fails, remember to doo the partial free and exit with error status
