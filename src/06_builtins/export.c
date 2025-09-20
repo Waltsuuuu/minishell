@@ -52,14 +52,39 @@ void	print_invalid_identifier(const char *builtin, const char *key)
 	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
 
 }
+*/
 t_env *env_find(t_env *head, const char *key)
 {
+	t_env	*envlist;
 
+	if (!key)
+		return (NULL);
+	envlist = head;
+	while (envlist)
+	{
+		if (!ft_strcmp(envlist->key, key))
+		{
+			return (envlist);
+		}
+		envlist = envlist->next;
+	}
+	return (NULL);
 }
-*/
+
 int env_set(t_env **head, const char *key, const char *value)
 {
-	
+	t_env	*envlist;
+
+	envlist = NULL;
+	envlist = env_find(head, key);
+	if (!envlist)
+	{
+		//we didnt find key
+	}
+
+	//if no key found, we create key and put value if given, or empty string and we just create the value 
+	// check if builtin is valid, i
+
 }
 
 
@@ -79,6 +104,7 @@ void env_sort_and_print(t_shell *shell)
 		while (j < size)
 		{
 			if (ft_strcmp(env[i], env[j]) > 0)
+
 			{
 				tmp = env[i];
 				env[i] = env[j];
