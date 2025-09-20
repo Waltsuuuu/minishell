@@ -13,18 +13,20 @@ static	int	split_key_and_value(char *line, char **key_out, char **value_out)
 		line++;
 	}
 	*key_out = malloc(counter + 1);
+	if (!key_out)
+		return (1);
 	ft_strlcpy(*key_out, start, counter +1);
 	if (*line == '=')
 	{
 		*value_out = ft_strdup(line + 1);
 		if (!*value_out)
-			return (-1);
+			return (free (key_out),1);
 	}
 	else
 	{
 		*value_out = ft_strdup("");
 		if (!*value_out)
-			return (-1);
+			return (free (key_out), 1);
 	}
 	return (0);
 }
@@ -48,6 +50,7 @@ t_env	*env_init_from_envp(char **envp)
 			{
 				free (key);
 				free (value);
+				free (node);
 				return (NULL);
 			}
 			free (key);
@@ -66,7 +69,10 @@ t_env	*create_new_env_node(const char *key, const char *value)
 	if (!env_node)
 		return (NULL);
 	if (!key || !value)
+	{
+		free (env_node);
 		return (NULL);
+	}
 	env_node->key = ft_strdup(key);
 	env_node->value = ft_strdup(value);
 	env_node->next = NULL;
@@ -102,7 +108,6 @@ char	**env_list_to_array(t_env *head, int *size)
 	t_env	*env_list;
 	char	*test;
 
-	env_arr = NULL;
 	env_list = head;
 	counter = 0;
 
@@ -126,6 +131,11 @@ char	**env_list_to_array(t_env *head, int *size)
 			return (NULL);
 		}
 		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
+		if (!test)
+		{
+			free_partial(&test, counter);
+			return (NULL);
+		}
 		 // if fails, remember to doo the partial free and exit with error status
 		 //Because if join returns NULL, our array is fucked
 		env_arr[counter] = test;
