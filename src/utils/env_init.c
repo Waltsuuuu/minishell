@@ -137,12 +137,8 @@ char	**env_list_to_array(t_env *head, int *size)
 			free_partial(&test, counter);
 			return (NULL);
 		}
-		 // if fails, remember to doo the partial free and exit with error status
-		 //Because if join returns NULL, our array is fucked
 		env_arr[counter] = test;
-
 		env_list = env_list->next;
-		//printf("%s\n", env_arr[counter]);
 		counter++;
 	}
 	env_arr[counter] = NULL;

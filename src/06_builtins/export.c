@@ -8,8 +8,55 @@
 
 int	builtin_export(char **argv, t_shell *shell)
 {
-	
+	int	counter;
+	int	status;
+
+	if (!argv[1])
+	{
+		env_sort_and_print(shell);
+		return (0);
+	}
+	counter = 1;
+	status = 0;
+	while (argv[counter])
+	{
+		if (process_export_arg(argv[counter], shell) != 0)
+			status = 1;
+		counter++;	
+	}
+	return (status);
 }
+
+static int	process_export_arg(char *argv, t_shell *shell)
+{
+	char	*key;
+	char	*value;
+	int		equal;
+
+	if (!is_builtin_valid(argv))
+	{
+		print_invalid_identifier("export", argv);
+		return (1);
+	}
+	equal = find_equal_sign(argv);
+	if (equal > 0)
+	{
+		if (split_key_and_value(argv, &key, &value) != 0)
+			return (1);
+		if (env_set(&shell->env_head, key, value) != 0)
+			return (1);
+		free (key);
+		free (value);
+	}
+	else
+	{
+		if (!env_find(shell->env_head, argv))
+			if (env_set(&shell->env_head, argv, "") != 0)
+				return (1);
+	}
+	return (0);
+}
+
 
 int		is_builtin_valid(const char *key) // this is used in both export and unset
 {
@@ -38,13 +85,13 @@ int		is_builtin_valid(const char *key) // this is used in both export and unset
 	}
 
 }
-/*
+
 void	print_invalid_identifier(const char *builtin, const char *key)
 {
 	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
 
 }
-*/
+
 t_env *env_find(t_env *head, const char *key)
 {
 	t_env	*envlist;
@@ -122,4 +169,18 @@ void env_sort_and_print(t_shell *shell)
 	while (i < size)
 		ft_printf("declare -x %s\n", env[i++]);
 	free_split(env);
+}
+
+int	find_equal_sign(char *str)
+{
+	int	counter;
+
+	if (!str)
+		return (-1);
+	counter = 0;
+	while (str[counter] && str[counter] != '=')
+		counter++;
+	if (str[counter] == '=')
+		return (counter);
+	return (-1);
 }
