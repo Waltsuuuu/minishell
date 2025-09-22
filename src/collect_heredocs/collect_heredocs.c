@@ -40,44 +40,73 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 {
 	int		fds[2];
 	char	*line;
+	int		status;
+	pid_t	pid;
 
 	if (pipe(fds) == -1)
 		return (-1);
-	setup_sig_handlers_for_heredoc();
-	while (1)
+	pid = fork();
+	if (pid < 0)
 	{
-		rl_done = 0;
-		line = readline("heredoc>");				// Take a line of input from the user.
-		if (g_signal == SIGINT)
-		{
-			if (line)
-				free(line);
-			shell->last_status = 130;
-			close(fds[0]);
-			close(fds[1]); 
-			setup_signal_handlers_for_prompt();
-			g_signal = 0;
-			return(-1);
-		}
-		if (!line)
-		{
-			break ;
-		}
-		if (ft_strcmp(line, redir->target) == 0)   // Check if line == EOF delimiter.
- 		{
-			free(line);		// Free the delimiter line.		
-			break ;			// Break out of the readline loop.
-		}
-		if (handle_heredoc_line(fds[1], line, redir, shell->last_status, envp) == -1)
-		{
-			free_line_close_fds(fds, line);
-			return (-1);
-		}
-		free(line);
+		close(fds[0]);
+		close(fds[1]);
+		return (-1);
 	}
-	close(fds[1]);
+	if (pid == 0)
+	{
+		struct sigaction	sa;
+		ft_bzero(&sa, sizeof(sa));
+		sa.sa_handler = SIG_DFL;
+		sigemptyset(&sa.sa_mask);
+		sigaction(SIGINT, &sa, NULL);
+		signal(SIGQUIT, SIG_IGN);
+		close(fds[0]); //Child only writes.
+		while (1)
+		{
+			line = readline("heredoc>");				// Take a line of input from the user.
+			if (!line)
+			{
+				break ;
+			}
+			if (ft_strcmp(line, redir->target) == 0)   // Check if line == EOF delimiter.
+			{
+				free(line);		// Free the delimiter line.		
+				break ;			// Break out of the readline loop.
+			}
+			if (handle_heredoc_line(fds[1], line, redir, shell->last_status, envp) == -1)
+			{
+				free_line_close_fds(fds, line);
+				_exit(1);
+			}
+			free(line);
+		}
+		close(fds[1]);
+		_exit(0);
+	}
+	close(fds[1]);  // Parent only reads
+
+	// Parent ignores ctrl+c and ctrl+d while child is working.
+	struct sigaction ign, old_int, old_quit;
+	ft_bzero(&ign, sizeof(ign));
+	ign.sa_handler = SIG_IGN;
+	sigemptyset(&ign.sa_mask);
+	sigaction(SIGINT,  &ign, &old_int);
+	sigaction(SIGQUIT, &ign, &old_quit);
+
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)	// If ctrl+c
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(fds[0]);
+		shell->last_status = 130;
+		return (-1);
+	}
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)		// If failure
+	{
+		close(fds[0]);
+		return (-1);
+	}
 	redir->hd_fd = fds[0];
-	setup_signal_handlers_for_prompt();
 	return (0);
 }
 void	free_line_close_fds(int fds[2], char *line)
@@ -129,23 +158,23 @@ void	write_line_nl(int fd, char *line)
 // Same as prompt signal handler, except 
 // - no rl_redisplay(), as we dont want to prompt for new input.
 // - rl_done is set to true to stop input loop and make readline() return.
-void	heredoc_sigint(int signum)
-{
-	g_signal = signum;
-	write(STDOUT_FILENO, "\n", 1);
-	// rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_done = 1;
-}
+// void	heredoc_sigint(int signum)
+// {
+// 	g_signal = signum;
+// 	write(STDOUT_FILENO, "\n", 1);
+//     rl_cleanup_after_signal();  // leave raw mode, etc. (safe from handler)
+// 	rl_done = 1;
+// 	printf("End of heredoc_sigint\n");
+// }
 
-void	setup_sig_handlers_for_heredoc(void)
-{
-	struct sigaction sa;
+// void	setup_sig_handlers_for_heredoc(void)
+// {
+// 	struct sigaction sa;
 	
-	ft_bzero(&sa, sizeof(sa));			// Zero init the struct
-	sigemptyset(&sa.sa_mask);			// No mask, no signals blocked
-	sa.sa_flags = 0;					// No flags
-	sa.sa_handler = heredoc_sigint;		// Use heredoc sig handler
-	sigaction(SIGINT, &sa, NULL);		// Handle ctrl-c during heredoc body collection
-	signal(SIGQUIT, SIG_IGN);			// Ignore ctrl-\ during heredoc body collection
-}
+// 	ft_bzero(&sa, sizeof(sa));			// Zero init the struct
+// 	sigemptyset(&sa.sa_mask);			// No mask, no signals blocked
+// 	sa.sa_flags = 0;					// No flags
+// 	sa.sa_handler = heredoc_sigint;		// Use heredoc sig handler
+// 	sigaction(SIGINT, &sa, NULL);		// Handle ctrl-c during heredoc body collection
+// 	signal(SIGQUIT, SIG_IGN);			// Ignore ctrl-\ during heredoc body collection
+// }
