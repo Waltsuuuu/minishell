@@ -43,11 +43,26 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 
 	if (pipe(fds) == -1)
 		return (-1);
+	setup_sig_handlers_for_heredoc();
 	while (1)
 	{
+		rl_done = 0;
 		line = readline("heredoc>");				// Take a line of input from the user.
+		if (g_signal == SIGINT)
+		{
+			if (line)
+				free(line);
+			shell->last_status = 130;
+			close(fds[0]);
+			close(fds[1]); 
+			setup_signal_handlers_for_prompt();
+			g_signal = 0;
+			return(-1);
+		}
 		if (!line)
+		{
 			break ;
+		}
 		if (ft_strcmp(line, redir->target) == 0)   // Check if line == EOF delimiter.
  		{
 			free(line);		// Free the delimiter line.		
@@ -62,6 +77,7 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	}
 	close(fds[1]);
 	redir->hd_fd = fds[0];
+	setup_signal_handlers_for_prompt();
 	return (0);
 }
 void	free_line_close_fds(int fds[2], char *line)
@@ -109,4 +125,27 @@ void	write_line_nl(int fd, char *line)
 		return ;
 	write(fd, line, ft_strlen(line));
 	write(fd, "\n", 1);
+}
+// Same as prompt signal handler, except 
+// - no rl_redisplay(), as we dont want to prompt for new input.
+// - rl_done is set to true to stop input loop and make readline() return.
+void	heredoc_sigint(int signum)
+{
+	g_signal = signum;
+	write(STDOUT_FILENO, "\n", 1);
+	// rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_done = 1;
+}
+
+void	setup_sig_handlers_for_heredoc(void)
+{
+	struct sigaction sa;
+	
+	ft_bzero(&sa, sizeof(sa));			// Zero init the struct
+	sigemptyset(&sa.sa_mask);			// No mask, no signals blocked
+	sa.sa_flags = 0;					// No flags
+	sa.sa_handler = heredoc_sigint;		// Use heredoc sig handler
+	sigaction(SIGINT, &sa, NULL);		// Handle ctrl-c during heredoc body collection
+	signal(SIGQUIT, SIG_IGN);			// Ignore ctrl-\ during heredoc body collection
 }

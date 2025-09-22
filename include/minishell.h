@@ -17,6 +17,8 @@
 # include <errno.h>
 # include <fcntl.h>
 
+extern volatile sig_atomic_t g_signal;
+
 typedef struct s_shell
 {
     int			last_status;   
@@ -119,6 +121,8 @@ int		handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, ch
 int		expand_write_line(int fd, char *line, int last_status, char **envp);
 void	write_line_nl(int fd, char *line);
 void	free_line_close_fds(int fds[2], char *line);
+void	heredoc_sigint(int signum);
+void	setup_sig_handlers_for_heredoc(void);
 
 // UTILS
 /*					get_working_dir.c							*/
@@ -136,7 +140,6 @@ void	free_partial(char **arr, size_t n);
 
 // UTILS - signal_handling
 /*					signal.c									*/
-extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
