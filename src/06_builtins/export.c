@@ -51,7 +51,13 @@ int	process_export_arg(char *argv, t_shell *shell)
 	return (0);
 }
 
-
+/**
+ * Validates an identifier for export/unset.
+ * First char must be alphabetical or underscore; rest alnum or underscore.
+ *
+ * @param key  candidate identifier (possibly with '=')
+ * @return 1 if valid up to '=' or end, else 0
+ */
 int		is_builtin_valid(const char *key)
 {
 
