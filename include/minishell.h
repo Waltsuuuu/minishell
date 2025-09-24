@@ -147,7 +147,6 @@ int		find_equal_sign(char *str);
 /*					Builtins									*/
 int		is_builtin_name(const char *name);
 int		builtin_export(char **argv, t_shell *shell);
-int		try_run_single_builtin(t_pipeline *pipeline, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
 int		exec_export_in_parent(t_command *cmd, t_shell *shell);
 int  	process_export_arg(char *arg, t_shell *shell);

@@ -1,36 +1,6 @@
 #include "minishell.h"
 
 /**
- * Decides whether to run a single builtin in the parent, otherwise
- * falls back to normal pipeline execution.
- *
- * @param envp  environment vector for external execs
- * @param pipeline parsed pipeline
- * @param shell shell state (last_status, env, etc.)
- * @return exit status of the executed command(s)
- */
-int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
-{
-	if (is_single_export(pipeline))
-		return (exec_export_in_parent(&pipeline->cmds[0], shell));
-	return (exec_pipeline(envp, pipeline, shell));
-}
-
-/**
- * Internal helper: returns 1 if pipeline is a single "export".
- *
- * @param p pipeline
- * @return 1 if exactly one command and it is "export", else 0
- */
-int	is_single_export(const t_pipeline *p)
-{
-	if (!p || p->n_cmds != 1)
-		return (0);
-	return (p->cmds && p->cmds[0].argv && p->cmds[0].argv[0]
-		&& ft_strcmp(p->cmds[0].argv[0], "export") == 0);
-}
-
-/**
  * Executes "export" as a single builtin in the parent shell.
  * Honors possible redirections; prints list when no arguments.
  *
@@ -48,7 +18,6 @@ int exec_export_in_parent(t_command *cmd, t_shell *shell)
 
     if (apply_redirs_in_parent(cmd, saved) != 0)
         return (1);
-    printf("%d\n", cmd->argc);
     if (cmd->argc <= 1 || (cmd->argv[1] && cmd->argv[1][0] == '\0'))
     {
         env_sort_and_print(shell);
@@ -103,28 +72,6 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 	if (out_fd != STDOUT_FILENO)
 		close(out_fd);
 	return (0);
-}
-
-int	try_run_single_builtin(t_pipeline *pipeline, t_shell *shell)
-{
-	t_command	*cmd;
-	int			saved[2];
-
-	if (!pipeline || pipeline->n_cmds != 1)
-		return (0);
-	cmd = &pipeline->cmds[0];
-	if (!cmd->argv || !cmd->argv[0])
-		return (0);
-	if (ft_strcmp(cmd->argv[0], "export") != 0)
-		return (0);
-	if (apply_redirs_in_parent(cmd, saved) < 0)
-	{
-		shell->last_status = 1;
-		return (1);
-	}
-	shell->last_status = builtin_export(cmd->argv, shell);
-	restore_stdio(saved);
-	return (1);
 }
 
 /**
