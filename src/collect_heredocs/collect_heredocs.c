@@ -44,6 +44,7 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	int		status;
 	pid_t	pid;
 	struct termios tty;
+	int		wait_result;
 	
 	// Take snapshot of tty
 	if (isatty(STDIN_FILENO))
@@ -103,7 +104,27 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	sigaction(SIGINT,  &ign, &old_int);
 	sigaction(SIGQUIT, &ign, &old_quit);
 
-	waitpid(pid, &status, 0);
+	// Prevent zombie child if waitpid() is interrupted by signal
+	while (1)
+	{
+		wait_result = waitpid(pid, &status, 0);
+		if (wait_result == -1 && errno == EINTR) // Interrupted signal call.
+			continue ;							 //  - Retry
+		break;									 // Success or real error.
+	}
+
+	// Real error - Status is garbage (not safe to use WIF macros), clean up and fail
+	if (wait_result == -1)
+	{
+		// Restore tty snapshot 
+		if (isatty(STDIN_FILENO))
+			tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+		// Stop ignoring ctrl-c and ctrl-d (Restore original signal handlers)
+		sigaction(SIGINT,  &old_int,  NULL);
+		sigaction(SIGQUIT, &old_quit, NULL);
+		close(fds[0]);
+		return (-1);
+	}
 
 	// Restore tty snapshot 
 	if (isatty(STDIN_FILENO))
