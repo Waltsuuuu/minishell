@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static	int	split_key_and_value(char *line, char **key_out, char **value_out)
+int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
 	int		counter;
 	char	*start;
@@ -50,6 +50,8 @@ t_env	*env_init_from_envp(char **envp)
 			{
 				free (key);
 				free (value);
+				free (node->key);
+				free(node->value);
 				free (node);
 				return (NULL);
 			}

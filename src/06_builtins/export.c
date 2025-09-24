@@ -1,11 +1,5 @@
 #include "minishell.h"
 
-//without arguments print env
-//export KEY=VALUE or export KEY = modify the env
-
-//Arrange in alphabetical order if not already CHECK THIS 
-//KEY=VALUE, if key is already in the list -> update it, if not create a new node 
-
 int	builtin_export(char **argv, t_shell *shell)
 {
 	int	counter;
@@ -27,7 +21,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	return (status);
 }
 
-static int	process_export_arg(char *argv, t_shell *shell)
+int	process_export_arg(char *argv, t_shell *shell)
 {
 	char	*key;
 	char	*value;
@@ -57,31 +51,6 @@ static int	process_export_arg(char *argv, t_shell *shell)
 	return (0);
 }
 
-static int	save_stdio(int saved[2])
-{
-	saved[0] = dup(STDIN_FILENO);
-	saved[1] = dup(STDOUT_FILENO);
-	if (saved[0] < 0 || saved[1] < 0)
-	{
-		perror("dup");
-		return (-1);
-	}
-	return (0);
-}
-
-static void	restore_stdio(int saved[2])
-{
-	if (saved[0] >= 0)
-	{
-	dup2(saved[0], STDIN_FILENO);
-	close(saved[0]);
-	}
-	if (saved[1] >= 0)
-	{
-	dup2(saved[1], STDOUT_FILENO);
-	close(saved[1]);
-	}
-}
 
 int		is_builtin_valid(const char *key) // this is used in both export and unset
 {

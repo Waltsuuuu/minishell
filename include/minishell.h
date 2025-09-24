@@ -92,6 +92,7 @@ int		remove_outer_quote(char c, int *in_single, int *in_double);
 /*					See pipeline.h								*/
 
 // 05_EXECUTE_CMD_PIPELINE
+int		exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
@@ -143,6 +144,23 @@ void	print_env(t_shell *shell);
 void	env_sort_and_print(t_shell *shell);
 int		find_equal_sign(char *str);
 
+/*					Builtins									*/
+int		is_builtin_name(const char *name);
+int		builtin_export(char **argv, t_shell *shell);
+int		try_run_single_builtin(t_pipeline *pipeline, t_shell *shell);
+int		split_key_and_value(char *line, char **key_out, char **value_out);
+int		exec_export_in_parent(t_command *cmd, t_shell *shell);
+int  	process_export_arg(char *arg, t_shell *shell);
+
+int		is_builtin_valid(const char *key);
+void	print_invalid_identifier(const char *builtin, const char *key);
+int		env_set(t_env **head, const char *key, const char *value);
+t_env	*env_find(t_env *head, const char *key);
+int		find_equal_sign(char *str);
+int		is_single_export(const t_pipeline *p);
+int		save_stdio(int saved[2]);
+void	restore_stdio(int saved[2]);
+int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
 
 
 #endif

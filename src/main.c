@@ -13,11 +13,11 @@ int	main(int argc, char *argv[], char *envp[])
     rl_bind_key('\t', rl_complete);
 	line = NULL;
 
-	t_env *envlist;
+	//t_env *envlist;
 	shell.env_head = env_init_from_envp(envp); //Initialize envp
-	envlist = shell.env_head;
-	if (shell.env_head == NULL)
-		printf("init FAIL");
+	//envlist = shell.env_head;
+	//if (shell.env_head == NULL)
+	//	printf("init FAIL");
 	//print_env(&shell);
 	//env_sort_and_print(&shell);
 	while (1337)
@@ -81,7 +81,8 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		exec_pipeline(envp, &shell.pipeline, &shell);
+		exec_dispatch(envp, &shell.pipeline, &shell);
+		//exec_pipeline(envp, &shell.pipeline, &shell);
 		free(line);
 	}
 	clean_env(&shell.env_head);
