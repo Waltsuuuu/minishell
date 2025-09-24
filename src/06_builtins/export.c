@@ -52,31 +52,27 @@ int	process_export_arg(char *argv, t_shell *shell)
 }
 
 
-int		is_builtin_valid(const char *key) // this is used in both export and unset
+int		is_builtin_valid(const char *key)
 {
 
 	int	counter;
 
 	counter = 0;
-	if (ft_isalpha(key[0]) || key[0] == '_')
+	if (!key || ft_isalpha(key[0]) || key[0] == '_')
 	{
 		counter++;
 		while (key[counter] && key[counter] != '=')
 		{
 			if (!ft_isalnum(key[counter]) && key[counter] != '_')
-			{
-				//error message
 				return (0);
-			}
+			
 			counter++;
 		}
 		return (1);
 	}
 	else
-	{
-		//Error message
 		return (0);
-	}
+
 
 }
 
