@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+/**
+ * Splits "KEY=VALUE" into newly allocated key/value.
+ * If '=' missing, value becomes empty string.
+ *
+ * @param line      input line
+ * @param key_out   result key (malloc'd)
+ * @param value_out result value (malloc'd)
+ * @return 0 on success, 1 on allocation error
+ */
 int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
 	int		counter;
@@ -31,6 +40,12 @@ int	split_key_and_value(char *line, char **key_out, char **value_out)
 	return (0);
 }
 
+/**
+ * Builds env list from envp.
+ *
+ * @param envp  environment vector
+ * @return head of env list, or NULL on error
+ */
 t_env	*env_init_from_envp(char **envp)
 {
 	int		i;
@@ -63,6 +78,13 @@ t_env	*env_init_from_envp(char **envp)
 	return (env_head);
 }
 
+/**
+ * Allocates a new env node (key/value are duplicated).
+ *
+ * @param key   key string (required)
+ * @param value value string (NULL treated as "")
+ * @return new node, or NULL on error
+ */
 t_env	*create_new_env_node(const char *key, const char *value)
 {
 	t_env	*env_node;
@@ -88,6 +110,13 @@ t_env	*create_new_env_node(const char *key, const char *value)
 	return (env_node);
 }
 
+/**
+ * Appends an env node to the end of list.
+ *
+ * @param head pointer to list head
+ * @param new_env_node node to append
+ * @return 0 on success
+ */
 int	append_env_node(t_env **head, t_env *new_env_node)
 {
 	t_env	*temp_node;
@@ -104,6 +133,13 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	return (0);
 }
 
+/**
+ * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
+ *
+ * @param head env list head
+ * @param size out param: number of entries (no NULL)
+ * @return newly allocated array, or NULL on error
+ */
 char	**env_list_to_array(t_env *head, int *size)
 {
 	char	**env_arr;
@@ -148,6 +184,13 @@ char	**env_list_to_array(t_env *head, int *size)
 	return (env_arr);
 }
 
+/**
+ * Joins key and value into "KEY=VALUE".
+ *
+ * @param s1 key (NULL treated as "")
+ * @param s2 value (NULL treated as "")
+ * @return newly allocated string, or NULL on error
+ */
 char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 {
 	size_t	s1_len;
@@ -174,6 +217,13 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 	return (result_str);
 }
 
+/**
+ * Joins key and value into "KEY=VALUE".
+ *
+ * @param s1 key (NULL treated as "")
+ * @param s2 value (NULL treated as "")
+ * @return newly allocated string, or NULL on error
+ */
 void	clean_env(t_env **head)
 {
 	t_env	*current;
@@ -190,4 +240,5 @@ void	clean_env(t_env **head)
 		free (current);
 		current = next;
 	}
+	*head = NULL;
 }

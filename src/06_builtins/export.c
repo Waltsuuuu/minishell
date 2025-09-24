@@ -82,6 +82,13 @@ int		is_builtin_valid(const char *key)
 
 }
 
+
+/**
+ * Prints "not a valid identifier" message for a builtin.
+ *
+ * @param builtin  builtin name ("export", etc.)
+ * @param key      offending key string
+ */
 void	print_invalid_identifier(const char *builtin, const char *key)
 {
 	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
@@ -167,6 +174,12 @@ void env_sort_and_print(t_shell *shell)
 	free_split(env);
 }
 
+/**
+ * Finds the index of '=' in a string.
+ *
+ * @param str string to scan
+ * @return index of '=', or -1 if none
+ */
 int	find_equal_sign(char *str)
 {
 	int	counter;
