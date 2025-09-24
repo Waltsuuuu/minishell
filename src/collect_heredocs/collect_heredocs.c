@@ -38,16 +38,10 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 // Collects the heredoc body for one heredoc.
 int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 {
-	int		fds[2];
-	char	*line;
-	int		status;
-	pid_t	pid;
-	struct termios tty;
-	int		wait_result;
-	
-	// Take snapshot of tty
-	if (isatty(STDIN_FILENO))
-		tcgetattr(STDIN_FILENO, &tty);
+	t_hd_state	state;
+
+	init_hd_state(&state);
+	save_terminal_state(&state.tty);
 
 	if (pipe(fds) == -1)
 		return (-1);
@@ -147,6 +141,21 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	redir->hd_fd = fds[0];
 	return (0);
 }
+
+void	init_hd_state(t_hd_state *state)
+{
+	ft_bzero(state, sizeof(state));
+	state->fds[0] = -1;
+	state->fds[1] = -1;
+	state->line = NULL;
+}
+
+void	save_terminal_state(struct termios *tty)
+{
+	if (isatty(STDIN_FILENO))
+		tcgetattr(STDIN_FILENO, tty);
+}
+
 void	free_line_close_fds(int fds[2], char *line)
 {
 	free(line);
