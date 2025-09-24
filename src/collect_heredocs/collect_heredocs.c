@@ -104,7 +104,7 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	waitpid(pid, &status, 0);
 
 	// Restore tty snapshot 
-	if (isatty(STDERR_FILENO))
+	if (isatty(STDIN_FILENO))
 		tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 
 	// Stop ignoring ctrl-c and ctrl-d (Restore original signal handlers)
@@ -172,26 +172,3 @@ void	write_line_nl(int fd, char *line)
 	write(fd, line, ft_strlen(line));
 	write(fd, "\n", 1);
 }
-// Same as prompt signal handler, except 
-// - no rl_redisplay(), as we dont want to prompt for new input.
-// - rl_done is set to true to stop input loop and make readline() return.
-// void	heredoc_sigint(int signum)
-// {
-// 	g_signal = signum;
-// 	write(STDOUT_FILENO, "\n", 1);
-//     rl_cleanup_after_signal();  // leave raw mode, etc. (safe from handler)
-// 	rl_done = 1;
-// 	printf("End of heredoc_sigint\n");
-// }
-
-// void	setup_sig_handlers_for_heredoc(void)
-// {
-// 	struct sigaction sa;
-	
-// 	ft_bzero(&sa, sizeof(sa));			// Zero init the struct
-// 	sigemptyset(&sa.sa_mask);			// No mask, no signals blocked
-// 	sa.sa_flags = 0;					// No flags
-// 	sa.sa_handler = heredoc_sigint;		// Use heredoc sig handler
-// 	sigaction(SIGINT, &sa, NULL);		// Handle ctrl-c during heredoc body collection
-// 	signal(SIGQUIT, SIG_IGN);			// Ignore ctrl-\ during heredoc body collection
-// }
