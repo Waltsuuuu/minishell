@@ -1,11 +1,5 @@
 #include "minishell.h"
 
-int  is_single_export(const t_pipeline *p);
-int  save_stdio(int saved[2]);
-void restore_stdio(int saved[2]);
-int  apply_redirs_in_parent(t_command *cmd, int saved[2]);
-
-
 int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
 {
 	if (is_single_export(pipeline))
@@ -105,7 +99,6 @@ int	try_run_single_builtin(t_pipeline *pipeline, t_shell *shell)
 {
 	t_command	*cmd;
 	int			saved[2];
-	int			status;
 
 	if (!pipeline || pipeline->n_cmds != 1)
 		return (0);
