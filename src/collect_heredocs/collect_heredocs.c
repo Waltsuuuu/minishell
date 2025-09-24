@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include <termios.h>
 
 // Loops through commands
 int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
@@ -42,6 +43,11 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	char	*line;
 	int		status;
 	pid_t	pid;
+	struct termios tty;
+	
+	// Take snapshot of tty
+	if (isatty(STDIN_FILENO))
+		tcgetattr(STDIN_FILENO, &tty);
 
 	if (pipe(fds) == -1)
 		return (-1);
@@ -54,12 +60,14 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	}
 	if (pid == 0)
 	{
+		// Reset the signal handling to default (SIG_DFL) for the child process.
 		struct sigaction	sa;
 		ft_bzero(&sa, sizeof(sa));
 		sa.sa_handler = SIG_DFL;
 		sigemptyset(&sa.sa_mask);
 		sigaction(SIGINT, &sa, NULL);
 		signal(SIGQUIT, SIG_IGN);
+
 		close(fds[0]); //Child only writes.
 		while (1)
 		{
@@ -94,6 +102,15 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	sigaction(SIGQUIT, &ign, &old_quit);
 
 	waitpid(pid, &status, 0);
+
+	// Restore tty snapshot 
+	if (isatty(STDERR_FILENO))
+		tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+
+	// Stop ignoring ctrl-c and ctrl-d (Restore original signal handlers)
+	sigaction(SIGINT,  &old_int,  NULL);
+	sigaction(SIGQUIT, &old_quit, NULL);
+	
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)	// If ctrl+c
 	{
 		write(STDOUT_FILENO, "\n", 1);
