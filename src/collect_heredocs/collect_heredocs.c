@@ -83,7 +83,9 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 			}
 			if (handle_heredoc_line(fds[1], line, redir, shell->last_status, envp) == -1)
 			{
-				free_line_close_fds(fds, line);
+				write(STDOUT_FILENO, "\n", 1);
+				free(line);
+				close(fds[1]);
 				_exit(1);
 			}
 			free(line);
@@ -113,7 +115,6 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)	// If ctrl+c
 	{
-		write(STDOUT_FILENO, "\n", 1);
 		close(fds[0]);
 		shell->last_status = 130;
 		return (-1);
