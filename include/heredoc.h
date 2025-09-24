@@ -2,6 +2,12 @@
 # define HEREDOC_H
 
 #include <termios.h>
+#include "minishell.h"
+
+typedef struct s_shell    t_shell;
+typedef struct s_pipeline t_pipeline;
+typedef struct s_command  t_command;
+typedef struct s_redir    t_redir;
 
 typedef struct s_hd_state
 {
@@ -25,5 +31,10 @@ void	write_line_nl(int fd, char *line);
 void	free_line_close_fds(int fds[2], char *line);
 void	heredoc_sigint(int signum);
 void	setup_sig_handlers_for_heredoc(void);
+void	init_hd_state(t_hd_state *state);
+void	save_terminal_state(struct termios *tty);
+void	free_line_close_fds(int fds[2], char *line);
+int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
+
 
 #endif
