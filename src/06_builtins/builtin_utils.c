@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+/**
+ * Decides whether to run a single builtin in the parent, otherwise
+ * falls back to normal pipeline execution.
+ *
+ * @param envp  environment vector for external execs
+ * @param pipeline parsed pipeline
+ * @param shell shell state (last_status, env, etc.)
+ * @return exit status of the executed command(s)
+ */
 int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
 {
 	if (is_single_export(pipeline))
@@ -7,7 +16,12 @@ int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
 	return (exec_pipeline(envp, pipeline, shell));
 }
 
-
+/**
+ * Internal helper: returns 1 if pipeline is a single "export".
+ *
+ * @param p pipeline
+ * @return 1 if exactly one command and it is "export", else 0
+ */
 int	is_single_export(const t_pipeline *p)
 {
 	if (!p || p->n_cmds != 1)
@@ -16,6 +30,14 @@ int	is_single_export(const t_pipeline *p)
 		&& ft_strcmp(p->cmds[0].argv[0], "export") == 0);
 }
 
+/**
+ * Executes "export" as a single builtin in the parent shell.
+ * Honors possible redirections; prints list when no arguments.
+ *
+ * @param cmd   command (argv/argc/redirs)
+ * @param shell shell state (env_head, last_status)
+ * @return exit status (0..255)
+ */
 int exec_export_in_parent(t_command *cmd, t_shell *shell)
 {
     int saved[2];
@@ -40,27 +62,15 @@ int exec_export_in_parent(t_command *cmd, t_shell *shell)
     return (status);
 }
 
-int	is_builtin_name(const char *name)
-{
-	if (!name)
-		return (0);
-	if (ft_strcmp(name, "export") == 0)
-		return (1);
-	if (ft_strcmp(name, "unset") == 0)
-		return (1);
-	if (ft_strcmp(name, "cd") == 0)
-		return (1);
-	if (ft_strcmp(name, "exit") == 0)
-		return (1);
-	if (ft_strcmp(name, "echo") == 0)
-		return (1);
-	if (ft_strcmp(name, "pwd") == 0)
-		return (1);
-	if (ft_strcmp(name, "env") == 0)
-		return (1);
-	return (0);
-}
 
+/**
+ * Applies <, >, >> redirections for a single builtin in the parent.
+ * On error, restores stdio and returns -1.
+ *
+ * @param cmd   command with redirections
+ * @param saved stdio backups (modified by save/restore)
+ * @return 0 on success, -1 on failure
+ */
 int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 {
 	t_list	*node;
@@ -117,6 +127,13 @@ int	try_run_single_builtin(t_pipeline *pipeline, t_shell *shell)
 	return (1);
 }
 
+/**
+ * Saves current STDIN/STDOUT FDs into saved[0]/saved[1].
+ * Used before temporary redirections in the parent process.
+ *
+ * @param saved array of two ints to store backups
+ * @return 0 on success, -1 on error (perror printed)
+ */
 int	save_stdio(int saved[2])
 {
 	saved[0] = dup(STDIN_FILENO);
@@ -129,6 +146,11 @@ int	save_stdio(int saved[2])
 	return (0);
 }
 
+/**
+ * Restores STDIN/STDOUT from saved[] backups and closes the backups.
+ *
+ * @param saved array from save_stdio
+ */
 void	restore_stdio(int saved[2])
 {
 	if (saved[0] >= 0)

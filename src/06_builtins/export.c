@@ -1,5 +1,14 @@
 #include "minishell.h"
 
+/**
+ * Builtin: export.
+ * With no arguments, prints the environment sorted as declare -x lines.
+ * With KEY=VALUE or KEY, sets or creates variables in the shell env.
+ *
+ * @param argv   command arguments (argv[0] == "export")
+ * @param shell  shell state holding env list
+ * @return 0 on success, 1 if any argument was invalid or failed to set
+ */
 int	builtin_export(char **argv, t_shell *shell)
 {
 	int	counter;
@@ -21,6 +30,14 @@ int	builtin_export(char **argv, t_shell *shell)
 	return (status);
 }
 
+/**
+ * Processes one export argument (KEY=VALUE or KEY).
+ * Validates identifier and updates env accordingly.
+ *
+ * @param arg    argument string
+ * @param shell  shell state
+ * @return 0 on success, 1 on error
+ */
 int	process_export_arg(char *argv, t_shell *shell)
 {
 	char	*key;
@@ -95,6 +112,13 @@ void	print_invalid_identifier(const char *builtin, const char *key)
 
 }
 
+/**
+ * Finds an env node by key.
+ *
+ * @param head env list head
+ * @param key  key to find
+ * @return pointer to node, or NULL if not found
+ */
 t_env *env_find(t_env *head, const char *key)
 {
 	t_env	*envlist;
@@ -113,6 +137,14 @@ t_env *env_find(t_env *head, const char *key)
 	return (NULL);
 }
 
+/**
+ * Sets or creates an env key to value.
+ *
+ * @param head  pointer to env head pointer
+ * @param key   key string (non-empty)
+ * @param value value string (NULL treated as "")
+ * @return 0 on success, 1 on error
+ */
 int env_set(t_env **head, const char *key, const char *value)
 {
 	t_env	*node;
@@ -141,7 +173,11 @@ int env_set(t_env **head, const char *key, const char *value)
 		return (0);
 }
 
-
+/**
+ * Converts env list to array, sorts it, and prints "declare -x KEY=VALUE".
+ *
+ * @param shell shell state with env_head
+ */
 void env_sort_and_print(t_shell *shell)
 {
 	char	**env;
