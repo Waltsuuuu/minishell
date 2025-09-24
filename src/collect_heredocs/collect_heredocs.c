@@ -45,86 +45,35 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	if (pipe(state.fds) == -1)
 		return (-1);
 	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
-		// Exit stuff
-
-
+	{
+		restore_terminal_state(&state);
+		return(close_pipe_err(&state));
+	}
 	close(state.fds[1]);  // Parent only reads
-
-	// Parent ignores ctrl+c and ctrl+d while child is working.
-	// struct sigaction ign, old_int, old_quit;
-	ft_bzero(&state.ign, sizeof(state.ign));
-	state.ign.sa_handler = SIG_IGN;
-	sigemptyset(&state.ign.sa_mask);
-	sigaction(SIGINT,  &state.ign, &state.old_int);
-	sigaction(SIGQUIT, &state.ign, &state.old_quit);
-
-	// Prevent zombie child if waitpid() is interrupted by signal
-	while (1)
+	ignore_parent_sig_handlers(&state);
+	if (wait_child(&state) == -1)
 	{
-		state.wait_result = waitpid(state.pid, &state.status, 0);
-		if (state.wait_result == -1 && errno == EINTR) // Interrupted signal call.
-			continue ;							 //  - Retry
-		break;									 // Success or real error.
-	}
-
-	// Real error - Status is garbage (not safe to use WIF macros), clean up and fail
-	if (state.wait_result == -1)
-	{
-		// Restore tty snapshot 
-		if (isatty(STDIN_FILENO))
-			tcsetattr(STDIN_FILENO, TCSANOW, &state.tty);
-		// Stop ignoring ctrl-c and ctrl-d (Restore original signal handlers)
-		sigaction(SIGINT,  &state.old_int,  NULL);
-		sigaction(SIGQUIT, &state.old_quit, NULL);
+		restore_terminal_state(&state);
+		restore_parent_sig_handlers(&state);
 		close(state.fds[0]);
 		return (-1);
 	}
-
-	// Restore tty snapshot 
-	if (isatty(STDIN_FILENO))
-		tcsetattr(STDIN_FILENO, TCSANOW, &state.tty);
-
-	// Stop ignoring ctrl-c and ctrl-d (Restore original signal handlers)
-	sigaction(SIGINT,  &state.old_int,  NULL);
-	sigaction(SIGQUIT, &state.old_quit, NULL);
-	
-	if (WIFSIGNALED(state.status) && WTERMSIG(state.status) == SIGINT)	// If ctrl+c
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		close(state.fds[0]);
-		shell->last_status = 130;
+	restore_terminal_state(&state);
+	restore_parent_sig_handlers(&state);
+	if (handle_child_status(&state, shell) == -1)
 		return (-1);
-	}
-	if (!WIFEXITED(state.status) || WEXITSTATUS(state.status) != 0)		// If failure
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		close(state.fds[0]);
-		return (-1);
-	}
 	redir->hd_fd = state.fds[0];
 	return (0);
 }
 
 int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
 {
-	struct sigaction	sa;
-
 	state->pid = fork();
 	if (state->pid < 0)
-	{
-		close(state->fds[0]);
-		close(state->fds[1]);
-		return (-1);
-	}
+		return(-1);
 	if (state->pid == 0)
 	{
-		// Reset the signal handling to default (SIG_DFL) for the child process.
-		ft_bzero(&sa, sizeof(sa));
-		sa.sa_handler = SIG_DFL;
-		sigemptyset(&sa.sa_mask);
-		sigaction(SIGINT, &sa, NULL);
-		signal(SIGQUIT, SIG_IGN);
-
+		set_default_sig_handling();
 		close(state->fds[0]); //Child only writes.
 		while (1)
 		{
@@ -147,8 +96,79 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		close(state->fds[1]);
 		_exit(0);
 	}
-	return(-1);
-}	
+	return(0);
+}
+
+int	handle_child_status(t_hd_state *state, t_shell *shell)
+{
+	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// If ctrl+c
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		shell->last_status = 130;
+		return (-1);
+	}
+	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// If failure
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		return (-1);
+	}
+	return (0);
+}
+
+void	set_default_sig_handling(void)
+{
+	struct sigaction	sa;
+
+	ft_bzero(&sa, sizeof(sa));
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+int	wait_child(t_hd_state *state)
+{
+	while (1)
+	{
+		state->wait_result = waitpid(state->pid, &state->status, 0);
+		if (state->wait_result == -1 && errno == EINTR) // Interrupted signal call.
+			continue ;							 //  - Retry
+		break;									 // Success or real error.
+	}
+	if (state->wait_result == -1)
+		return (-1);
+	return (0);
+}
+
+int		close_pipe_err(t_hd_state *state)
+{
+	close(state->fds[0]);
+	close(state->fds[1]);
+	return (-1);
+}
+
+void	restore_terminal_state(t_hd_state *state)
+{
+	if (isatty(STDIN_FILENO))
+		tcsetattr(STDIN_FILENO, TCSANOW, &state->tty);
+}
+
+void	restore_parent_sig_handlers(t_hd_state *state)
+{
+	sigaction(SIGINT,  &state->old_int,  NULL);
+	sigaction(SIGQUIT, &state->old_quit, NULL);
+}
+
+void	ignore_parent_sig_handlers(t_hd_state *state)
+{
+	ft_bzero(&state->ign, sizeof(state->ign));
+	state->ign.sa_handler = SIG_IGN;
+	sigemptyset(&state->ign.sa_mask);
+	sigaction(SIGINT,  &state->ign, &state->old_int);
+	sigaction(SIGQUIT, &state->ign, &state->old_quit);
+}
 
 void	init_hd_state(t_hd_state *state)
 {
