@@ -134,7 +134,7 @@ char	**env_list_to_array(t_env *head, int *size)
 		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
 		if (!test)
 		{
-			free_partial(&test, counter);
+			free_partial(env_arr, counter);
 			return (NULL);
 		}
 		env_arr[counter] = test;
