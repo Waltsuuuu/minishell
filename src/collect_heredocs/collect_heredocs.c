@@ -1,5 +1,4 @@
 #include "minishell.h"
-#include <termios.h>
 
 // Loops through commands
 int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
