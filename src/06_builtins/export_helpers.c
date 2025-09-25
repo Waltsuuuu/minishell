@@ -1,11 +1,25 @@
 #include "minishell.h"
+/**
+ * Prints env, and frees it after.
+ * @param env env array
+ * @param size the size of the array
+ */
+static void	print_env_and_free(char **env, int size)
+{
+	int	i;
+
+	i = 0;
+	while (i < size)
+		ft_printf("declare -x %s\n", env[i++]);
+	free_split(env);
+}
 
 /**
  * Converts env list to array, sorts it, and prints "declare -x KEY=VALUE".
  *
  * @param shell shell state with env_head
  */
-void env_sort_and_print(t_shell *shell)
+void	env_sort_and_print(t_shell *shell)
 {
 	char	**env;
 	char	*tmp;
@@ -21,7 +35,6 @@ void env_sort_and_print(t_shell *shell)
 		while (j < size)
 		{
 			if (ft_strcmp(env[i], env[j]) > 0)
-
 			{
 				tmp = env[i];
 				env[i] = env[j];
@@ -31,10 +44,7 @@ void env_sort_and_print(t_shell *shell)
 		}
 		i++;
 	}
-	i = 0;
-	while (i < size)
-		ft_printf("declare -x %s\n", env[i++]);
-	free_split(env);
+	print_env_and_free(env, size);
 }
 
 /**
@@ -44,7 +54,7 @@ void env_sort_and_print(t_shell *shell)
  * @param key  key to find
  * @return pointer to node, or NULL if not found
  */
-t_env *env_find(t_env *head, const char *key)
+t_env	*env_find(t_env *head, const char *key)
 {
 	t_env	*envlist;
 
@@ -62,7 +72,6 @@ t_env *env_find(t_env *head, const char *key)
 	return (NULL);
 }
 
-
 /**
  * Sets or creates an env key to value.
  *
@@ -71,7 +80,7 @@ t_env *env_find(t_env *head, const char *key)
  * @param value value string (NULL treated as "")
  * @return 0 on success, 1 on error
  */
-int env_set(t_env **head, const char *key, const char *value)
+int	env_set(t_env **head, const char *key, const char *value)
 {
 	t_env	*node;
 	char	*new_value;
@@ -92,9 +101,9 @@ int env_set(t_env **head, const char *key, const char *value)
 		node->value = new_value;
 		return (0);
 	}
-		node = create_new_env_node(key, value);
-		if (!node)
-			return (1);
-		append_env_node(head, node);
-		return (0);
+	node = create_new_env_node(key, value);
+	if (!node)
+		return (1);
+	append_env_node(head, node);
+	return (0);
 }
