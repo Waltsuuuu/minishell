@@ -11,10 +11,10 @@ SRC         :=  src/main.c \
                 src/02_exapand_vars_and_status/01_expansion.c src/02_exapand_vars_and_status/02_expand_status.c src/02_exapand_vars_and_status/03_expand_variable.c src/02_exapand_vars_and_status/04_expand_utils.c src/02_exapand_vars_and_status/05_expand_utils_2.c \
                 src/03_remove_quotes/quote_removal.c \
                 src/04_build_cmd_pipeline/build_pipeline.c src/04_build_cmd_pipeline/pipeline_args.c src/04_build_cmd_pipeline/pipeline_debugger.c src/04_build_cmd_pipeline/pipeline_exit_free.c src/04_build_cmd_pipeline/pipeline_redirs.c src/04_build_cmd_pipeline/pipeline_utils.c \
-                src/05_execute_cmd_pipeline/exec_pipeline.c src/05_execute_cmd_pipeline/pipe_utils.c src/05_execute_cmd_pipeline/resolve_path.c src/05_execute_cmd_pipeline/spawn_cmd.c src/05_execute_cmd_pipeline/wait_utils.c \
-                src/utils/free_allocs.c src/utils/free_split.c src/utils/get_working_dir.c src/utils/print_msh_banner.c src/utils/signal_handling/signal.c	src/06_builtins/env_init.c src/06_builtins/env.c	src/06_builtins/export_exec_parent.c \
-				        src/06_builtins/export_builtin.c src/06_builtins/export_helpers.c  src/05_execute_cmd_pipeline/exec_dispatch.c src/collect_heredocs/collect_heredocs.c
-
+                src/05_collect_heredocs/collect_heredocs.c \
+				src/06_execute_cmd_pipeline/exec_pipeline.c src/06_execute_cmd_pipeline/pipe_utils.c src/06_execute_cmd_pipeline/resolve_path.c src/06_execute_cmd_pipeline/spawn_cmd.c src/06_execute_cmd_pipeline/wait_utils.c src/06_execute_cmd_pipeline/exec_dispatch.c  \
+				src/07_builtins/env_init.c src/07_builtins/env.c src/07_builtins/export_exec_parent.c src/07_builtins/export_builtin.c src/07_builtins/export_helpers.c \
+                src/utils/free_allocs.c src/utils/free_split.c src/utils/get_working_dir.c src/utils/print_msh_banner.c src/utils/signal_handling/signal.c	
 OBJ         := $(SRC:.c=.o)
 
 # =========================
