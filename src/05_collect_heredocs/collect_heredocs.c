@@ -110,24 +110,6 @@ int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 	return (0);										// Input gathered and not EOF, move on.
 }
 
-int	handle_child_status(t_hd_state *state, t_shell *shell)
-{
-	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// If ctrl+c
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		close(state->fds[0]);
-		shell->last_status = 130;
-		return (-1);
-	}
-	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// If failure
-	{
-		write(STDOUT_FILENO, "\n", 1);
-		close(state->fds[0]);
-		return (-1);
-	}
-	return (0);
-}
-
 int		close_pipe_err(t_hd_state *state)
 {
 	close(state->fds[0]);

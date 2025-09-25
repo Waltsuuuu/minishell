@@ -43,3 +43,21 @@ void	restore_parent_sig_handlers(t_hd_state *state)
 	sigaction(SIGINT,  &state->old_int,  NULL);
 	sigaction(SIGQUIT, &state->old_quit, NULL);
 }
+
+int	handle_child_status(t_hd_state *state, t_shell *shell)
+{
+	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// If ctrl+c
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		shell->last_status = 130;
+		return (-1);
+	}
+	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// If failure
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		return (-1);
+	}
+	return (0);
+}
