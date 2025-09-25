@@ -16,7 +16,7 @@
 # include <fcntl.h>
 #include <termios.h>
 # include "colors.h"
-# include "tokenizer.h"
+# include "tokenize.h"
 # include "expand.h"
 # include "pipeline.h"
 # include "heredoc.h"
