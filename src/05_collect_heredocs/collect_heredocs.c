@@ -77,14 +77,8 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		close(state->fds[0]); //Child only writes.
 		while (1)
 		{
-			state->line = readline("heredoc>");				// Take a line of input from the user.
-			if (!state->line)
+			if (readline_and_check_eof(state, redir) == 1)
 				break ;
-			if (ft_strcmp(state->line, redir->target) == 0)   // Check if line == EOF delimiter.
-			{
-				free(state->line);		// Free the delimiter line.		
-				break ;			// Break out of the readline loop.
-			}
 			if (handle_heredoc_line(state->fds[1], state->line, redir, shell->last_status, envp) == -1)
 			{
 				free(state->line);
@@ -97,6 +91,19 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		_exit(0);
 	}
 	return(0);
+}
+
+int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
+{
+	state->line = readline("heredoc>");				// Take a line of input from the user.
+	if (!state->line)								
+		return (1);					
+	if (ft_strcmp(state->line, redir->target) == 0)	// Check if line == EOF delimiter.
+	{
+		free(state->line);							// Free the delimiter line.		
+		return (1);									// Break out of the readline loop.
+	}
+	return (0);										// Input gathered and not EOF, move on.
 }
 
 int	handle_child_status(t_hd_state *state, t_shell *shell)

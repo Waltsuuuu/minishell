@@ -39,6 +39,7 @@ int		close_pipe_err(t_hd_state *state);
 void	restore_terminal_state(t_hd_state *state);
 void	restore_parent_sig_handlers(t_hd_state *state);
 void	ignore_parent_sig_handlers(t_hd_state *state);
+int		readline_and_check_eof(t_hd_state *state, t_redir *redir);
 
 
 #endif
