@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 #include "libft.h"
+# include "printf/ft_printf.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -17,10 +18,19 @@
 # include <errno.h>
 # include <fcntl.h>
 
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 typedef struct s_shell
 {
     int			last_status;   
-    char		*env_head;
+    t_env		*env_head;
+	char		**env_arr;
+	int			env_size;
     t_input		input;
     char		*cwd;
 	t_pipeline	pipeline;
@@ -36,12 +46,6 @@ typedef struct s_expand_state
 	int	expanded;
 }	t_expand_state;
 
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
 
 
 // 00_TOKENIZE
@@ -90,6 +94,7 @@ int		remove_outer_quote(char c, int *in_single, int *in_double);
 /*					See pipeline.h								*/
 
 // 05_EXECUTE_CMD_PIPELINE
+int		exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell);
 char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
@@ -140,5 +145,33 @@ extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
+/*					ENV											*/
+t_env	*env_init_from_envp(char **envp);
+t_env	*create_new_env_node(const char *key, const char *value);
+int		append_env_node(t_env **head, t_env *new_env_node);
+void	clean_env(t_env **head);
+char	**env_list_to_array(t_env *head, t_shell *shell);
+char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
+void	print_env(t_shell *shell);
+void	env_sort_and_print(t_shell *shell);
+int		find_equal_sign(char *str);
+
+/*					Builtins									*/
+int		is_builtin_name(const char *name);
+int		builtin_export(char **argv, t_shell *shell);
+int		split_key_and_value(char *line, char **key_out, char **value_out);
+int		exec_export_in_parent(t_command *cmd, t_shell *shell);
+int  	process_export_arg(char *arg, t_shell *shell);
+
+int		is_builtin_valid(const char *key);
+void	print_invalid_identifier(const char *builtin, const char *key);
+int		env_set(t_env **head, const char *key, const char *value);
+t_env	*env_find(t_env *head, const char *key);
+int		find_equal_sign(char *str);
+int		is_single_export(const t_pipeline *p);
+int		save_stdio(int saved[2]);
+void	restore_stdio(int saved[2]);
+int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
+
 
 #endif
