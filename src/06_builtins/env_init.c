@@ -140,7 +140,7 @@ int	append_env_node(t_env **head, t_env *new_env_node)
  * @param size out param: number of entries (no NULL)
  * @return newly allocated array, or NULL on error
  */
-char	**env_list_to_array(t_env *head, int *size)
+char	**env_list_to_array(t_env *head, t_shell *shell)
 {
 	char	**env_arr;
 	int		counter;
@@ -156,7 +156,7 @@ char	**env_list_to_array(t_env *head, int *size)
 		env_list = env_list->next;
 	}
 	env_arr = malloc((counter + 1) * (sizeof(*env_arr)));
-	*size = counter;
+	shell->env_size = counter;
 	if (!env_arr)
 		return (NULL);
 

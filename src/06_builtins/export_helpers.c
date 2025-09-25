@@ -23,16 +23,15 @@ void	env_sort_and_print(t_shell *shell)
 {
 	char	**env;
 	char	*tmp;
-	int		size;
 	int		i;
 	int		j;
 
-	env = env_list_to_array(shell->env_head, &size);
+	env = env_list_to_array(shell->env_head, shell);
 	i = 0;
-	while (i < size)
+	while (i < shell->env_size)
 	{
 		j = i + 1;
-		while (j < size)
+		while (j < shell->env_size)
 		{
 			if (ft_strcmp(env[i], env[j]) > 0)
 			{
@@ -44,7 +43,7 @@ void	env_sort_and_print(t_shell *shell)
 		}
 		i++;
 	}
-	print_env_and_free(env, size);
+	print_env_and_free(env, shell->env_size);
 }
 
 /**

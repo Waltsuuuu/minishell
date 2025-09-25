@@ -22,6 +22,7 @@ int	main(int argc, char *argv[], char *envp[])
 	//env_sort_and_print(&shell);
 	while (1337)
 	{
+		shell.env_arr = env_list_to_array(shell.env_head, &shell); //Remember to clean in the end 
 		getworkindir(cwd, sizeof(cwd));
 		shell.buf = ft_strjoin(cwd, "~:$");
 		if (!shell.buf)
@@ -54,7 +55,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue ;
 		}
-		if (expand_tokens(&shell.input, shell.last_status, envp) == -1)
+		if (expand_tokens(&shell.input, shell.last_status, shell.env_arr) == -1)
 		{
 			free_allocs(&shell);
 			free(line);
@@ -81,9 +82,10 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue;
 		}
-		exec_dispatch(envp, &shell.pipeline, &shell);
+		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		//exec_pipeline(envp, &shell.pipeline, &shell);
 		free(line);
+		
 	}
 	clean_env(&shell.env_head);
 	return (EXIT_SUCCESS);
