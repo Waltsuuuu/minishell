@@ -12,8 +12,17 @@ int	main(int argc, char *argv[], char *envp[])
 	print_msh_banner();
     rl_bind_key('\t', rl_complete);
 	line = NULL;
+
+	//t_env *envlist;
+	shell.env_head = env_init_from_envp(envp); //Initialize envp
+	//envlist = shell.env_head;
+	//if (shell.env_head == NULL)
+	//	printf("init FAIL");
+	//print_env(&shell);
+	//env_sort_and_print(&shell);
 	while (1337)
 	{
+		shell.env_arr = env_list_to_array(shell.env_head, &shell); //Remember to clean in the end 
 		getworkindir(cwd, sizeof(cwd));
 		shell.buf = ft_strjoin(cwd, "~:$");
 		if (!shell.buf)
@@ -46,7 +55,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue ;
 		}
-		if (expand_tokens(&shell.input, shell.last_status, envp) == -1)
+		if (expand_tokens(&shell.input, shell.last_status, shell.env_arr) == -1)
 		{
 			free_allocs(&shell);
 			free(line);
@@ -78,10 +87,12 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue ;
 		}
+		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		//print_cmds(&shell.pipeline);						// Pipeline cmds debug
-		exec_pipeline(envp, &shell.pipeline, &shell);
 		free(line);
+		
 	}
+	clean_env(&shell.env_head);
 	return (EXIT_SUCCESS);
 }
 
