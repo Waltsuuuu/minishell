@@ -128,31 +128,6 @@ int	handle_child_status(t_hd_state *state, t_shell *shell)
 	return (0);
 }
 
-void	set_default_sig_handling(void)
-{
-	struct sigaction	sa;
-
-	ft_bzero(&sa, sizeof(sa));
-	sa.sa_handler = SIG_DFL;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
-}
-
-int	wait_child(t_hd_state *state)
-{
-	while (1)
-	{
-		state->wait_result = waitpid(state->pid, &state->status, 0);
-		if (state->wait_result == -1 && errno == EINTR) // Interrupted signal call.
-			continue ;							 //  - Retry
-		break;									 // Success or real error.
-	}
-	if (state->wait_result == -1)
-		return (-1);
-	return (0);
-}
-
 int		close_pipe_err(t_hd_state *state)
 {
 	close(state->fds[0]);
@@ -164,21 +139,6 @@ void	restore_terminal_state(t_hd_state *state)
 {
 	if (isatty(STDIN_FILENO))
 		tcsetattr(STDIN_FILENO, TCSANOW, &state->tty);
-}
-
-void	restore_parent_sig_handlers(t_hd_state *state)
-{
-	sigaction(SIGINT,  &state->old_int,  NULL);
-	sigaction(SIGQUIT, &state->old_quit, NULL);
-}
-
-void	ignore_parent_sig_handlers(t_hd_state *state)
-{
-	ft_bzero(&state->ign, sizeof(state->ign));
-	state->ign.sa_handler = SIG_IGN;
-	sigemptyset(&state->ign.sa_mask);
-	sigaction(SIGINT,  &state->ign, &state->old_int);
-	sigaction(SIGQUIT, &state->ign, &state->old_quit);
 }
 
 void	init_hd_state(t_hd_state *state)
