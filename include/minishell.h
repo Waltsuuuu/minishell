@@ -114,6 +114,16 @@ int		wait_all_and_last_status(pid_t *child_pids, int child_count,
 int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
+int		apply_redir_heredoc(const t_redir *redir, int *final_in);
+
+// COLLECT_HEREDOCS
+int		collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp);
+int		collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp);
+int		collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp);
+int		handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp);
+int		expand_write_line(int fd, char *line, int last_status, char **envp);
+void	write_line_nl(int fd, char *line);
+void	free_line_close_fds(int fds[2], char *line);
 
 // UTILS
 /*					get_working_dir.c							*/
