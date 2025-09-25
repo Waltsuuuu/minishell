@@ -14,7 +14,7 @@
 # include <signal.h>
 # include <errno.h>
 # include <fcntl.h>
-#include <termios.h>
+# include <termios.h>
 # include "colors.h"
 # include "tokenize.h"
 # include "expand.h"
@@ -85,21 +85,7 @@ int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
 
-// UTILS
-/*					See utils.h									*/
-
-/*					ENV											*/
-t_env	*env_init_from_envp(char **envp);
-t_env	*create_new_env_node(const char *key, const char *value);
-int		append_env_node(t_env **head, t_env *new_env_node);
-void	clean_env(t_env **head);
-char	**env_list_to_array(t_env *head, t_shell *shell);
-char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
-void	print_env(t_shell *shell);
-void	env_sort_and_print(t_shell *shell);
-int		find_equal_sign(char *str);
-
-/*					Builtins									*/
+// 07_BUILTINS
 int		is_builtin_name(const char *name);
 int		builtin_export(char **argv, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
@@ -114,6 +100,20 @@ int		is_single_export(const t_pipeline *p);
 int		save_stdio(int saved[2]);
 void	restore_stdio(int saved[2]);
 int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
+
+/*					ENV											*/
+t_env	*env_init_from_envp(char **envp);
+t_env	*create_new_env_node(const char *key, const char *value);
+int		append_env_node(t_env **head, t_env *new_env_node);
+void	clean_env(t_env **head);
+char	**env_list_to_array(t_env *head, t_shell *shell);
+char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
+void	print_env(t_shell *shell);
+void	env_sort_and_print(t_shell *shell);
+int		find_equal_sign(char *str);
+
+// UTILS
+/*					See utils.h									*/
 
 
 #endif
