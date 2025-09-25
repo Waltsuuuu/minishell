@@ -38,32 +38,152 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 // Collects the heredoc body for one heredoc.
 int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 {
-	int		fds[2];
-	char	*line;
+	t_hd_state	state;
 
-	if (pipe(fds) == -1)
+	init_hd_state(&state);
+	save_terminal_state(&state.tty);
+	if (pipe(state.fds) == -1)
 		return (-1);
-	while (1)
+	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
 	{
-		line = readline("heredoc>");				// Take a line of input from the user.
-		if (!line)
-			break ;
-		if (ft_strcmp(line, redir->target) == 0)   // Check if line == EOF delimiter.
- 		{
-			free(line);		// Free the delimiter line.		
-			break ;			// Break out of the readline loop.
-		}
-		if (handle_heredoc_line(fds[1], line, redir, shell->last_status, envp) == -1)
-		{
-			free_line_close_fds(fds, line);
-			return (-1);
-		}
-		free(line);
+		restore_terminal_state(&state);
+		return(close_pipe_err(&state));
 	}
-	close(fds[1]);
-	redir->hd_fd = fds[0];
+	close(state.fds[1]);  // Parent only reads
+	ignore_parent_sig_handlers(&state);
+	if (wait_child(&state) == -1)
+	{
+		restore_terminal_state(&state);
+		restore_parent_sig_handlers(&state);
+		close(state.fds[0]);
+		return (-1);
+	}
+	restore_terminal_state(&state);
+	restore_parent_sig_handlers(&state);
+	if (handle_child_status(&state, shell) == -1)
+		return (-1);
+	redir->hd_fd = state.fds[0];
 	return (0);
 }
+
+int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
+{
+	state->pid = fork();
+	if (state->pid < 0)
+		return(-1);
+	if (state->pid == 0)
+	{
+		set_default_sig_handling();
+		close(state->fds[0]); //Child only writes.
+		while (1)
+		{
+			state->line = readline("heredoc>");				// Take a line of input from the user.
+			if (!state->line)
+				break ;
+			if (ft_strcmp(state->line, redir->target) == 0)   // Check if line == EOF delimiter.
+			{
+				free(state->line);		// Free the delimiter line.		
+				break ;			// Break out of the readline loop.
+			}
+			if (handle_heredoc_line(state->fds[1], state->line, redir, shell->last_status, envp) == -1)
+			{
+				free(state->line);
+				close(state->fds[1]);
+				_exit(1);
+			}
+			free(state->line);
+		}
+		close(state->fds[1]);
+		_exit(0);
+	}
+	return(0);
+}
+
+int	handle_child_status(t_hd_state *state, t_shell *shell)
+{
+	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// If ctrl+c
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		shell->last_status = 130;
+		return (-1);
+	}
+	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// If failure
+	{
+		write(STDOUT_FILENO, "\n", 1);
+		close(state->fds[0]);
+		return (-1);
+	}
+	return (0);
+}
+
+void	set_default_sig_handling(void)
+{
+	struct sigaction	sa;
+
+	ft_bzero(&sa, sizeof(sa));
+	sa.sa_handler = SIG_DFL;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+int	wait_child(t_hd_state *state)
+{
+	while (1)
+	{
+		state->wait_result = waitpid(state->pid, &state->status, 0);
+		if (state->wait_result == -1 && errno == EINTR) // Interrupted signal call.
+			continue ;							 //  - Retry
+		break;									 // Success or real error.
+	}
+	if (state->wait_result == -1)
+		return (-1);
+	return (0);
+}
+
+int		close_pipe_err(t_hd_state *state)
+{
+	close(state->fds[0]);
+	close(state->fds[1]);
+	return (-1);
+}
+
+void	restore_terminal_state(t_hd_state *state)
+{
+	if (isatty(STDIN_FILENO))
+		tcsetattr(STDIN_FILENO, TCSANOW, &state->tty);
+}
+
+void	restore_parent_sig_handlers(t_hd_state *state)
+{
+	sigaction(SIGINT,  &state->old_int,  NULL);
+	sigaction(SIGQUIT, &state->old_quit, NULL);
+}
+
+void	ignore_parent_sig_handlers(t_hd_state *state)
+{
+	ft_bzero(&state->ign, sizeof(state->ign));
+	state->ign.sa_handler = SIG_IGN;
+	sigemptyset(&state->ign.sa_mask);
+	sigaction(SIGINT,  &state->ign, &state->old_int);
+	sigaction(SIGQUIT, &state->ign, &state->old_quit);
+}
+
+void	init_hd_state(t_hd_state *state)
+{
+	ft_bzero(state, sizeof(state));
+	state->fds[0] = -1;
+	state->fds[1] = -1;
+	state->line = NULL;
+}
+
+void	save_terminal_state(struct termios *tty)
+{
+	if (isatty(STDIN_FILENO))
+		tcgetattr(STDIN_FILENO, tty);
+}
+
 void	free_line_close_fds(int fds[2], char *line)
 {
 	free(line);

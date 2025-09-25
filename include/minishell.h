@@ -15,8 +15,10 @@
 # include <signal.h>
 # include "tokenizer.h"
 # include "pipeline.h"
+# include "heredoc.h"
 # include <errno.h>
 # include <fcntl.h>
+extern volatile sig_atomic_t g_signal;
 
 typedef struct s_env
 {
@@ -117,13 +119,8 @@ int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
 
 // COLLECT_HEREDOCS
-int		collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp);
-int		collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp);
-int		collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp);
-int		handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp);
-int		expand_write_line(int fd, char *line, int last_status, char **envp);
-void	write_line_nl(int fd, char *line);
-void	free_line_close_fds(int fds[2], char *line);
+/*					See heredoc.h								*/
+
 
 // UTILS
 /*					get_working_dir.c							*/
@@ -141,7 +138,6 @@ void	free_partial(char **arr, size_t n);
 
 // UTILS - signal_handling
 /*					signal.c									*/
-extern volatile sig_atomic_t g_signal;
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
