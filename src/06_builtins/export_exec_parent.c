@@ -14,30 +14,26 @@
  */
 static int	replug_stdio_pair(int in_fd, int out_fd, int saved[2])
 {
-	if (in_fd >= 0 && in_fd != STDIN_FILENO)
+	if (in_fd >= 0 && in_fd != STDIN_FILENO
+		&& dup2(in_fd, STDIN_FILENO) < 0)
 	{
-		if (dup2(in_fd, STDIN_FILENO) < 0)
-		{
-			restore_stdio(saved);
-			if (in_fd >= 0 && in_fd != STDIN_FILENO);
-			close(in_fd);
-			if (out_fd >= 0 && out_fd != STDOUT_FILENO);
+		restore_stdio(saved);
+		if (out_fd >= 0 && out_fd != STDOUT_FILENO)
 			close(out_fd);
-			return (-1);
-		}
 		close(in_fd);
+		return (-1);
+	}
+	if (in_fd >= 0 && in_fd != STDIN_FILENO)
+		close(in_fd);
+	if (out_fd >= 0 && out_fd != STDOUT_FILENO
+		&& dup2(out_fd, STDOUT_FILENO) < 0)
+	{
+		restore_stdio(saved);
+		close(out_fd);
+		return (-1);
 	}
 	if (out_fd >= 0 && out_fd != STDOUT_FILENO)
-	{
-		if (dup2(out_fd, STDOUT_FILENO) < 0)
-		{
-			restore_stdio(saved);
-			if (out_fd >= 0 && out_fd != STDOUT_FILENO);
-			close(out_fd);
-			return (-1);
-		}
 		close(out_fd);
-	}
 	return (0);
 }
 
