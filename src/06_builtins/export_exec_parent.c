@@ -1,6 +1,47 @@
 #include "minishell.h"
 
 /**
+ * replug_stdio_pair - Redirect STDIN/STDOUT to given FDs and close originals.
+ *
+ * Duplicates in_fd → STDIN and out_fd → STDOUT (if different), restoring
+ * previously saved stdio on error. On success, closes the original fds
+ * (when not 0/1) and leaves redirection active.
+ *
+ * @param in_fd  New stdin FD (or STDIN_FILENO / <0 to skip).
+ * @param out_fd New stdout FD (or STDOUT_FILENO / <0 to skip).
+ * @param saved  Pair of saved stdio FDs from save_stdio(saved).
+ * @return 0 on success; -1 on error (stdio restored).
+ */
+static int	replug_stdio_pair(int in_fd, int out_fd, int saved[2])
+{
+	if (in_fd >= 0 && in_fd != STDIN_FILENO)
+	{
+		if (dup2(in_fd, STDIN_FILENO) < 0)
+		{
+			restore_stdio(saved);
+			if (in_fd >= 0 && in_fd != STDIN_FILENO);
+			close(in_fd);
+			if (out_fd >= 0 && out_fd != STDOUT_FILENO);
+			close(out_fd);
+			return (-1);
+		}
+		close(in_fd);
+	}
+	if (out_fd >= 0 && out_fd != STDOUT_FILENO)
+	{
+		if (dup2(out_fd, STDOUT_FILENO) < 0)
+		{
+			restore_stdio(saved);
+			if (out_fd >= 0 && out_fd != STDOUT_FILENO);
+			close(out_fd);
+			return (-1);
+		}
+		close(out_fd);
+	}
+	return (0);
+}
+
+/**
  * Executes "export" as a single builtin in the parent shell.
  * Honors possible redirections; prints list when no arguments.
  *
@@ -8,27 +49,24 @@
  * @param shell shell state (env_head, last_status)
  * @return exit status (0..255)
  */
-int exec_export_in_parent(t_command *cmd, t_shell *shell)
+int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 {
-    int saved[2];
-    int status;
+	int	saved[2];
 
-    if (!cmd || !shell)
-        return (1);
-
-    if (apply_redirs_in_parent(cmd, saved) != 0)
-        return (1);
-    if (cmd->argc <= 1 || (cmd->argv[1] && cmd->argv[1][0] == '\0'))
-    {
-        env_sort_and_print(shell);
-        restore_stdio(saved);
-        shell->last_status = 0;
-        return (0);
-    }
-    status = builtin_export(cmd->argv, shell);
-    restore_stdio(saved);
-    shell->last_status = status;
-    return (status);
+	if (!cmd || !shell)
+		return (1);
+	if (apply_redirs_in_parent(cmd, saved) != 0)
+		return (1);
+			if (cmd->argc <= 1 || (cmd->argv[1] && cmd->argv[1][0] == '\0'))
+			{
+        		env_sort_and_print(shell);
+        		restore_stdio(saved);
+        		shell->last_status = 0;
+        		return (0);
+    		}
+			shell->last_status = builtin_export(cmd->argv, shell);
+    		restore_stdio(saved);
+    		return (shell->last_status);
 }
 
 
@@ -63,14 +101,8 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 			return (restore_stdio(saved), -1);
 		node = node->next;
 	}
-	if (in_fd != STDIN_FILENO && dup2(in_fd, STDIN_FILENO) < 0)
-		return (restore_stdio(saved), -1);
-	if (out_fd != STDOUT_FILENO && dup2(out_fd, STDOUT_FILENO) < 0)
-		return (restore_stdio(saved), -1);
-	if (in_fd != STDIN_FILENO)
-		close(in_fd);
-	if (out_fd != STDOUT_FILENO)
-		close(out_fd);
+	if (replug_stdio_pair(in_fd, out_fd, saved) < 0)
+		return (-1);
 	return (0);
 }
 
@@ -111,3 +143,4 @@ void	restore_stdio(int saved[2])
 	close(saved[1]);
 	}
 }
+

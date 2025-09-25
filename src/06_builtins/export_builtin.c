@@ -25,7 +25,7 @@ int	builtin_export(char **argv, t_shell *shell)
 	{
 		if (process_export_arg(argv[counter], shell) != 0)
 			status = 1;
-		counter++;	
+		counter++;
 	}
 	return (status);
 }
@@ -52,9 +52,8 @@ int	process_export_arg(char *argv, t_shell *shell)
 	equal = find_equal_sign(argv);
 	if (equal > 0)
 	{
-		if (split_key_and_value(argv, &key, &value) != 0)
-			return (1);
-		if (env_set(&shell->env_head, key, value) != 0)
+		if (split_key_and_value(argv, &key, &value) != 0
+			|| env_set(&shell->env_head, key, value) != 0)
 			return (1);
 		free (key);
 		free (value);
@@ -75,9 +74,8 @@ int	process_export_arg(char *argv, t_shell *shell)
  * @param key  candidate identifier (possibly with '=')
  * @return 1 if valid up to '=' or end, else 0
  */
-int		is_builtin_valid(const char *key)
+int	is_builtin_valid(const char *key)
 {
-
 	int	counter;
 
 	counter = 0;
@@ -88,17 +86,13 @@ int		is_builtin_valid(const char *key)
 		{
 			if (!ft_isalnum(key[counter]) && key[counter] != '_')
 				return (0);
-			
 			counter++;
 		}
 		return (1);
 	}
 	else
 		return (0);
-
-
 }
-
 
 /**
  * Prints "not a valid identifier" message for a builtin.
@@ -109,7 +103,6 @@ int		is_builtin_valid(const char *key)
 void	print_invalid_identifier(const char *builtin, const char *key)
 {
 	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
-
 }
 
 /**
