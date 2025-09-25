@@ -10,7 +10,7 @@ void	ignore_parent_sig_handlers(t_hd_state *state)
 	sigaction(SIGQUIT, &state->ign, &state->old_quit);
 }
 
-// In child - Set SIGINT and SIGQUIT handlers to default.
+// In child - Set SIGINT and SIGQUIT handlers to default (SIGDFL).
 void	set_default_sig_handling(void)
 {
 	struct sigaction	sa;
@@ -44,16 +44,19 @@ void	restore_parent_sig_handlers(t_hd_state *state)
 	sigaction(SIGQUIT, &state->old_quit, NULL);
 }
 
+// Interprets child status: 
+// if SIGINT or nonzero exit - returns -1;
+// otherwise returns 0.
 int	handle_child_status(t_hd_state *state, t_shell *shell)
 {
-	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// If ctrl+c
+	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// Child terminated by signal && Signal was SIGINT.
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		close(state->fds[0]);
 		shell->last_status = 130;
 		return (-1);
 	}
-	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// If failure
+	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// Normal exit (WIFEXITED = true), but non-zero (failure).
 	{
 		write(STDOUT_FILENO, "\n", 1);
 		close(state->fds[0]);

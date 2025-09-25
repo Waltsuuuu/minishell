@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+// Collects the users input via readline() and checks if the line == delimiter.
 int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 {
 	state->line = readline("heredoc>");				// Take a line of input from the user.
@@ -13,6 +14,7 @@ int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 	return (0);										// Input gathered and not EOF, move on.
 }
 
+// Checks if line has to be expanded before writing to the pipe.
 int	handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp)
 {
 	if (redir->no_expand == 0)										// Delimiter was not quoted - Expand
@@ -27,24 +29,25 @@ int	handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, cha
 
 int	expand_write_line(int fd, char *line, int last_status, char **envp)
 {
-	char *temp1;
-	char *temp2;
+	char *temp1;	// Line with status expanded.
+	char *temp2;	// Line with status and var expaneded.
 
-	temp1 = expand_status(line, last_status);						// Rebuilds the inpit line with status expanded.
+	temp1 = expand_status(line, last_status);	// Rebuilds the inpit line with status expanded.
 	if (!temp1)
 		return (-1);
-	temp2 = expand_variable(temp1, envp);							// Rebuilds temp1 with var exapnded.
+	temp2 = expand_variable(temp1, envp);		// Rebuilds temp1 with var exapnded.
 	if (!temp2)
 	{
 		free(temp1);
 		return (-1);
 	}
-	write_line_nl(fd, temp2);
+	write_line_nl(fd, temp2);					// Write the expaneded line to the pipe.
 	free(temp1);
 	free(temp2);
 	return (0);
 }
 
+// Writes the input line, followed by a newline, to the pipe.
 void	write_line_nl(int fd, char *line)
 {
 	if (!line)

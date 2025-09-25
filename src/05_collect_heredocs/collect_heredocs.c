@@ -23,12 +23,12 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 	t_redir	*redir;
 
 	current = cmd->redirs;
-	while (current)										// Loop over the redirect linked list of this specific command
+	while (current)										// Loop over the kinked list of redirects for the current command.
 	{
 		redir = (t_redir *)current->content;
-		if (redir && redir->type == REDIR_HEREDOC)		// If the redir type is heredoc, go collect the body
+		if (redir && redir->type == REDIR_HEREDOC)		// If the redir type is heredoc, go collect the body.
 		{
-			if (collect_heredoc_body(redir, shell, envp) == -1)		// 		-Collect heredoc body.
+			if (collect_heredoc_body(redir, shell, envp) == -1)		// 	-Collect heredoc body.
 				return (-1);
 		}
 		current = current->next;						// Move to next redirect.
@@ -64,7 +64,8 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	return (0);
 }
 
-
+// Forks and collects the heredoc body in a child process.
+// Sets SIGINT and SIGQUIT handling back the default.
 int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
 {
 	state->pid = fork();
