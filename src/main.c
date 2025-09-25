@@ -81,7 +81,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free(line);
 			continue ;
 		}
-		if (collect_heredocs(&shell.pipeline, &shell, envp) == -1)
+		if (collect_heredocs(&shell.pipeline, &shell, shell.env_arr) == -1)
 		{
 			free_allocs(&shell);
 			free(line);

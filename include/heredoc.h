@@ -34,7 +34,14 @@ void	setup_sig_handlers_for_heredoc(void);
 void	init_hd_state(t_hd_state *state);
 void	save_terminal_state(struct termios *tty);
 void	free_line_close_fds(int fds[2], char *line);
-int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
+int		fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
+int		handle_child_status(t_hd_state *state, t_shell *shell);
+void	set_default_sig_handling(void);
+int		wait_child(t_hd_state *state);
+int		close_pipe_err(t_hd_state *state);
+void	restore_terminal_state(t_hd_state *state);
+void	restore_parent_sig_handlers(t_hd_state *state);
+void	ignore_parent_sig_handlers(t_hd_state *state);
 
 
 #endif
