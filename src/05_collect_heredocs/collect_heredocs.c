@@ -117,24 +117,12 @@ int		close_pipe_err(t_hd_state *state)
 	return (-1);
 }
 
-void	restore_terminal_state(t_hd_state *state)
-{
-	if (isatty(STDIN_FILENO))
-		tcsetattr(STDIN_FILENO, TCSANOW, &state->tty);
-}
-
 void	init_hd_state(t_hd_state *state)
 {
 	ft_bzero(state, sizeof(state));
 	state->fds[0] = -1;
 	state->fds[1] = -1;
 	state->line = NULL;
-}
-
-void	save_terminal_state(struct termios *tty)
-{
-	if (isatty(STDIN_FILENO))
-		tcgetattr(STDIN_FILENO, tty);
 }
 
 void	free_line_close_fds(int fds[2], char *line)
