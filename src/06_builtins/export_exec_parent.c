@@ -53,18 +53,17 @@ int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 		return (1);
 	if (apply_redirs_in_parent(cmd, saved) != 0)
 		return (1);
-			if (cmd->argc <= 1 || (cmd->argv[1] && cmd->argv[1][0] == '\0'))
-			{
-        		env_sort_and_print(shell);
-        		restore_stdio(saved);
-        		shell->last_status = 0;
-        		return (0);
-    		}
-			shell->last_status = builtin_export(cmd->argv, shell);
-    		restore_stdio(saved);
-    		return (shell->last_status);
+	if (cmd->argc <= 1 || (cmd->argv[1] && cmd->argv[1][0] == '\0'))
+	{
+		env_sort_and_print(shell);
+		restore_stdio(saved);
+		shell->last_status = 0;
+		return (0);
+	}
+	shell->last_status = builtin_export(cmd->argv, shell);
+	restore_stdio(saved);
+	return (shell->last_status);
 }
-
 
 /**
  * Applies <, >, >> redirections for a single builtin in the parent.
@@ -130,13 +129,12 @@ void	restore_stdio(int saved[2])
 {
 	if (saved[0] >= 0)
 	{
-	dup2(saved[0], STDIN_FILENO);
-	close(saved[0]);
+		dup2(saved[0], STDIN_FILENO);
+		close(saved[0]);
 	}
 	if (saved[1] >= 0)
 	{
-	dup2(saved[1], STDOUT_FILENO);
-	close(saved[1]);
+		dup2(saved[1], STDOUT_FILENO);
+		close(saved[1]);
 	}
 }
-
