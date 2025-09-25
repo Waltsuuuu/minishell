@@ -1,8 +1,6 @@
 #ifndef HEREDOC_H
 # define HEREDOC_H
 
-#include <termios.h>
-
 typedef struct s_shell    t_shell;
 typedef struct s_pipeline t_pipeline;
 typedef struct s_command  t_command;

@@ -1,7 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include "libft.h"
+# include "libft.h"
 # include "printf/ft_printf.h"
 # include <stdio.h>
 # include <stdlib.h>
@@ -14,12 +14,14 @@
 # include <signal.h>
 # include <errno.h>
 # include <fcntl.h>
+#include <termios.h>
 # include "colors.h"
 # include "tokenizer.h"
 # include "expand.h"
 # include "pipeline.h"
 # include "heredoc.h"
 # include "utils.h"
+# include "quotes.h"
 
 extern volatile sig_atomic_t g_signal;
 
@@ -43,9 +45,7 @@ typedef struct s_shell
 }   t_shell;
 
 // 00_BALANCE_QUOTES
-/* 					quote_check.c								*/
-int check_quote_balance(char **line, int *last_status);
-int	quotes_unbalanced(const char *string);
+/*					See quotes.h 								*/
 
 // 01_TOKENIZE
 /*					See tokenizer.h 							*/
@@ -54,11 +54,7 @@ int	quotes_unbalanced(const char *string);
 /*					See expand.h 								*/
 
 // 03_REMOVE_QUOTES
-/*					quote_removal.c								*/
-int		remove_quotes(t_input *input);
-char	*handle_quote_removal(char *text, int *was_quoted);
-int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
-int		remove_outer_quote(char c, int *in_single, int *in_double);
+/*					See quotes.h 								*/
 
 // 04_BUILD_CMD_PIPELINE
 /*					See pipeline.h								*/
@@ -92,7 +88,6 @@ int		apply_redir_heredoc(const t_redir *redir, int *final_in);
 // UTILS
 /*					See utils.h									*/
 
-
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);
 t_env	*create_new_env_node(const char *key, const char *value);
@@ -110,7 +105,6 @@ int		builtin_export(char **argv, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
 int		exec_export_in_parent(t_command *cmd, t_shell *shell);
 int  	process_export_arg(char *arg, t_shell *shell);
-
 int		is_builtin_valid(const char *key);
 void	print_invalid_identifier(const char *builtin, const char *key);
 int		env_set(t_env **head, const char *key, const char *value);
