@@ -64,11 +64,6 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	return (0);
 }
 
-void	restore_tty_and_sig(t_hd_state *state)
-{
-	restore_terminal_state(state);
-	restore_parent_sig_handlers(state);
-}
 
 int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
 {
@@ -108,28 +103,6 @@ int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 		return (1);									// Break out of the readline loop.
 	}
 	return (0);										// Input gathered and not EOF, move on.
-}
-
-int		close_pipe_err(t_hd_state *state)
-{
-	close(state->fds[0]);
-	close(state->fds[1]);
-	return (-1);
-}
-
-void	init_hd_state(t_hd_state *state)
-{
-	ft_bzero(state, sizeof(state));
-	state->fds[0] = -1;
-	state->fds[1] = -1;
-	state->line = NULL;
-}
-
-void	free_line_close_fds(int fds[2], char *line)
-{
-	free(line);
-	close(fds[0]);
-	close(fds[1]);	
 }
 
 int	handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp)
