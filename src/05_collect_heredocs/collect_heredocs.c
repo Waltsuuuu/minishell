@@ -66,8 +66,8 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 
 void	restore_tty_and_sig(t_hd_state *state)
 {
-	restore_terminal_state(&state);
-	restore_parent_sig_handlers(&state);
+	restore_terminal_state(state);
+	restore_parent_sig_handlers(state);
 }
 
 int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
