@@ -2,7 +2,6 @@
 # define HEREDOC_H
 
 #include <termios.h>
-#include "minishell.h"
 
 typedef struct s_shell    t_shell;
 typedef struct s_pipeline t_pipeline;
