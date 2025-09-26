@@ -9,5 +9,13 @@ void	free_allocs(t_shell *shell)
 		free(shell->pipeline.cmds);
 	}
 	shell->pipeline.cmds = NULL;
-	free(shell->buf);
+}
+
+void	free_str_ptr(char **str_ptr)
+{
+	if (str_ptr != NULL && *str_ptr != NULL)
+	{
+		free(*str_ptr);
+		*str_ptr = NULL;
+	}
 }

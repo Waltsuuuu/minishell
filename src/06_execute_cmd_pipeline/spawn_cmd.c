@@ -36,7 +36,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 					argv[0]);
 			if (!candidate_path)
 			{
-				free_split(path_directories);
+				free_split(&path_directories);
 				free_allocs(shell);
 				free(child_pids);
 				free(pipe_pairs);
@@ -46,7 +46,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 			free(candidate_path);
 			path_index++;
 		}
-		free_split(path_directories);
+		free_split(&path_directories);
 	}
 	write(2, "minishell: ", 11);
 	if (argv && argv[0])

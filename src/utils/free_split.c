@@ -3,10 +3,14 @@
 /**
  * Frees null terminated array of strings
  */
-void	free_split(char **arr)
+void	free_split(char ***arr_ptr)
 {
 	size_t	i;
+	char	**arr;
 
+	if (arr_ptr == NULL || *arr_ptr == NULL)
+		return ;
+	arr = *arr_ptr;
 	i = 0;
 	while (arr[i])
 	{
@@ -14,6 +18,7 @@ void	free_split(char **arr)
 		i++;
 	}
 	free(arr);
+	*arr_ptr = NULL;
 }
 /**
  * Frees non-NULL terminated array of strings in case of error.

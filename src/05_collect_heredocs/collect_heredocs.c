@@ -83,10 +83,16 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 			{
 				free(state->line);
 				close(state->fds[1]);
+				free_allocs(shell);
+				free_split(&shell->env_arr);
+				clean_env(&shell->env_head);
 				_exit(1);
 			}
 			free(state->line);
 		}
+		free_allocs(shell);
+		free_split(&shell->env_arr);
+		clean_env(&shell->env_head);
 		close(state->fds[1]);
 		_exit(0);
 	}

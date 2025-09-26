@@ -140,48 +140,48 @@ int	append_env_node(t_env **head, t_env *new_env_node)
  * @param size out param: number of entries (no NULL)
  * @return newly allocated array, or NULL on error
  */
-char	**env_list_to_array(t_env *head, t_shell *shell)
+int	env_list_to_array(t_env *head, t_shell *shell)
 {
-	char	**env_arr;
+	// char	**env_arr;
 	int		counter;
 	t_env	*env_list;
 	char	*test;
 
+
 	env_list = head;
 	counter = 0;
-
 	while (env_list)
 	{
 		counter++;
 		env_list = env_list->next;
 	}
-	env_arr = malloc((counter + 1) * (sizeof(*env_arr)));
+	free_split(&shell->env_arr);
+	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
+	if (!shell->env_arr)
+		return (-1);
 	shell->env_size = counter;
-	if (!env_arr)
-		return (NULL);
-
 	env_list = head;
 	counter = 0;
 	while (env_list)
 	{
 		if (env_list->key == NULL)
 		{
-			free_partial(env_arr, counter);
-			return (NULL);
+			free_partial(shell->env_arr, counter);
+			return (-1);
 		}
 		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
 		if (!test)
 		{
-			free_partial(env_arr, counter);
-			return (NULL);
+			free_partial(shell->env_arr, counter);
+			return (-1);
 		}
-		env_arr[counter] = test;
+		shell->env_arr[counter] = test;
 		env_list = env_list->next;
 		counter++;
 	}
-	env_arr[counter] = NULL;
+	shell->env_arr[counter] = NULL;
 
-	return (env_arr);
+	return (0);
 }
 
 /**
