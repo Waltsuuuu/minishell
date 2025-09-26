@@ -34,6 +34,7 @@ int	main(int argc, char *argv[], char *envp[])
 		{  
 			clean_env(&shell.env_head);
 			free_split(&shell.env_arr);
+			clear_history();
             printf("exit\n");
             break ;
         }
@@ -104,6 +105,7 @@ int	main(int argc, char *argv[], char *envp[])
 	free_allocs(&shell);
 	clean_env(&shell.env_head);
 	free_split(&shell.env_arr);
+	clear_history();
 	return (EXIT_SUCCESS);
 }
 
