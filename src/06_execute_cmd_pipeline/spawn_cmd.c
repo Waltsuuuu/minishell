@@ -24,6 +24,12 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
 		execve(argv[0], argv, envp);
+		free_split(&path_directories);
+		free_allocs(shell);
+		free(child_pids);
+		free(pipe_pairs);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
 		_exit((errno == ENOENT || errno == ENOTDIR) ? 127 : 126); 
 	}
 	path_directories = find_from_path(envp);
@@ -40,6 +46,8 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 				free_allocs(shell);
 				free(child_pids);
 				free(pipe_pairs);
+				clean_env(&shell->env_head);
+				free_split(&shell->env_arr);
 				_exit(1);
 			}
 			execve(candidate_path, argv, envp);
@@ -55,6 +63,8 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	free_allocs(shell);
 	free(child_pids);
 	free(pipe_pairs);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
 	_exit(127);
 }
 
@@ -188,6 +198,8 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 			free_allocs(shell);
 			free(child_pids);
 			free(pipe_pairs);
+			clean_env(&shell->env_head);
+			free_split(&shell->env_arr);
 			_exit(shell->last_status);
 		}
 
