@@ -20,33 +20,8 @@ int	parse_input_line(const char *line, t_input *input)
 	input->raw = ft_strdup(line);
 	if (!input->raw)
 		return (-1);
-	if (fill_words_from_line(input, line) == -1)
-		return (clear_struct_on_failure(input));
 	if (tokenize_line(input->raw, &input->tokens, &input->n_tokens) == -1)
 		return (clear_struct_on_failure(input));
-	return (0);
-}
-
-int	fill_words_from_line(t_input *input, const char *line)
-{
-	char	*norm;
-
-	norm = normalize_tabs(line);
-	if (!norm)
-		return (-1);
-	input->words = ft_split(norm, ' ');
-	if (!input->words)
-	{
-		free(norm);
-		return (-1);
-	}
-	free(norm);
-	input->count = count_words(input->words);
-	if (input->count == 0)
-	{
-		free(input->words);
-		input->words = NULL;
-	}
 	return (0);
 }
 
@@ -64,8 +39,6 @@ void	input_struct_zero(t_input *input)
 	if (!input)
 		return ;
 	input->raw = NULL;
-	input->words = NULL;
-	input->count = 0;
 	input->tokens = NULL;
 	input->n_tokens = 0;
 }
@@ -88,32 +61,25 @@ int	clear_struct_on_failure(t_input *input)
 		return (-1);
 	if (input->raw)
 		free(input->raw);
-	if (input->words)
-	{
-		while (input->words[i] != NULL)
-		{
-			free(input->words[i]);
-			i++;
-		}
-		free(input->words);
-	}
 	free_tokens(input);
 	input_struct_zero(input);
 	return (-1);
 }
+
 /**
  * Frees all tokens stored in a `t_input` structs token array.
  *
  * @param input  Pointer to the `t_input` whose tokens will be freed.
- *               If NULL, or if `input->tokens` is NULL, the function does nothing.
+ *               If NULL, or if `input->tokens` is NULL,
+ * 				 the function does nothing.
  *
  * @return void
  *
  */
 void	free_tokens(t_input *input)
 {
-	int i;
-	
+	int	i;
+
 	if (!input || !input->tokens)
 		return ;
 	i = 0;
@@ -125,59 +91,4 @@ void	free_tokens(t_input *input)
 	free(input->tokens);
 	input->tokens = NULL;
 	input->n_tokens = 0;
-}
-
-/**
- * Creates a copy of a string with all tab characters replaced by spaces.
- *
- * @param line  The input string to normalize. Must not be NULL.
- *
- * @return	A newly allocated string identical to `line`,
- * 			but with tabs replaced by spaces.
- * 
- * @return NULL if `line` is NULL or if memory allocation fails.
- *
- */
-char	*normalize_tabs(const char *line)
-{
-	char	*norm;
-	int		i;
-
-	norm = NULL;
-	i = 0;
-	if (!line)
-		return (NULL);
-	norm = ft_strdup(line);
-	if (!norm)
-		return (NULL);
-	while (norm[i] != '\0')
-	{
-		if (norm[i] == '\t')
-			norm[i] = ' ';
-		i++;
-	}
-	return (norm);
-}
-
-/**
- * Counts the number of words in a NULL-terminated string array.
- *
- * @param words  A NULL-terminated array of strings
- *               If NULL, the function returns 0.
- *
- * @return The number of words (non-NULL elements) in the array.
- * 
- * @return 0 if `words` is NULL or the array is empty.
- *
- */
-int	count_words(char **words)
-{
-	int	count;
-
-	count = 0;
-	if (!words)
-		return (0);
-	while (words[count] != NULL)
-		count++;
-	return (count);
 }

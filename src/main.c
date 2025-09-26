@@ -68,7 +68,7 @@ int	main(int argc, char *argv[], char *envp[])
 			continue ;
 		}
 		// print_tokens(&shell.input);						// Token debug
-		if (!shell.input.words || shell.input.count == 0)
+		if (shell.input.n_tokens <= 0)
 		{
 			free_allocs(&shell);
 			free(line);
