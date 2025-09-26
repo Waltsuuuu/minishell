@@ -95,8 +95,8 @@ int	main(int argc, char *argv[], char *envp[])
 			free_split(&shell.env_arr);
 			continue ;
 		}
+		// print_cmds(&shell.pipeline);						// Pipeline cmds debug
 		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
-		//print_cmds(&shell.pipeline);						// Pipeline cmds debug
 		free_str_ptr(&line);
 		free_allocs(&shell);
 	}

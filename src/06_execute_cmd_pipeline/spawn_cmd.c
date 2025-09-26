@@ -263,10 +263,7 @@ int	apply_redir_out(const t_redir *redir, int *final_out)
 		return (-1);
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-	{
-		write(1, "test\n", 5);
 		return (-1);
-	}
 		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
 	   ja se ei ole sama kuin juuri avattu fd,
 	   sulje se, ettei jää fd-vuotoa. */
