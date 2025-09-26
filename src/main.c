@@ -22,16 +22,18 @@ int	main(int argc, char *argv[], char *envp[])
 	//env_sort_and_print(&shell);
 	while (1337)
 	{
-		shell.env_arr = env_list_to_array(shell.env_head, &shell); //Remember to clean in the end 
+		if (env_list_to_array(shell.env_head, &shell) == -1)
+			continue ;
 		getworkindir(cwd, sizeof(cwd));
 		shell.buf = ft_strjoin(cwd, "~:$");
 		if (!shell.buf)
 			break ;
         line = readline(shell.buf);
+		free_str_ptr(&shell.buf);
 		if (!line) // CTR:+D
-		{   
-			free(shell.buf);
-			free (line);  
+		{  
+			clean_env(&shell.env_head);
+			free_split(&shell.env_arr);
             printf("exit\n");
             break ;
         }
@@ -39,60 +41,69 @@ int	main(int argc, char *argv[], char *envp[])
 		{
 				shell.last_status = 130;
                 g_signal = 0;
-				free (shell.buf);
-				free(line);
+				free_str_ptr(&line);
 				continue ;
         }
 		if (check_quote_balance(&line, &shell.last_status) == -1)
 		{
-			free(shell.buf);
+			free_str_ptr(&line);
 			continue ;
 		}
 		add_history(line);
 		if (parse_input_line(line, &shell.input) == -1)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		if (expand_tokens(&shell.input, shell.last_status, shell.env_arr) == -1)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		if (remove_quotes(&shell.input) == -1)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		// print_tokens(&shell.input);						// Token debug
 		if (shell.input.n_tokens <= 0)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		// printf("Last status: %d\n", shell.last_status); 	// Last status debug
 		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		if (collect_heredocs(&shell.pipeline, &shell, shell.env_arr) == -1)
 		{
+			free_str_ptr(&line);
 			free_allocs(&shell);
-			free(line);
+			free_split(&shell.env_arr);
 			continue ;
 		}
 		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		//print_cmds(&shell.pipeline);						// Pipeline cmds debug
-		free(line);
-		
+		free_str_ptr(&line);
+		free_allocs(&shell);
 	}
+	free_str_ptr(&shell.buf);
+	free_str_ptr(&line);
+	free_allocs(&shell);
 	clean_env(&shell.env_head);
+	free_split(&shell.env_arr);
 	return (EXIT_SUCCESS);
 }
 

@@ -11,7 +11,7 @@ static void	print_env_and_free(char **env, int size)
 	i = 0;
 	while (i < size)
 		ft_printf("declare -x %s\n", env[i++]);
-	free_split(env);
+	// free_split(env);
 }
 
 /**
@@ -21,29 +21,30 @@ static void	print_env_and_free(char **env, int size)
  */
 void	env_sort_and_print(t_shell *shell)
 {
-	char	**env;
+	// char	**env;
 	char	*tmp;
 	int		i;
 	int		j;
 
-	env = env_list_to_array(shell->env_head, shell);
+	if (env_list_to_array(shell->env_head, shell) == -1)
+		return ; // Should probably return int aswell to inform of failure.
 	i = 0;
 	while (i < shell->env_size)
 	{
 		j = i + 1;
 		while (j < shell->env_size)
 		{
-			if (ft_strcmp(env[i], env[j]) > 0)
+			if (ft_strcmp(shell->env_arr[i], shell->env_arr[j]) > 0)
 			{
-				tmp = env[i];
-				env[i] = env[j];
-				env[j] = tmp;
+				tmp = shell->env_arr[i];
+				shell->env_arr[i] = shell->env_arr[j];
+				shell->env_arr[j] = tmp;
 			}
 			j++;
 		}
 		i++;
 	}
-	print_env_and_free(env, shell->env_size);
+	print_env_and_free(shell->env_arr, shell->env_size);
 }
 
 /**
