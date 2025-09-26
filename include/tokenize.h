@@ -25,8 +25,6 @@ typedef struct s_toknode
 
 typedef struct s_input {
 	char	*raw;		// Original line the user typed in.
-	char	**words;	// Array of words (split from the original line).
-	int		count;		// Number of words.
 	t_token	*tokens;	// Array of tokens.
 	int		n_tokens;	// Number of tokens.
 }		t_input;
@@ -49,11 +47,8 @@ typedef struct s_tokenizer_state
 /*					parse_input.c					*/
 int		parse_input_line(const char *line, t_input *input);
 void	input_struct_zero(t_input *input);
-int		fill_words_from_line(t_input *input, const char *line);
 int		clear_struct_on_failure(t_input *input);
 void	free_tokens(t_input *input);
-char	*normalize_tabs(const char *line);
-int		count_words(char **words);
 
 /*					tokenize.c						*/
 int		tokenize_line(const char *line, t_token **out, int *out_count);
