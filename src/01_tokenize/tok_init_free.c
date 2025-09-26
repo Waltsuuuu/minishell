@@ -8,7 +8,7 @@ int	init_tokenizer_state(t_tokenizer_state *state, const char *line)
 	state->index = 0;
 	state->in_double = 0;
 	state->in_single = 0;
-	state->word_start = -1;	// -1 means no active word yet.
+	state->word_start = -1;
 	state->tokens = NULL;
 	state->n_tokens = 0;
 	state->head = NULL;
