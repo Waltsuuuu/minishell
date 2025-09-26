@@ -132,7 +132,12 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
         				perror("redir");
 					}
 					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
-    				_exit(1);
+					free_allocs(shell);
+					free(child_pids);
+					free(pipe_pairs);
+					clean_env(&shell->env_head);
+					free_split(&shell->env_arr);
+					_exit(1);
 				}
 
 			}
@@ -146,6 +151,11 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 					else
 						perror("redir");
 					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					free_allocs(shell);
+					free(child_pids);
+					free(pipe_pairs);
+					clean_env(&shell->env_head);
+					free_split(&shell->env_arr);
 					_exit(1);
 				}
 			}
@@ -158,7 +168,12 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 						perror(redir->target);
 					else
 						perror("redir");
-					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);	
+					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					free_allocs(shell);
+					free(child_pids);
+					free(pipe_pairs);
+					clean_env(&shell->env_head);
+					free_split(&shell->env_arr);	
 					_exit(1);
 				}
 			}
@@ -172,6 +187,11 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 					else
 						perror("redir");
 					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					free_allocs(shell);
+					free(child_pids);
+					free(pipe_pairs);
+					clean_env(&shell->env_head);
+					free_split(&shell->env_arr);
 					_exit(1);
 				}
 			}
@@ -243,7 +263,10 @@ int	apply_redir_out(const t_redir *redir, int *final_out)
 		return (-1);
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
+	{
+		write(1, "test\n", 5);
 		return (-1);
+	}
 		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
 	   ja se ei ole sama kuin juuri avattu fd,
 	   sulje se, ettei jää fd-vuotoa. */
