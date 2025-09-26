@@ -58,8 +58,8 @@ int	run_tokenizer(t_tokenizer_state *state)
 			if (set_operator(state) == -1)						// 		-If operator, create operator token.
 				return (-1);
 		}
-		else
-			if (set_word(state) == -1 )								// 		-If not operator, create word token.
+		else													//		-If not operator, 
+			if (set_word(state) == -1 )							// 			create word token.
 				return (-1);
 	}
 	return (0);

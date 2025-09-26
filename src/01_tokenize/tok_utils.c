@@ -13,9 +13,9 @@ int	scan_word_end(const char *string, int i, int *in_single, int *in_double)
 {
 	if (!string)
 		return (i);
-	while (string[i] != '\0')											// Loop over 
+	while (string[i] != '\0')
 	{
-		if (!*in_single && !*in_double)									// When NOT inside quotes
+		if (!*in_single && !*in_double)
 		{
 			if (string[i] == ' ' || string[i] == '\t'
 				|| get_operator_len(&string[i]) > 0)					// If the current char is space OR operator char is found
