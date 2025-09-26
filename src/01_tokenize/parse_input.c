@@ -65,19 +65,21 @@ int	clear_struct_on_failure(t_input *input)
 	input_struct_zero(input);
 	return (-1);
 }
+
 /**
  * Frees all tokens stored in a `t_input` structs token array.
  *
  * @param input  Pointer to the `t_input` whose tokens will be freed.
- *               If NULL, or if `input->tokens` is NULL, the function does nothing.
+ *               If NULL, or if `input->tokens` is NULL,
+ * 				 the function does nothing.
  *
  * @return void
  *
  */
 void	free_tokens(t_input *input)
 {
-	int i;
-	
+	int	i;
+
 	if (!input || !input->tokens)
 		return ;
 	i = 0;
@@ -90,4 +92,3 @@ void	free_tokens(t_input *input)
 	input->tokens = NULL;
 	input->n_tokens = 0;
 }
-
