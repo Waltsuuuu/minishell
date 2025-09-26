@@ -62,6 +62,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	free(pipe_pairs);
 	clean_env(&shell->env_head);
 	free_split(&shell->env_arr);
+	free_split(&path_directories);
 	_exit(127);
 }
 
