@@ -19,8 +19,6 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	char	*candidate_path;
 	int		path_index;
 
-	(void)shell;
-	(void)child_pids;
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
 		execve(argv[0], argv, envp);
@@ -129,7 +127,10 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
     				if (redir->target) // Tarkistetaan onko kohdenimi olemassa 
         				perror(redir->target);
     				else
+					{
         				perror("redir");
+					}
+					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
     				_exit(1);
 				}
 
@@ -143,6 +144,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 						perror(redir->target);
 					else
 						perror("redir");
+					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
 					_exit(1);
 				}
 			}
@@ -155,6 +157,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 						perror(redir->target);
 					else
 						perror("redir");
+					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);	
 					_exit(1);
 				}
 			}
@@ -167,6 +170,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 						perror(redir->target);
 					else
 						perror("redir");
+					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
 					_exit(1);
 				}
 			}
@@ -188,7 +192,8 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 				_exit(1);
 			close(final_out);
 		}
-
+	
+		close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
 
 		if (cmd && cmd->argv && cmd->argv[0]
 			&& ft_strcmp(cmd->argv[0], "export") == 0)
