@@ -24,7 +24,6 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
 		execve(argv[0], argv, envp);
-		free_split(&path_directories);
 		free_allocs(shell);
 		free(child_pids);
 		free(pipe_pairs);
