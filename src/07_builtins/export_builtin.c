@@ -43,6 +43,7 @@ int	process_export_arg(char *argv, t_shell *shell)
 	char	*key;
 	char	*value;
 	int		equal;
+	t_env	*node;
 
 	if (!is_builtin_valid(argv))
 	{
@@ -52,17 +53,24 @@ int	process_export_arg(char *argv, t_shell *shell)
 	equal = find_equal_sign(argv);
 	if (equal > 0)
 	{
-		if (split_key_and_value(argv, &key, &value) != 0
-			|| env_set(&shell->env_head, key, value) != 0)
+		if (split_key_and_value(argv, &key, &value) != 0)
 			return (1);
-		free (key);
-		free (value);
+		shell->last_status = env_set(&shell->env_head, key, value);
+		free(key);
+		free(value);
+		return (shell->last_status);
 	}
 	else
 	{
-		if (!env_find(shell->env_head, argv))
+		node = env_find(shell->env_head, argv);
+		if (!node)
+		{
 			if (env_set(&shell->env_head, argv, "") != 0)
 				return (1);
+			node = env_find(shell->env_head, argv);
+			if (node)
+				node->assigned = 0;      // NEW: created by `export KEY`
+		}
 	}
 	return (0);
 }

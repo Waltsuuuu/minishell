@@ -29,6 +29,7 @@ typedef struct s_env
 {
 	char			*key;
 	char			*value;
+	int				assigned;
 	struct s_env	*next;
 }	t_env;
 
@@ -91,6 +92,7 @@ int		builtin_export(char **argv, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
 int		exec_export_in_parent(t_command *cmd, t_shell *shell);
 int  	process_export_arg(char *arg, t_shell *shell);
+int		env_list_to_export_display_array(t_env *head, t_shell *shell);
 int		is_builtin_valid(const char *key);
 void	print_invalid_identifier(const char *builtin, const char *key);
 int		env_set(t_env **head, const char *key, const char *value);

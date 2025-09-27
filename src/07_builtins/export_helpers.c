@@ -4,14 +4,13 @@
  * @param env env array
  * @param size the size of the array
  */
-static void	print_env_and_free(char **env, int size)
+static void	print_env_export(char **env, int size)
 {
 	int	i;
 
 	i = 0;
 	while (i < size)
 		ft_printf("declare -x %s\n", env[i++]);
-	// free_split(env);
 }
 
 /**
@@ -26,8 +25,11 @@ void	env_sort_and_print(t_shell *shell)
 	int		i;
 	int		j;
 
-	if (env_list_to_array(shell->env_head, shell) == -1)
+	if (env_list_to_export_display_array(shell->env_head, shell) == -1) //Creating env in printable form
+	{
+		printf("ERROR creating a env_arr");
 		return ; // Should probably return int aswell to inform of failure.
+	}
 	i = 0;
 	while (i < shell->env_size)
 	{
@@ -44,7 +46,12 @@ void	env_sort_and_print(t_shell *shell)
 		}
 		i++;
 	}
-	print_env_and_free(shell->env_arr, shell->env_size);
+	print_env_export(shell->env_arr, shell->env_size);
+	if (env_list_to_array(shell->env_head, shell) == -1) //Recreating the right **env for execve usage
+	{
+		printf("ERROR creating a env_arr");
+		return ; // Should probably return int aswell to inform of failure.
+	}
 }
 
 /**
@@ -99,6 +106,7 @@ int	env_set(t_env **head, const char *key, const char *value)
 			return (1);
 		free (node->value);
 		node->value = new_value;
+		node->assigned = 1;
 		return (0);
 	}
 	node = create_new_env_node(key, value);
