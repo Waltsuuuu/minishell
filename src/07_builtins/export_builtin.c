@@ -86,15 +86,15 @@ int	is_builtin_valid(const char *key)
 {
 	int	counter;
 
-	if (!key || !key[0])
+	if (!key || key[0] == '\0')
 		return (0);
 	counter = 0;
-	if ((unsigned char)ft_isalpha(key[0]) || key[0] == '_')
+	if (ft_isalpha((unsigned char)key[0]) || key[0] == '_')
 	{
 		counter++;
 		while (key[counter] && key[counter] != '=')
 		{
-			if ((unsigned char)!ft_isalnum(key[counter]) && key[counter] != '_')
+			if (!ft_isalnum((unsigned char)key[counter]) && key[counter] != '_')
 				return (0);
 			counter++;
 		}

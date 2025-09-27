@@ -85,6 +85,7 @@ int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
+int		run_builtin(t_command *cmd, t_shell *shell);
 
 // 07_BUILTINS
 int		is_builtin_name(const char *name);
@@ -98,10 +99,13 @@ void	print_invalid_identifier(const char *builtin, const char *key);
 int		env_set(t_env **head, const char *key, const char *value);
 t_env	*env_find(t_env *head, const char *key);
 int		find_equal_sign(char *str);
-int		is_single_export(const t_pipeline *p);
 int		save_stdio(int saved[2]);
 void	restore_stdio(int saved[2]);
 int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
+int		is_parent_builtin(const char *name);
+int		exec_unset_in_parent(t_command *cmd, t_shell *shell);
+int		builtin_unset(char **argv, t_shell *shell);
+int		env_unset(t_shell *shell, const char *key);
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);

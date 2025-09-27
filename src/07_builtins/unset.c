@@ -1,28 +1,30 @@
 #include "minishell.h"
-/*
-unset
 
-Jokaiselle argumentille:
+int	exec_unset_in_parent(t_command *cmd, t_shell *shell)
+{
+	int	saved[2];
 
-Validointi.
+	if (!cmd || !shell)
+		return (1);
+	if (apply_redirs_in_parent(cmd, saved) != 0)
+		return (1);
+	shell->last_status = builtin_unset(cmd->argv, shell);
+	restore_stdio(saved);
+	return (shell->last_status);
+}
 
-Jos kelvollinen → poista listasta (huomioi jos pääsolmu poistetaan).
-
-Ei virhettä jos avainta ei ole.
-
-Paluuarvo: virheellisestä tunnisteesta 1, muuten 0.*/
 static int	is_valid_unset_name(const char *key)
 {
     int counter;
 
     if (!key || !key[0])
         return (0);
-    if (!(ft_isalpha(key[0]) || key[0] == '_'))
+    if (!(ft_isalpha((unsigned char)key[0]) || key[0] == '_'))
         return (0);
     counter = 1;
     while (key[counter])
     {
-        if (!ft_isalnum(key[counter]) && key[counter] != '_')
+        if (!ft_isalnum((unsigned char)key[counter]) && key[counter] != '_')
             return (0);
         counter++;
     }
