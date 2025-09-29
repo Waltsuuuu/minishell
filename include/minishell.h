@@ -119,6 +119,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
 void	print_env(t_shell *shell);
 void	env_sort_and_print(t_shell *shell);
 int		find_equal_sign(char *str);
+char	*env_get(t_shell *shell, const char *key);
 
 // UTILS
 /*					See utils.h									*/
