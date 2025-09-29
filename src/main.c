@@ -1,5 +1,38 @@
 #include "minishell.h"
 
+// REAL
+// line = readline(shell.buf);
+// free_str_ptr(&shell.buf);
+// if (!line) // CTR:+D
+// {  
+// 	clean_env(&shell.env_head);
+// 	free_split(&shell.env_arr);
+// 	clear_history();
+// 	printf("exit\n");
+// 	break ;
+// }
+
+// MSTEST M
+// if (isatty(fileno(stdin)))
+// line = readline(shell.buf);
+// else
+// {
+// char *line;
+// line = get_next_line(fileno(stdin));
+// line = ft_strtrim(line, "\n");
+// free(line);
+// }
+// // line = readline(shell.buf);
+// free_str_ptr(&shell.buf);
+// if (!line) // CTR:+D
+// {  
+// clean_env(&shell.env_head);
+// free_split(&shell.env_arr);
+// clear_history();
+// // printf("exit\n");
+// break ;
+// }
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	(void)	argc;
