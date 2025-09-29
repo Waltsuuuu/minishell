@@ -42,7 +42,7 @@ int	main(int argc, char *argv[], char *envp[])
 	char	cwd[BUFSIZ];
 	
 	setup_signal_handlers_for_prompt();
-	print_msh_banner();
+	// print_msh_banner();
     rl_bind_key('\t', rl_complete);
 	line = NULL;
 
@@ -61,16 +61,18 @@ int	main(int argc, char *argv[], char *envp[])
 		shell.buf = ft_strjoin(cwd, "~:$");
 		if (!shell.buf)
 			break ;
-        line = readline(shell.buf);
+		// ADD TESTER BLOCK HERE vvv
+		line = readline(shell.buf);
 		free_str_ptr(&shell.buf);
 		if (!line) // CTR:+D
 		{  
 			clean_env(&shell.env_head);
 			free_split(&shell.env_arr);
 			clear_history();
-            printf("exit\n");
-            break ;
-        }
+			printf("exit\n");
+			break ;
+		}
+		// ADD TESTER BLOCK HERE ^^^
 		if (g_signal == SIGINT)
 		{
 				shell.last_status = 130;
