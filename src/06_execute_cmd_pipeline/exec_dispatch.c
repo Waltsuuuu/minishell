@@ -21,6 +21,9 @@ int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
 			return (exec_export_in_parent(&pipeline->cmds[0], shell));
 		else if (ft_strcmp(pipeline->cmds[0].argv[0], "unset") == 0)
 			return (exec_unset_in_parent(&pipeline->cmds[0], shell));
+		else if (ft_strcmp(pipeline->cmds[0].argv[0], "cd") == 0)
+			return (exec_cd_in_parent(&pipeline->cmds[0], shell));
+		
 	}
 	return (exec_pipeline(envp, pipeline, shell));
 }
