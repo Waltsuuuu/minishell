@@ -216,10 +216,10 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 	
 		close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
 
-		if (cmd && cmd->argv && cmd->argv[0]
-			&& ft_strcmp(cmd->argv[0], "export") == 0)
+		if (cmd && cmd->argv && cmd->argv[0] //betarunning builtins
+			&& is_builtin_name(cmd->argv[0]))
 		{
-			shell->last_status = builtin_export(cmd->argv, shell);
+			shell->last_status = run_builtin(cmd, shell);
 			free_allocs(shell);
 			free(child_pids);
 			free(pipe_pairs);

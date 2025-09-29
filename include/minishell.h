@@ -29,6 +29,7 @@ typedef struct s_env
 {
 	char			*key;
 	char			*value;
+	int				assigned;
 	struct s_env	*next;
 }	t_env;
 
@@ -84,6 +85,7 @@ int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
+int		run_builtin(t_command *cmd, t_shell *shell);
 
 // 07_BUILTINS
 int		is_builtin_name(const char *name);
@@ -91,15 +93,21 @@ int		builtin_export(char **argv, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
 int		exec_export_in_parent(t_command *cmd, t_shell *shell);
 int  	process_export_arg(char *arg, t_shell *shell);
+int		env_list_to_export_display_array(t_env *head, t_shell *shell);
 int		is_builtin_valid(const char *key);
 void	print_invalid_identifier(const char *builtin, const char *key);
 int		env_set(t_env **head, const char *key, const char *value);
 t_env	*env_find(t_env *head, const char *key);
 int		find_equal_sign(char *str);
-int		is_single_export(const t_pipeline *p);
 int		save_stdio(int saved[2]);
 void	restore_stdio(int saved[2]);
 int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
+int		is_parent_builtin(const char *name);
+int		exec_unset_in_parent(t_command *cmd, t_shell *shell);
+int		builtin_unset(char **argv, t_shell *shell);
+int		env_unset(t_shell *shell, const char *key);
+int		builtin_cd(char **argv, t_shell *shell);
+int		exec_cd_in_parent(t_command *cmd, t_shell *shell);
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);

@@ -99,6 +99,7 @@ t_env	*create_new_env_node(const char *key, const char *value)
 		env_node->value = ft_strdup(value);
 	else if (!value)
 		env_node->value =ft_strdup("");
+	env_node->assigned = 1;
 	env_node->next = NULL;
 	if (!env_node->key || !env_node->value)
 	{
@@ -145,7 +146,7 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 	// char	**env_arr;
 	int		counter;
 	t_env	*env_list;
-	char	*test;
+	char	*pair;
 
 
 	env_list = head;
@@ -155,7 +156,9 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 		counter++;
 		env_list = env_list->next;
 	}
-	free_split(&shell->env_arr);
+	free_split(&shell->env_arr); //Clean before building
+	shell->env_arr = NULL;
+	shell->env_size = 0;
 	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
 	if (!shell->env_arr)
 		return (-1);
@@ -169,18 +172,113 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 			free_partial(shell->env_arr, counter);
 			return (-1);
 		}
-		test = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
-		if (!test)
+		pair = ft_strjoin_with_equal_sign(env_list->key, env_list->value);
+		if (!pair)
 		{
 			free_partial(shell->env_arr, counter);
 			return (-1);
 		}
-		shell->env_arr[counter] = test;
+		shell->env_arr[counter] = pair;
 		env_list = env_list->next;
 		counter++;
 	}
 	shell->env_arr[counter] = NULL;
 
+	return (0);
+}
+
+/**
+ * @brief Build a printable array for `export` output.
+ *
+ * Creates a NULL-terminated array of display lines from the env list and
+ * stores it in shell->env_arr, setting shell->env_size. Each entry is
+ * formatted like Bash `declare -x`:
+ *   - unassigned:          "KEY"
+ *   - assigned & empty:    "KEY=\"\""
+ *   - assigned & nonempty: "KEY=\"VALUE\""
+ *
+ * @param head   Head of the linked-list of environment variables.
+ * @param shell  Shell state; receives the allocated array and its size.
+ * @return 0 on success, -1 on allocation error (partial allocations are freed).
+ *
+ * @note This is for display only. Use a separate builder for execve envp.
+ */
+int	env_list_to_export_display_array(t_env *head, t_shell *shell)
+{
+
+	int		counter;
+	t_env	*env_list;
+	char	*pair;
+	char	*tmp;
+
+
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		counter++;
+		env_list = env_list->next;
+	}
+	free_split(&shell->env_arr); //Clean before building
+	shell->env_arr = NULL;
+	shell->env_size = 0;
+	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
+	if (!shell->env_arr)
+		return (-1);
+	shell->env_size = counter;
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		if (env_list->key == NULL)
+		{
+			free_partial(shell->env_arr, counter);
+			return (-1);
+		}
+		if (env_list->assigned == 0)
+		{
+			pair = ft_strdup(env_list->key);                      /* KEY */
+		}
+		else if (env_list->value[0] == '\0')
+		{
+			pair = ft_strjoin(env_list->key, "=\"\"");            /* KEY="" */
+		}
+		else
+		{
+			/* KEY="VALUE" */
+			tmp = ft_strjoin(env_list->key, "=\"");
+			if (!tmp)
+			{
+				free_partial(shell->env_arr, counter);
+				return (-1);
+			}
+			pair = ft_strjoin(tmp, env_list->value);
+			free(tmp);
+			if (!pair)
+			{
+				free_partial(shell->env_arr, counter);
+				return (-1);
+			}
+			tmp = ft_strjoin(pair, "\"");
+			free(pair);
+			if (!tmp)
+			{
+				free_partial(shell->env_arr, counter);
+				return (-1);
+			}
+			pair = tmp;
+		}
+
+		if (!pair)
+		{
+			free_partial(shell->env_arr, counter);
+			return (-1);
+		}
+		shell->env_arr[counter] = pair;
+		env_list = env_list->next;
+		counter++;
+	}
+	shell->env_arr[counter] = NULL;
 	return (0);
 }
 
