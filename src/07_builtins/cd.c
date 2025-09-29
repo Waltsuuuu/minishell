@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
 
 int	builtin_cd(char **argv, t_shell *shell)
 {

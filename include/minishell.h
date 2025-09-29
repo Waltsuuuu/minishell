@@ -108,6 +108,7 @@ int		builtin_unset(char **argv, t_shell *shell);
 int		env_unset(t_shell *shell, const char *key);
 int		builtin_cd(char **argv, t_shell *shell);
 int		exec_cd_in_parent(t_command *cmd, t_shell *shell);
+int		pwd(void);
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);

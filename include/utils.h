@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 # define UTILS_H
 
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+
 /*					get_working_dir.c							*/
 void	getworkindir(char *buf, size_t size);
 
