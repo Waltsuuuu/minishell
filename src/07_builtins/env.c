@@ -17,3 +17,18 @@ void	print_env(t_shell *shell)
 		env_list = env_list->next;
 	}
 }
+
+char	*env_get(t_shell *shell, const char *key)
+{
+	t_env *env;
+
+	env = shell->env_head;
+
+	while (env)
+	{
+		if (env->key && key && !ft_strncmp(env->key, key, ft_strlen(key)))
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
