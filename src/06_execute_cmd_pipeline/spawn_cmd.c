@@ -115,6 +115,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 		if (pipe_out >= 0)
 			final_out = pipe_out;
 
+
 		// 2. Käy läpi redirit: tässä vaiheessa vain '>'
 		node = cmd->redirs;
 		while (node)
@@ -199,7 +200,6 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 			node = node->next;
 		}
 	
-
 		/* 3. Tee dup2 lopullisille fd:ille ja sulje ylimääräiset */
 		if (final_in != STDIN_FILENO)
 		{
@@ -230,10 +230,6 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 
 		/* 4. Aja komento */
 		exec_with_path_search(cmd->argv, envp, shell, child_pids, pipe_pairs);
-		if (cmd->argv && cmd->argv[0])
-    		perror(cmd->argv[0]);
-		else
-    		perror("execve");
 		_exit(127);
 	}
 	return (pid);

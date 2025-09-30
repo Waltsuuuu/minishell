@@ -69,7 +69,7 @@ int	main(int argc, char *argv[], char *envp[])
 			clean_env(&shell.env_head);
 			free_split(&shell.env_arr);
 			clear_history();
-			printf("exit\n");
+			// printf("exit\n");
 			break ;
 		}
 		// ADD TESTER BLOCK HERE ^^^
@@ -141,7 +141,7 @@ int	main(int argc, char *argv[], char *envp[])
 	clean_env(&shell.env_head);
 	free_split(&shell.env_arr);
 	clear_history();
-	return (EXIT_SUCCESS);
+	return (shell.last_status);
 }
 
 // Notes:
