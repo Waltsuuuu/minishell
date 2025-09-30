@@ -101,7 +101,7 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 			*i += 1;
 		}
 		else
-			return (-1);
+			*i += 1;
 	}
 	return (0);
 }
