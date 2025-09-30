@@ -130,6 +130,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free_split(&shell.env_arr);
 			continue ;
 		}
+		// print_tokens(&shell.input);						// Token debug
 		// print_cmds(&shell.pipeline);						// Pipeline cmds debug
 		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		free_str_ptr(&line);
