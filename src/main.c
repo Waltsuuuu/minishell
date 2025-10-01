@@ -124,7 +124,7 @@ int	main(int argc, char *argv[], char *envp[])
 			continue ;
 		}
 		// printf("Last status: %d\n", shell.last_status); 	// Last status debug
-		if (build_pipeline(&shell.input, shell.input.tokens, &shell.pipeline) == -1)
+		if (build_pipeline(&shell, &shell.input, shell.input.tokens, &shell.pipeline) == -1)
 		{
 			free_str_ptr(&line);
 			free_allocs(&shell);

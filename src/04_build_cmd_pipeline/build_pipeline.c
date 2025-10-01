@@ -5,14 +5,14 @@
  * Modifies t_pipeline *pipeline in place.
  * @return 0 on success, -1 on syntax/alloc error.
  */
-int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
+int	build_pipeline(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline)
 {
 	int		n_cmds;
 	int		i;
 	int		cmd_i;
 	t_seg	seg;
 
-	n_cmds = bp_prepare(input, tokens, pipeline);
+	n_cmds = bp_prepare(shell, input, tokens, pipeline);
 	if (n_cmds <= 0)
 		return (n_cmds);
 	pipeline->n_cmds = n_cmds;
@@ -21,9 +21,9 @@ int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
 	while (cmd_i < n_cmds)
 	{
 		bp_seg_init(&seg, i);
-		if (bp_fill_segment(input, tokens, &seg, &i) == -1)
+		if (bp_fill_segment(shell, input, tokens, &seg, &i) == -1)
 			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
-		if (bp_finalize_command(&seg, pipeline, cmd_i, tokens, i) == -1)
+		if (bp_finalize_command(&seg, pipeline, cmd_i, shell, i) == -1)
 			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
 		if (i < input->n_tokens && tokens[i].type == TOK_PIPE)
 			i++;
@@ -38,7 +38,7 @@ int	build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline)
  * Prepare pipeline: Basic syntax checks and alloc pipeline->cmds array.
  * @return -1 on error, 0 if no tokens, >0 = n_cmds allocated. 
  */
-int	bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline)
+int	bp_prepare(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline)
 {
 	int	n_cmds;
 
@@ -56,7 +56,7 @@ int	bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline)
 		return (-1);
 	if (tokens[0].type == TOK_PIPE)
 	{
-		printf("Syntax error near '%s' at position %d\n", tokens[0].text, tokens[0].pos); // These have to go to stderr i think? Update it later...
+		tok_syntax_err(&tokens[0], shell);
 		free(pipeline->cmds);
 		pipeline->cmds = NULL;
 		pipeline->n_cmds = 0;
@@ -78,7 +78,7 @@ void	bp_seg_init(t_seg *seg, int start)
  * Advances *i, appends to seg->args/redirs, increments seg->argc.
  * @return 0 on success, -1 on syntax/alloc error.
  */
-int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
+int	bp_fill_segment(t_shell *shell, t_input *input, t_token *tokens, t_seg *seg, int *i)
 {
 	while (*i < input->n_tokens && tokens[*i].type != TOK_PIPE)
 	{
@@ -86,7 +86,7 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 		{
 			if ((*i + 1 >= input->n_tokens) || tokens[*i + 1].type != TOK_WORD)
 			{
-				printf("Syntax error near '%s' at position %d\n", tokens[*i].text, tokens[*i].pos);
+				tok_syntax_err(&tokens[*i], shell);
 				return(-1);
 			}
 			if (build_and_append_redir(tokens, *i, seg) == -1)
@@ -106,14 +106,14 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 	return (0);
 }
 
-int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *tokens, int i)
+int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_shell *shell, int i)
 {
 	if (seg->argc == 0 && seg->redirs == NULL)		// Empty command
 	{
 		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
 			ft_putstr_fd("Syntax error near newline", STDERR_FILENO);
 		else										// Between pipes
-			printf("Syntax error near '%s' at position %d\n", tokens[i].text, tokens[i].pos);
+			tok_syntax_err(&shell->input.tokens[i], shell);
 		return (-1);
 	}
 	if (arg_ll_to_arr(seg, pipeline, cmd_i) == -1)

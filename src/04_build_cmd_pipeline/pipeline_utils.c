@@ -40,3 +40,16 @@ int	count_pipes(t_input *input)
 	}
 	return (count);
 }
+
+void	tok_syntax_err(t_token *token, t_shell *shell)
+{
+	ft_putstr_fd("Syntax error near '", STDERR_FILENO);
+	if (token->text)
+		ft_putstr_fd(token->text, STDERR_FILENO);
+	else
+		ft_putstr_fd("(null)", STDERR_FILENO);
+	ft_putstr_fd("' at position ", STDERR_FILENO);
+	ft_putnbr_fd(token->pos, STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
+	shell->last_status = 2;
+}
