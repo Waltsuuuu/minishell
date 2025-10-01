@@ -132,7 +132,7 @@ int	main(int argc, char *argv[], char *envp[])
 		}
 		// print_tokens(&shell.input);						// Token debug
 		// print_cmds(&shell.pipeline);						// Pipeline cmds debug
-		exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
+		shell.last_status = exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		free_str_ptr(&line);
 		free_allocs(&shell);
 	}

@@ -25,4 +25,7 @@ void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
 
+// Parsing for exit
+int		ft_strtoll(const char *str, long long *out);
+
 #endif
