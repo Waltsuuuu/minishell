@@ -10,7 +10,6 @@ int	builtin_echo(t_command *cmd)
 	nflag = 0;
 	if (!cmd || !cmd->argv || !cmd->argv[0])
 		return (0);
-	printf("%s\n", cmd->argv[i]);
 	while (cmd->argv[i] && cmd->argv[i][0] == '-' && cmd->argv[i][1] == 'n') //go through multiple n blocks
 	{
 		int j = 1;

@@ -21,6 +21,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
+		
 		execve(argv[0], argv, envp);
 		free_allocs(shell);
 		free(child_pids);
@@ -53,10 +54,10 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 		}
 		free_split(&path_directories);
 	}
-	write(2, "minishell: ", 11);
+	write(1, "minishell: ", 11);
 	if (argv && argv[0])
-		write(2, argv[0], (int)strlen(argv[0]));
-	write(2, ": command not found\n", 20);
+		write(1, argv[0], (int)strlen(argv[0]));
+	write(1, ": command not found\n", 20);
 	free_allocs(shell);
 	free(child_pids);
 	free(pipe_pairs);
@@ -198,7 +199,6 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 
 			node = node->next;
 		}
-	
 
 		/* 3. Tee dup2 lopullisille fd:ille ja sulje ylimääräiset */
 		if (final_in != STDIN_FILENO)

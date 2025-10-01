@@ -23,6 +23,7 @@
 # include "utils.h"
 # include "quotes.h"
 # include "../libft/get_next_line/get_next_line.h"
+# include "limits.h"
 
 extern volatile sig_atomic_t g_signal;
 
