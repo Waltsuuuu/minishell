@@ -93,6 +93,14 @@ int	main(int argc, char *argv[], char *envp[])
 			free_split(&shell.env_arr);
 			continue ;
 		}
+		if (count_heredocs(&shell.input) >= 16)
+		{
+			ft_putstr_fd("minishell: maximum here-document count exceeded\n", STDERR_FILENO);
+			free_str_ptr(&line);
+			free_allocs(&shell);
+			free_split(&shell.env_arr);
+			continue ;
+		}
 		if (expand_tokens(&shell.input, shell.last_status, shell.env_arr) == -1)
 		{
 			free_str_ptr(&line);
@@ -144,6 +152,7 @@ int	main(int argc, char *argv[], char *envp[])
 	clear_history();
 	return (shell.last_status);
 }
+
 
 // Notes:
 // TODO we should be able to open a minishell on minishell. 

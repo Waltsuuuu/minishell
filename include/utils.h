@@ -28,4 +28,7 @@ void	handle_sig(int signum);
 // Parsing for exit
 int		ft_strtoll(const char *str, long long *out);
 
+// Count heredocs
+int	count_heredocs(t_input *input);
+
 #endif
