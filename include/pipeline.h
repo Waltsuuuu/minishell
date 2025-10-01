@@ -1,6 +1,8 @@
 #ifndef PIPELINE_H
 # define PIPELINE_H
 
+typedef struct s_shell	t_shell;
+
 typedef enum e_redir_type
 {
 	REDIR_IN,
@@ -40,17 +42,17 @@ typedef struct s_seg {
 } t_seg;
 
 // build_pipeline.c
-int		build_pipeline(t_input *input, t_token *tokens, t_pipeline *pipeline);
-int		bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline);
+int		build_pipeline(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline);
+int		bp_prepare(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline);
 void	bp_seg_init(t_seg *seg, int start);
-int		bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i);
-int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *tokens, int i);
+int		bp_fill_segment(t_shell *shell, t_input *input, t_token *tokens, t_seg *seg, int *i);
+int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_shell *shell, int i);
 
 // pipeline_utils.c
 int		get_redir_type(TokType type, t_redir_type *t_type);
 int		is_redir_tok(TokType type);
 int		count_pipes(t_input *input);
-void	tok_syntax_err(t_token *token);
+void	tok_syntax_err(t_token *token, t_shell *shell);
 
 // pipeline_args.c
 int		arg_ll_to_arr(t_seg *seg, t_pipeline *pipeline, int cmd_i);
