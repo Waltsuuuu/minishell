@@ -56,7 +56,7 @@ int	bp_prepare(t_input *input, t_token *tokens, t_pipeline *pipeline)
 		return (-1);
 	if (tokens[0].type == TOK_PIPE)
 	{
-		printf("Syntax error near '%s' at position %d\n", tokens[0].text, tokens[0].pos); // These have to go to stderr i think? Update it later...
+		tok_syntax_err(&tokens[0]);
 		free(pipeline->cmds);
 		pipeline->cmds = NULL;
 		pipeline->n_cmds = 0;
@@ -86,7 +86,7 @@ int	bp_fill_segment(t_input *input, t_token *tokens, t_seg *seg, int *i)
 		{
 			if ((*i + 1 >= input->n_tokens) || tokens[*i + 1].type != TOK_WORD)
 			{
-				printf("Syntax error near '%s' at position %d\n", tokens[*i].text, tokens[*i].pos);
+				tok_syntax_err(&tokens[*i]);
 				return(-1);
 			}
 			if (build_and_append_redir(tokens, *i, seg) == -1)
@@ -113,7 +113,7 @@ int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *to
 		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
 			ft_putstr_fd("Syntax error near newline", STDERR_FILENO);
 		else										// Between pipes
-			printf("Syntax error near '%s' at position %d\n", tokens[i].text, tokens[i].pos);
+			tok_syntax_err(&tokens[i]);
 		return (-1);
 	}
 	if (arg_ll_to_arr(seg, pipeline, cmd_i) == -1)

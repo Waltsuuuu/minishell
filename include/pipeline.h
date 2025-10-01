@@ -50,6 +50,7 @@ int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *t
 int		get_redir_type(TokType type, t_redir_type *t_type);
 int		is_redir_tok(TokType type);
 int		count_pipes(t_input *input);
+void	tok_syntax_err(t_token *token);
 
 // pipeline_args.c
 int		arg_ll_to_arr(t_seg *seg, t_pipeline *pipeline, int cmd_i);
