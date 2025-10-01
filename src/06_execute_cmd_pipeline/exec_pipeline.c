@@ -21,7 +21,6 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline, t_shell *shell)
 	int		cmd_index;
 	int		pipe_in;
 	int		pipe_out;
-	int		last_status;
 
 	pipe_pairs = allocate_pipes(pipeline->n_cmds);
 	child_pids = (pid_t *)malloc(sizeof(pid_t) * pipeline->n_cmds);
@@ -39,10 +38,10 @@ int	exec_pipeline(char **envp, t_pipeline *pipeline, t_shell *shell)
 	}
 	close_all_pipes(pipe_pairs, pipeline->n_cmds);
 	free(pipe_pairs);
-	last_status = wait_all_and_last_status(child_pids, pipeline->n_cmds,
+	shell->last_status = wait_all_and_last_status(child_pids, pipeline->n_cmds,
 			child_pids[pipeline->n_cmds - 1]);
 	free(child_pids);
 	free_allocs(shell);
-	return (last_status);
+	return (shell->last_status);
 }
 

@@ -7,7 +7,8 @@ typedef enum {
 	TOK_REDIR_IN,	// <
 	TOK_REDIR_OUT,	// >
 	TOK_REDIR_APP,	// >>
-	TOK_HEREDOC		// <<
+	TOK_HEREDOC,	// <<
+	TOK_VOID		// IGNORE TOKEN (Empty token.text after expansion, and was not quoted)
 }	TokType;
 
 typedef struct s_token {

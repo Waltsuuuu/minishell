@@ -22,6 +22,8 @@ int	remove_quotes(t_input *input)
 				return (-1);
 			free(input->tokens[i].text);								// Free the old token.text
 			input->tokens[i].text = unquoted_text;						// Replace token.text with unquoted_text
+			if (unquoted_text[0] == '\0' && input->tokens[i].was_quoted == 0) // Check if the token.text is an empty string and the string was NOT quoted (empty expansion).
+				input->tokens[i].type = TOK_VOID;
 		}
 		i++;
 	}

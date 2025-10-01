@@ -32,3 +32,16 @@ int	builtin_echo(t_command *cmd)
 	return (0);
 }
 }
+
+int	exec_echo_in_parent(t_command *cmd, t_shell *shell)
+{
+	int	saved[2];
+
+	if (!cmd || !shell)
+		return (1);
+	if (apply_redirs_in_parent(cmd, saved) != 0)
+		return (1);
+	shell->last_status = builtin_echo(cmd);
+	restore_stdio(saved);
+	return (shell->last_status);
+}

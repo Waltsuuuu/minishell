@@ -69,7 +69,7 @@ int	main(int argc, char *argv[], char *envp[])
 			clean_env(&shell.env_head);
 			free_split(&shell.env_arr);
 			clear_history();
-			printf("exit\n");
+			// printf("exit\n");
 			break ;
 		}
 		// ADD TESTER BLOCK HERE ^^^
@@ -130,6 +130,7 @@ int	main(int argc, char *argv[], char *envp[])
 			free_split(&shell.env_arr);
 			continue ;
 		}
+		// print_tokens(&shell.input);						// Token debug
 		// print_cmds(&shell.pipeline);						// Pipeline cmds debug
 		shell.last_status = exec_dispatch(shell.env_arr, &shell.pipeline, &shell);
 		free_str_ptr(&line);
@@ -141,7 +142,7 @@ int	main(int argc, char *argv[], char *envp[])
 	clean_env(&shell.env_head);
 	free_split(&shell.env_arr);
 	clear_history();
-	return (EXIT_SUCCESS);
+	return (shell.last_status);
 }
 
 // Notes:
