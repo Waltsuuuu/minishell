@@ -111,7 +111,7 @@ int	bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_token *to
 	if (seg->argc == 0 && seg->redirs == NULL)		// Empty command
 	{
 		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
-			printf("Syntax error near newline\n");
+			ft_putstr_fd("Syntax error near newline", STDERR_FILENO);
 		else										// Between pipes
 			printf("Syntax error near '%s' at position %d\n", tokens[i].text, tokens[i].pos);
 		return (-1);

@@ -8,6 +8,8 @@ int	builtin_pwd(void)
 	cwd = getcwd(buf, sizeof(buf));
 	if (!cwd)
 		return(perror("pwd"), 1);
-	printf("%s\n", cwd);
+	ft_putstr_fd(cwd, STDOUT_FILENO);
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	// printf("%s\n", cwd);
 	return (0);
 }

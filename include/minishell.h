@@ -99,7 +99,7 @@ int		exec_export_in_parent(t_command *cmd, t_shell *shell);
 int  	process_export_arg(char *arg, t_shell *shell);
 int		env_list_to_export_display_array(t_env *head, t_shell *shell);
 int		is_builtin_valid(const char *key);
-void	print_invalid_identifier(const char *builtin, const char *key);
+void	print_invalid_identifier(char *builtin, char *key);
 int		env_set(t_env **head, const char *key, const char *value);
 t_env	*env_find(t_env *head, const char *key);
 int		find_equal_sign(char *str);

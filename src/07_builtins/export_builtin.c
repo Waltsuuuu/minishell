@@ -110,9 +110,13 @@ int	is_builtin_valid(const char *key)
  * @param builtin  builtin name ("export", etc.)
  * @param key      offending key string
  */
-void	print_invalid_identifier(const char *builtin, const char *key)
+void	print_invalid_identifier(char *builtin, char *key)
 {
-	ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
+	ft_putstr_fd(builtin, STDERR_FILENO);
+	ft_putstr_fd(": `", STDERR_FILENO);
+	ft_putstr_fd(key, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
+	// ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
 }
 
 /**
