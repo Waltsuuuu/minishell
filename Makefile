@@ -16,7 +16,7 @@ SRC         :=  src/main.c \
 				src/07_builtins/env_init.c src/07_builtins/env.c src/07_builtins/export_exec_parent.c src/07_builtins/export_builtin.c src/07_builtins/export_helpers.c \
                 src/utils/free_allocs.c src/utils/free_split.c src/utils/get_working_dir.c src/utils/print_msh_banner.c src/utils/signal_handling/signal.c	src/07_builtins/unset.c src/07_builtins/builtin_utils.c src/07_builtins/cd.c src/07_builtins/pwd.c \
 				src/07_builtins/echo.c src/utils/ft_strtoll.c src/07_builtins/exit.c \
-				src/utils/count_heredocs.c
+				src/utils/count_heredocs.c src/utils/mode_check.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================

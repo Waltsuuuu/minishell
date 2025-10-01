@@ -31,4 +31,8 @@ int		ft_strtoll(const char *str, long long *out);
 // Count heredocs
 int	count_heredocs(t_input *input);
 
+// Mode check
+char	*read_with_mode_check(const char *buf);
+void	remove_nl(char *str);
+
 #endif
