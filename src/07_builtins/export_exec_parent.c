@@ -94,6 +94,8 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 			return (restore_stdio(saved), -1);
 		if (r && r->type == REDIR_IN && apply_redir_in(r, &in_fd) < 0)
 			return (restore_stdio(saved), -1);
+		if (r && r->type == REDIR_HEREDOC && apply_redir_in(r, &in_fd) < 0)
+			return (restore_stdio(saved), -1);
 		node = node->next;
 	}
 	if (replug_stdio_pair(in_fd, out_fd, saved) < 0)

@@ -8,7 +8,7 @@ static int	is_interactive(t_shell *shell)
 	return (isatty(STDIN_FILENO));
 }
 
-int	exit_core(t_command *cmd, t_shell *shell)
+int	builtin_exit(t_command *cmd, t_shell *shell)
 {
 	int			status;
 	long long	value;
@@ -67,7 +67,7 @@ int exec_exit_in_parent(t_command *cmd, t_shell *shell)
     if (apply_redirs_in_parent(cmd, saved) != 0)
         return (1);
 
-    shell->last_status = exit_core(cmd, shell);
+    shell->last_status = builtin_exit(cmd, shell);
 
     restore_stdio(saved);
     return (shell->last_status);

@@ -10,8 +10,8 @@ int	run_builtin(t_command *cmd, t_shell *shell)
 		return (builtin_unset(cmd->argv, shell));
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
 		return (builtin_cd(cmd->argv, shell));
-	//if (ft_strcmp(cmd->argv[0], "exit") == 0)
-	//	return (builtin_exit(cmd->argv, shell));
+	if (ft_strcmp(cmd->argv[0], "exit") == 0)
+		return (builtin_exit(cmd, shell));
 	if (ft_strcmp(cmd->argv[0], "echo") == 0)
 		return (builtin_echo(cmd));
 	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
@@ -29,8 +29,8 @@ int	is_builtin_name(const char *name)
 		return (1);
 	if (ft_strcmp(name, "cd") == 0)
 		return (1);
-	//if (ft_strcmp(name, "exit") == 0)
-	//	return (1);
+	if (ft_strcmp(name, "exit") == 0)
+		return (1);
 	if (ft_strcmp(name, "echo") == 0)
 		return (1);
 	if (ft_strcmp(name, "pwd") == 0)
