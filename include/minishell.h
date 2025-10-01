@@ -45,6 +45,8 @@ typedef struct s_shell
     char		*cwd;
 	t_pipeline	pipeline;
 	char		*buf;
+	int			in_child;
+	int			interactive;
 }   t_shell;
 
 // 00_BALANCE_QUOTES
@@ -112,6 +114,8 @@ int		builtin_cd(char **argv, t_shell *shell);
 int		exec_cd_in_parent(t_command *cmd, t_shell *shell);
 int		builtin_pwd(void);
 int		builtin_echo(t_command *cmd);
+int 	exec_exit_in_parent(t_command *cmd, t_shell *shell);
+int		exit_core(t_command *cmd, t_shell *shell);
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);

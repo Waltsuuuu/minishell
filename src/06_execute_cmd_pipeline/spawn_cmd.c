@@ -106,6 +106,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 	pid = fork();
 	if (pid == 0)
 	{
+		shell->in_child = 1; //Tag that we are in child
 		setup_signal_handlers_for_child();
 
 		// 1. Aloitus oletuksilla (putkista jos on, muuten stdin/stdout)

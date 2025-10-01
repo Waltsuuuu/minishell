@@ -6,11 +6,11 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 13:12:08 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/06/19 11:37:06 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/09/30 11:54:26 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "libft.h"
 
 int	ft_safe_atoi(const char *nptr, int *output)
 {
