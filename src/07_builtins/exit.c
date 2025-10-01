@@ -34,10 +34,10 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(cmd->argv[1] ,2);
 		ft_putstr_fd(": numeric argument required\n", 2);
-		//CLEANUP HEEW
+		//CLEANUP HEERE
 		if (shell->in_child)
-			_exit(255);
-		exit(255);
+			_exit(2);
+		exit(2);
 	}
 	if (cmd->argv[2])
 	{
