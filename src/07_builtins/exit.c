@@ -20,10 +20,21 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 	{
 		status = (unsigned char)shell->last_status; // by casting to unsigned char we get the 0-255 value
 		if (shell->in_child)
+		{
+			free_allocs(shell);
+			free_split(&shell->env_arr);
+			clean_env(&shell->env_head);
+			free_split(&shell->env_arr);
+			free(shell->pipeline.child_pids); // Only free in child
+			free(shell->pipeline.pipe_pairs); // Only free in child
 			_exit(status);
+		}
 		if (is_interactive(shell))
 			ft_putstr_fd("exit\n",1);
-		//CLEANUP HERE
+		free_allocs(shell);
+		free_split(&shell->env_arr);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
 		exit(status);
 	}
 		//validate the first arg
@@ -34,9 +45,16 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(cmd->argv[1] ,2);
 		ft_putstr_fd(": numeric argument required\n", 2);
-		//CLEANUP HEERE
+		free_allocs(shell);
+		free_split(&shell->env_arr);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
 		if (shell->in_child)
+		{
+			free(shell->pipeline.child_pids);
+			free(shell->pipeline.pipe_pairs);
 			_exit(2);
+		}
 		exit(2);
 	}
 	if (cmd->argv[2])
@@ -49,10 +67,21 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 	//if right amount arg, and arg validated to be ok
 	status = (unsigned char)value;
 	if (shell->in_child)
+	{
+		free_allocs(shell);
+		free_split(&shell->env_arr);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
+		free(shell->pipeline.child_pids);
+		free(shell->pipeline.pipe_pairs);
 		_exit(status);
+	}
 	if (is_interactive(shell))
 		ft_putstr_fd("exit\n", 1);
-	//CLEANUP!
+	free_allocs(shell);
+	free_split(&shell->env_arr);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
 	exit(status);
 }
 

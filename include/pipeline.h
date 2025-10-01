@@ -28,6 +28,8 @@ typedef struct s_pipeline
 {
 	int			n_cmds;
 	t_command	*cmds;
+	int			(*pipe_pairs)[2]; //Osoitin taulukko pareista ns putket
+	pid_t		*child_pids;
 }	t_pipeline;
 
 typedef struct s_seg {
