@@ -6,30 +6,57 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 09:45:46 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/02 09:52:12 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/02 13:21:59 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
-static void	exec_with_path_search(char **argv, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
+/**
+ * Checks whether a string contains a '/' character.
+ *
+ * @param input the string to scan (program name or path)
+ * @return 1 if a slash is present, 0 otherwise
+ */
+static int	has_slash(char *input)
 {
-	char	**path_directories;
-	char	*candidate_path;
-	int		path_index;
+	while (*input)
+		if (*input++ == '/')
+			return (1);
+	return (0);
+}
 
-	if (argv && argv[0] && has_slash(argv[0]))
-	{
-		
+static void direct_exec(char **argv, t_shell *shell, pid_t *child_pids, int(*pipe_pairs)[2])
+{
 		execve(argv[0], argv, shell->env_arr);
 		free_allocs(shell);
 		free(child_pids);
 		free(pipe_pairs);
 		clean_env(&shell->env_head);
 		free_split(&shell->env_arr);
-		_exit((errno == ENOENT || errno == ENOTDIR) ? 127 : 126); 
-	}
+		if (errno == ENOENT || errno == ENOTDIR)
+			_exit(127);
+		else
+			_exit(126);
+}
+
+static void	clean(char **directories, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
+{
+	free_split(&directories);
+	free_allocs(shell);
+	free(child_pids);
+	free(pipe_pairs);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
+}
+//
+static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
+{
+	char	**path_directories;
+	char	*candidate_path;
+	int		path_index;
+
+	if (argv && argv[0] && has_slash(argv[0]))
+		direct_exec(argv, shell, shell->pipeline.child_pids, shell->pipeline.pipe_pairs);
 	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0] && path_directories)
 	{
@@ -39,13 +66,8 @@ static void	exec_with_path_search(char **argv, t_shell *shell, pid_t *child_pids
 			candidate_path = join_cmd_to_path(path_directories[path_index],
 					argv[0]);
 			if (!candidate_path)
-			{
-				free_split(&path_directories);
-				free_allocs(shell);
-				free(child_pids);
-				free(pipe_pairs);
-				clean_env(&shell->env_head);
-				free_split(&shell->env_arr);
+			{	
+				clean(path_directories, shell, shell->pipeline.child_pids, shell->pipeline.pipe_pairs);
 				_exit(1);
 			}
 			execve(candidate_path, argv, shell->env_arr);
@@ -53,22 +75,18 @@ static void	exec_with_path_search(char **argv, t_shell *shell, pid_t *child_pids
 			path_index++;
 		}
 		free_split(&path_directories);
-	}
-	write(2, "minishell: ", 11);
-	if (argv && argv[0])
+	} //Test this 
+	if (argc != 0)
+	{
 		write(1, argv[0], (int)strlen(argv[0]));
-	write(2, ": command not found\n", 20);
-	free_allocs(shell);
-	free(child_pids);
-	free(pipe_pairs);
-	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
-	free_split(&path_directories);
+		write(2, ": command not found\n", 20);
+	}
+	clean(path_directories, shell, shell->pipeline.child_pids, shell->pipeline.pipe_pairs);
 	_exit(127);
 }
 
 
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
+pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 {
 	pid_t	pid;
 	int		final_in;
@@ -107,10 +125,10 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t
 					{
         				perror("redir");
 					}
-					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 					free_allocs(shell);
-					free(child_pids);
-					free(pipe_pairs);
+					free(shell->pipeline.child_pids);
+					free(shell->pipeline.pipe_pairs);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -126,10 +144,10 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t
 						perror(redir->target);
 					else
 						perror("redir");
-					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 					free_allocs(shell);
-					free(child_pids);
-					free(pipe_pairs);
+					free(shell->pipeline.child_pids);
+					free(shell->pipeline.pipe_pairs);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -144,12 +162,12 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t
 						perror(redir->target);
 					else
 						perror("redir");
-					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 					free_allocs(shell);
-					free(child_pids);
-					free(pipe_pairs);
+					free(shell->pipeline.child_pids);
+					free(shell->pipeline.pipe_pairs);
 					clean_env(&shell->env_head);
-					free_split(&shell->env_arr);	
+					free_split(&shell->env_arr);
 					_exit(1);
 				}
 			}
@@ -162,10 +180,10 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t
 						perror(redir->target);
 					else
 						perror("redir");
-					close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+					close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 					free_allocs(shell);
-					free(child_pids);
-					free(pipe_pairs);
+					free(shell->pipeline.child_pids);
+					free(shell->pipeline.pipe_pairs);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -189,42 +207,27 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t
 			close(final_out);
 		}
 	
-		close_all_pipes(pipe_pairs, shell->pipeline.n_cmds);
+		close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 
 		if (cmd && cmd->argv && cmd->argv[0] //betarunning builtins
 			&& is_builtin_name(cmd->argv[0]))
 		{
 			shell->last_status = run_builtin(cmd, shell);
+			close_all_pipes(shell->pipeline.pipe_pairs, shell->pipeline.n_cmds);
 			free_allocs(shell);
-			free(child_pids);
-			free(pipe_pairs);
+			free(shell->pipeline.child_pids);
+			free(shell->pipeline.pipe_pairs);
 			clean_env(&shell->env_head);
 			free_split(&shell->env_arr);
 			_exit(shell->last_status);
 		}
 
 		/* 4. Aja komento */
-		exec_with_path_search(cmd->argv, shell, child_pids, pipe_pairs);
+		exec_with_path_search(cmd->argc, cmd->argv, shell);
 		_exit(127);
 	}
 	return (pid);
 }
-/*
-static int  open_one_redir(const t_redir *redir)
-{
-    int fd;
-
-    fd = -1;
-    if (redir->type == REDIR_IN)
-        fd = open(redir->target, O_RDONLY);
-    else if (redir->type == REDIR_OUT)
-        fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    else if (redir->type == REDIR_APPEND)
-        fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	//heredoc here too?
-    return (fd);
-}
-*/
 
 int	apply_redir_out(const t_redir *redir, int *final_out)
 {
@@ -235,9 +238,6 @@ int	apply_redir_out(const t_redir *redir, int *final_out)
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		return (-1);
-		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
-	   ja se ei ole sama kuin juuri avattu fd,
-	   sulje se, ettei jää fd-vuotoa. */
 	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
 		close(*final_out);
 	*final_out = fd;
@@ -253,9 +253,6 @@ int	apply_redir_in(const t_redir *redir, int *final_in)
 	fd = open(redir->target, O_RDONLY);
 	if (fd < 0)
 		return (-1);
-		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
-	   ja se ei ole sama kuin juuri avattu fd,
-	   sulje se, ettei jää fd-vuotoa. */
 	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
 		close(*final_in);
 	*final_in = fd;
@@ -271,9 +268,6 @@ int apply_redir_append(const t_redir *redir, int *final_out)
 	fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd < 0)
 		return (-1);
-		/* Jos final_out on jo ollut joku muu fd kuin STDOUT,
-	   ja se ei ole sama kuin juuri avattu fd,
-	   sulje se, ettei jää fd-vuotoa. */
 	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
 		close(*final_out);
 	*final_out = fd;
@@ -296,16 +290,3 @@ int	apply_redir_heredoc(const t_redir *redir, int *final_in)
 	
 }
 
-/**
- * Checks whether a string contains a '/' character.
- *
- * @param input the string to scan (program name or path)
- * @return 1 if a slash is present, 0 otherwise
- */
-int	has_slash(char *input)
-{
-	while (*input)
-		if (*input++ == '/')
-			return (1);
-	return (0);
-}
