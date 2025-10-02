@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipeline.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 09:27:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/02 11:51:45 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/02 15:30:38 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 	pipeline->pipe_pairs = allocate_pipes(pipeline->n_cmds);
 	pipeline->child_pids = (pid_t *)malloc(sizeof(pid_t) * pipeline->n_cmds);
 	if (!pipeline->child_pids || (pipeline->n_cmds > 1 && !pipeline->pipe_pairs))
+	{
 		return (free(pipeline->child_pids), close_all_pipes(pipeline->pipe_pairs, pipeline->n_cmds),
 			free(pipeline->pipe_pairs), 1);
+	}
 	cmd_index = 0;
 	while (cmd_index < pipeline->n_cmds)
 	{

@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 09:45:46 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/02 13:56:06 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/02 15:51:12 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,28 @@ static int	has_slash(char *input)
 static void direct_exec(char **argv, t_shell *shell, pid_t *child_pids, int(*pipe_pairs)[2])
 {
 		execve(argv[0], argv, shell->env_arr);
-		free_allocs(shell);
 		free(child_pids);
-		free(pipe_pairs);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
+		free(pipe_pairs);	
 		if (errno == ENOENT || errno == ENOTDIR)
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(argv[0], STDERR_FILENO);
+			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+			clean_env(&shell->env_head);
+			free_split(&shell->env_arr);
+			free_allocs(shell);
 			_exit(127);
+		}
 		else
+		{
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
+			ft_putstr_fd(*argv, STDERR_FILENO);
+			ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+			clean_env(&shell->env_head);
+			free_split(&shell->env_arr);
+			free_allocs(shell);
 			_exit(126);
+		}
 }
 
 static void	clean(char **directories, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])

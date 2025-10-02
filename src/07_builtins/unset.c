@@ -42,8 +42,8 @@ int	builtin_unset(char **argv, t_shell *shell)
 	{
 	if (!is_valid_unset_name(argv[counter]))
 	{
-		print_invalid_identifier("unset", argv[counter]);
-		return (1);
+		// print_invalid_identifier("unset", argv[counter]);
+		return (0);
 	}
 	else 
 	{
