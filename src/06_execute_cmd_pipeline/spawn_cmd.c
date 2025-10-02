@@ -1,19 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   spawn_cmd.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/02 09:45:46 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/02 09:52:12 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/**
- * Executes a command by resolving its path.
- * If argv[0] contains '/', executes directly
- * Otherwise searches PATH for a matching executable and execs the first hit.
- * On failure, prints "command not found" and exits with 127.
- *
- * @param argv the command and its arguments (argv[0] is the program name)
- * @param envp the environment vector
- * @return never returns on success; calls _exit(126/127/1) on failure
- *
- * @note Exits with 127 for ENOENT/ENOTDIR when using a direct path,
- *       126 for other execve errors, and 127 if not found in PATH.
- */
-static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
+
+static void	exec_with_path_search(char **argv, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
 {
 	char	**path_directories;
 	char	*candidate_path;
@@ -22,7 +22,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	if (argv && argv[0] && has_slash(argv[0]))
 	{
 		
-		execve(argv[0], argv, envp);
+		execve(argv[0], argv, shell->env_arr);
 		free_allocs(shell);
 		free(child_pids);
 		free(pipe_pairs);
@@ -30,7 +30,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 		free_split(&shell->env_arr);
 		_exit((errno == ENOENT || errno == ENOTDIR) ? 127 : 126); 
 	}
-	path_directories = find_from_path(envp);
+	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0] && path_directories)
 	{
 		path_index = 0;
@@ -48,7 +48,7 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 				free_split(&shell->env_arr);
 				_exit(1);
 			}
-			execve(candidate_path, argv, envp);
+			execve(candidate_path, argv, shell->env_arr);
 			free(candidate_path);
 			path_index++;
 		}
@@ -67,35 +67,8 @@ static void	exec_with_path_search(char **argv, char **envp, t_shell *shell, pid_
 	_exit(127);
 }
 
-/**
- * Forks and executes a command with optional stdin/stdout redirection.
- * In the child: sets signal handlers, duplicates in_fd/out_fd (if >= 0),
- * then calls exec_with_path_search(argv, envp). On dup2 failure, exits(1).
- *
- * @param argv the command and its arguments
- * @param envp the environment vector
- * @param in_fd file descriptor to use as STDIN (pass -1 to keep current)
- * @param out_fd file descriptor to use as STDOUT (pass -1 to keep current)
- * @return PID of the child in the parent process; 0 in the child; -1 on fork error
- *
-pid_t	spawn_cmd(char **argv, char **envp, int in_fd, int out_fd)
-{
-	pid_t	child_pid;
 
-	child_pid = fork();
-	if (child_pid == 0)
-	{
-		setup_signal_handlers_for_child();
-		if (in_fd >= 0 && dup2(in_fd, 0) < 0)
-			_exit(1);
-		if (out_fd >= 0 && dup2(out_fd, 1) < 0)
-			_exit(1);
-		exec_with_path_search(argv, envp);
-	}
-	return (child_pid);
-}*/
-
-pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
+pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, pid_t *child_pids, int (*pipe_pairs)[2])
 {
 	pid_t	pid;
 	int		final_in;
@@ -231,7 +204,7 @@ pid_t	spawn_cmd(t_command *cmd, char **envp, int pipe_in, int pipe_out, t_shell 
 		}
 
 		/* 4. Aja komento */
-		exec_with_path_search(cmd->argv, envp, shell, child_pids, pipe_pairs);
+		exec_with_path_search(cmd->argv, shell, child_pids, pipe_pairs);
 		_exit(127);
 	}
 	return (pid);
