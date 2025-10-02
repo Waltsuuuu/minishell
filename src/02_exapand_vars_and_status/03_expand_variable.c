@@ -47,7 +47,7 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 			continue ;
 		}
 		st.expanded = handle_var_expansion(text, exp_text, &st.i,			// Checks if current char is the beginning of a $VAR to expand
-				envp, st.in_single);
+				envp, st.in_single, st.in_double);
 		if (st.expanded == -1)												// -1 == Failure
 			return (-1);
 		if (st.expanded == 1)												// 1 if found something to expand.
@@ -60,13 +60,27 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 }
 
 /**
- * @brief If at a $VAR start (and not in '), expand it via process_var_expansion.
- * @return 1 if expanded, 0 if not applicable, -1 on error.
+ * @brief Skips $ char in cases of $".." and $'..' (When not already inside quotes)
+ * If at a $VAR start (and not in single quotes), expand it via process_var_expansion.
+ * Increments the iterator as needed.
+ * @return 1 if handled, 0 if not applicable, -1 on error.
  */
-int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single)
+int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single, int in_double)
 {
 	int	status;
 
+	// Skip $ in case of locale-specific transltion input
+	if (!in_single && !in_double && text[*i] == '$' && text[*i + 1] == '\"')
+	{
+		(*i)++;
+		return (1);
+	}
+	// Skip $ in case of ANSI-C Quoting
+	if (!in_single && !in_double && text[*i] == '$' && text[*i + 1] == '\'')
+	{
+		(*i)++;
+		return (1);
+	}
 	status = 0;
 	if (!in_single && text[*i] == '$' && valid_start_char(text[*i + 1]) == 1)
 	{
