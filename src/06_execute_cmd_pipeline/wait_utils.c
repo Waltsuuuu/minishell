@@ -22,9 +22,9 @@ int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
 			*out_raw_status = raw_status;
 			return (0);
 		}
-		if (wait_result == -1 && errno == EINTR) //interrupted signal call 
+		if (wait_result == -1 && errno == EINTR)
 			continue ;
-		if (wait_result == -1 && errno == ECHILD) //No more child processes to wait
+		if (wait_result == -1 && errno == ECHILD)
 			return (0);
 		return (-1);
 	}
@@ -45,9 +45,9 @@ static int	normalize_raw_status(int raw_status)
 	return (1);
 }
 
-
 /**
- * Waits for all given child processes and returns the exit status of the last one.
+ * Waits for all given child processes and returns 
+ * the exit status of the last one.
  *
  * @param child_pids array of child process IDs
  * @param child_count number of children in the array

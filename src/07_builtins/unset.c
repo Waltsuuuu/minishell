@@ -35,15 +35,15 @@ int	builtin_unset(char **argv, t_shell *shell)
 {
 	int	counter;
 
-	if (!argv[1]) //if no arguments
+	if (!argv[1] || *argv[1] == '\0') //if no arguments
 		return (0);
 	counter = 1; // first argument
 	while (argv[counter])
 	{
 	if (!is_valid_unset_name(argv[counter]))
 	{
-		print_invalid_identifier("unset", argv[counter]);
-		return (1);
+		// print_invalid_identifier("unset", argv[counter]);
+		return (0);
 	}
 	else 
 	{

@@ -12,10 +12,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 
 	path = argv[1];
 	if (argv[0] && !argv[1])
-	{
 		path = env_get(shell, "HOME");
-		printf("%s\n", path);
-	}
 	if (!getcwd(oldbuf, sizeof(oldbuf)) && !path)
 		return (ft_putstr_fd("cd: getwcd\n", 2), 1);
 
@@ -30,7 +27,6 @@ int	builtin_cd(char **argv, t_shell *shell)
 		
 	if (env_set(&shell->env_head, "PWD", newbuf) == 1)
 		return (ft_putstr_fd("pwd update error\n", 2), 1);
-
 	return (0);
 
 }

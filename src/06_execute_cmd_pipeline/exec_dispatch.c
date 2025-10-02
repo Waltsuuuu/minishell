@@ -9,10 +9,9 @@
  * @param shell shell state (last_status, env, etc.)
  * @return exit status of the executed command(s)
  */
-int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
+int	exec_dispatch(t_pipeline *pipeline, t_shell *shell)
 {
-
-		if (pipeline->n_cmds == 1
+	if (pipeline->n_cmds == 1
 		&& pipeline->cmds[0].argv
 		&& pipeline->cmds[0].argv[0]
 		&& is_parent_builtin(pipeline->cmds[0].argv[0]))
@@ -25,7 +24,6 @@ int	exec_dispatch(char **envp, t_pipeline *pipeline, t_shell *shell)
 			return (exec_cd_in_parent(&pipeline->cmds[0], shell));
 		else if (ft_strcmp(pipeline->cmds[0].argv[0], "exit") == 0)
 			return (exec_exit_in_parent(&pipeline->cmds[0], shell));
-      
 	}
-	return (exec_pipeline(envp, pipeline, shell));
+	return (exec_pipeline(pipeline, shell));
 }

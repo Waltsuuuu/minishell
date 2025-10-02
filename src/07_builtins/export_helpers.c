@@ -10,7 +10,12 @@ static void	print_env_export(char **env, int size)
 
 	i = 0;
 	while (i < size)
-		ft_printf("declare -x %s\n", env[i++]);
+	{
+		ft_putstr_fd("declare -x ", STDOUT_FILENO);
+		ft_putstr_fd(env[i], STDOUT_FILENO);
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		i++;
+	}
 }
 
 /**
