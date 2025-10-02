@@ -20,7 +20,7 @@ int		create_exp_status_text(char *text, char **exp_text, char *status_str);
 /* 					03_expand_variable.c						*/
 char	*expand_variable(char *text, char **envp);
 int		create_exp_var_text(char *text, char **exp_text, char **envp);
-int		handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single);
+int		handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single, int in_double);
 int		process_var_expansion(char *text, char **exp_text, int *i, char **envp);
 
 /* 					04_expand_utils.c							*/
