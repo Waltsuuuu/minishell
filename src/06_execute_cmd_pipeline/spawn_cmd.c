@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 09:45:46 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/02 13:21:59 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/02 13:56:06 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	} //Test this 
 	if (argc != 0)
 	{
-		write(1, argv[0], (int)strlen(argv[0]));
+		write(2, argv[0], (int)strlen(argv[0]));
 		write(2, ": command not found\n", 20);
 	}
 	clean(path_directories, shell, shell->pipeline.child_pids, shell->pipeline.pipe_pairs);
