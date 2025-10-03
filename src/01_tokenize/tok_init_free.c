@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+/**
+ * @brief Initializes the tokenize_line() variables.
+ * Line is set to the raw input line.
+ * Word_start is set to -1 (No active word).
+ * All other variables set to 0 / NULL.
+ * @return 0 on success, -1 if state is NULL. 
+ */
 int	init_tokenizer_state(t_tokenizer_state *state, const char *line)
 {
 	if (!state)
