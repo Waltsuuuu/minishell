@@ -94,10 +94,10 @@ int exec_exit_in_parent(t_command *cmd, t_shell *shell)
 
     shell->in_child = 0;
     if (apply_redirs_in_parent(cmd, saved) != 0)
-        return (1);
-
+	{
+		return (1);
+	}
     shell->last_status = builtin_exit(cmd, shell);
-
     restore_stdio(saved);
     return (shell->last_status);
 }

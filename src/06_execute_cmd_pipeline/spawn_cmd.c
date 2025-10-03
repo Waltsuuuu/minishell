@@ -7,6 +7,8 @@
  */
 static int	has_slash(char *input)
 {
+	if (!input)
+		return (0);
 	while (*input)
 		if (*input++ == '/')
 			return (1);
@@ -75,7 +77,7 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 			free(candidate_path);
 			path_index++;
 		}
-		free_split(&path_directories);
+		//free_split(&path_directories);
 	} //Test this 
 	if (argc != 0)
 	{

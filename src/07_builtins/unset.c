@@ -7,7 +7,9 @@ int	exec_unset_in_parent(t_command *cmd, t_shell *shell)
 	if (!cmd || !shell)
 		return (1);
 	if (apply_redirs_in_parent(cmd, saved) != 0)
+	{
 		return (1);
+	}
 	shell->last_status = builtin_unset(cmd->argv, shell);
 	restore_stdio(saved);
 	return (shell->last_status);
