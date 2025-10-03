@@ -47,36 +47,3 @@ char	*join_cmd_to_path(const char *path, const char *cmd)
 	free (temp);
 	return (absolute_path);
 }
-
-/**
- * @brief Builds an array of absolute paths for a command.
- *
- * @param paths Array of PATH directories.
- * @param cmd Command to resolve.
- * @return Array of absolute paths or NULL on failure.
- */
-char	**build_absolute_paths(char **paths, const char *cmd)
-{
-	size_t	counter;
-	size_t	len;
-	char	**absolute_paths;
-
-	if (!paths || !cmd || !*cmd)
-		return (NULL);
-	len = 0;
-	while (paths[len])
-		len++;
-	absolute_paths = malloc(sizeof(char *) *(len + 1));
-	if (!absolute_paths)
-		return (NULL);
-	counter = 0;
-	while (paths[counter])
-	{
-		absolute_paths[counter] = join_cmd_to_path(paths[counter], cmd);
-		if (!absolute_paths[counter])
-			return (free_partial(absolute_paths, counter), NULL);
-		counter++;
-	}
-	absolute_paths[counter] = NULL;
-	return (absolute_paths);
-}
