@@ -1,10 +1,10 @@
 #include "minishell.h"
 
 /**
- * Ensures the quotes in the input line are balanced. If no closing quote is found
- * the input is discarded, error message is written, last status is set to syntax error,
+ * @brief Ensures the quotes in the input line are balanced. If no closing quote is found
+ * the input is discarded, error message is written, last status is set to 2 (syntax error),
  * and user is returned to prompt.
- * @return 0 on balance, -1 on unbalance.
+ * @return 0 if balance, -1 if unbalanced. 
  */
 int check_quote_balance(char **line, int *last_status)
 {
@@ -38,12 +38,12 @@ int	quotes_unbalanced(const char *string)
 	i = 0;
 	while (string[i] != '\0')
 	{
-		if (string[i] == '\'' && !in_double)		// If single quote is found and we arent inside a double quote;
-			in_single = !in_single;					// Turn in_single on. // Turned off when closing quote is found
-		else if (string[i] == '\"' && !in_single)	
+		if (string[i] == '\'' && !in_double)
+			in_single = !in_single;
+		else if (string[i] == '\"' && !in_single)
 			in_double = !in_double;
 		i++;
 	}
-	return (in_single || in_double);				// Returns 1 if either flag is still true. 0 if both are false
+	return (in_single || in_double);
 }
 
