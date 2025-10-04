@@ -26,7 +26,7 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 			clean_env(&shell->env_head);
 			free_split(&shell->env_arr);
 			free(shell->pipeline.child_pids); // Only free in child
-			free(shell->pipeline.pipe_pairs); // Only free in child
+			//free(shell->pipeline.pipe_pairs); // Only free in child
 			_exit(status);
 		}
 		if (is_interactive(shell))
@@ -52,7 +52,7 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		if (shell->in_child)
 		{
 			free(shell->pipeline.child_pids);
-			free(shell->pipeline.pipe_pairs);
+			//free(shell->pipeline.pipe_pairs);
 			_exit(2);
 		}
 		exit(2);
@@ -73,7 +73,7 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		clean_env(&shell->env_head);
 		free_split(&shell->env_arr);
 		free(shell->pipeline.child_pids);
-		free(shell->pipeline.pipe_pairs);
+		//free(shell->pipeline.pipe_pairs);
 		_exit(status);
 	}
 	if (is_interactive(shell))

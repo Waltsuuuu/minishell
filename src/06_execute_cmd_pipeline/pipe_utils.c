@@ -1,52 +1,28 @@
 #include "minishell.h"
 
-/**
- * Allocates and creates the N-1 pipes required for a pipeline of N commands.
- * Each pipe is an int[2] (read end [0], write end [1]).
- * On failure, closes already-created pipes and frees memory.
- *
- * @param cmd_count total number of commands in the pipeline
- * @return pointer to an array of (cmd_count - 1) pipe pairs, or 
- * 												NULL if none/failed.
- *
- * @note Caller owns the returned array and must later call close_all_pipes()
- *       and free() the array.
- */
-int	(*allocate_pipes(int cmd_count))[2]
+ //returns 0 if ok (or no next), -1 on error; sets next_r/next_w or -1/-1 
+int open_next_pipe_if_needed(int cmd_index, int n_cmds, int *next_read, int *next_write)
 {
-	int	(*pipe_pairs)[2];
-	int	pipe_index;
+	int pipepair[2];
 
-	if (cmd_count <= 1)
-		return (NULL);
-	pipe_pairs = (int (*)[2])malloc(sizeof(int [2]) * (cmd_count - 1));
-	if (!pipe_pairs)
-		return (NULL);
-	pipe_index = 0;
-	while (pipe_index < cmd_count - 1)
-	{
-		if (pipe(pipe_pairs[pipe_index]) < 0)
-		{
-			while (pipe_index > 0)
-			{
-				pipe_index--;
-				close(pipe_pairs[pipe_index][0]);
-				close(pipe_pairs[pipe_index][1]);
-			}
-			free(pipe_pairs);
-			return (NULL);
-		}
-		pipe_index++;
-	}
-	return (pipe_pairs);
+	*next_read = -1;
+	*next_write = -1;
+	if (cmd_index >= n_cmds - 1)
+		return (0);
+	if (pipe(pipepair) < 0)
+		return (-1);
+	*next_read = pipepair[0];
+	*next_write = pipepair[1];
+	return (0);
 }
+/*
 
-/**
+
  * Closes all file descriptors for the given array of pipe pairs.
  *
  * @param pipe_pairs array of pipe pairs returned by allocate_pipes()
  * @param cmd_count total number of commands (determines number of pipes as N-1)
- */
+ *
 void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count)
 {
 	int	pipe_index;
@@ -62,7 +38,7 @@ void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count)
 	}
 }
 
-/**
+
  * Computes the desired stdin/stdout FDs for a command in a pipeline.
  * For command i in [0..N-1]:
  *  - in_fd  = read end of pipe (i-1) if i > 0, else -1
@@ -72,7 +48,7 @@ void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count)
  * @param pipeline pointer to pipeline struct
  * @param in_fd output: desired FD to dup2() to STDIN, or -1 if none
  * @param out_fd output: desired FD to dup2() to STDOUT, or -1 if none
- */
+ 
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 			int *in_fd, int *out_fd)
 {
@@ -86,7 +62,7 @@ void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 		*out_fd = pipeline->pipe_pairs[cmd_index][1];
 }
 
-/**
+
  * In the parent process, closes the pipe ends that are not needed anymore
  * after forking the child for command cmd_index.
  *
@@ -96,7 +72,7 @@ void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
  *
  * @note Typically called once per spawned child in the parent 
  * to prevent FD leaks.
- */
+ *
 void	close_parent_unused_ends(int cmd_index, int cmd_count,
 			int (*pipe_pairs)[2])
 {
@@ -106,4 +82,45 @@ void	close_parent_unused_ends(int cmd_index, int cmd_count,
 		close(pipe_pairs[cmd_index - 1][0]);
 	if (cmd_index < cmd_count - 1)
 		close(pipe_pairs[cmd_index][1]);
+}
+*/
+
+static void	send_signal_children(pid_t *child_pids, int spawned_count, int sig)
+{
+	int i;
+
+	i = 0;
+	while (i < spawned_count)
+	{
+		if (child_pids[i] > 0)
+			kill(child_pids[i], sig);
+		i++;
+	}
+}
+
+static void	reap_children(pid_t *child_pids, int spawned_count)
+{
+	int i;
+	int st;
+
+	i = 0;
+	while (i < spawned_count)
+	{
+		if (child_pids[i] > 0)
+		{
+			while (waitpid(child_pids[i], &st, 0) == -1 && errno == EINTR)
+				;
+		}
+		i++;
+	}
+}
+
+/* Public: kill nicely, then force, then reap (blocks until reaped). */
+void	kill_and_reap_children(pid_t *child_pids, int spawned_count)
+{
+	send_signal_children(child_pids, spawned_count, SIGTERM);
+	reap_children(child_pids, spawned_count);
+	/* If any survived (e.g. ignored SIGTERM), SIGKILL and reap again. */
+	send_signal_children(child_pids, spawned_count, SIGKILL);
+	reap_children(child_pids, spawned_count);
 }

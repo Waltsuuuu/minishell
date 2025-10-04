@@ -17,30 +17,56 @@
 int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 {
 	int		cmd_index;
-	int		pipe_in;
-	int		pipe_out;
+	int		previous_read;
+	int		next_read;
+	int		next_write;
 
-	pipeline->pipe_pairs = allocate_pipes(pipeline->n_cmds);
 	pipeline->child_pids = (pid_t *)malloc(sizeof(pid_t) * pipeline->n_cmds);
-	if (!pipeline->child_pids || (pipeline->n_cmds > 1 && !pipeline->pipe_pairs))
+	if (!pipeline->child_pids)
 	{
-		return (free(pipeline->child_pids), close_all_pipes(pipeline->pipe_pairs, pipeline->n_cmds),
-			free(pipeline->pipe_pairs), 1);
+		return (1);
 	}
+	ft_bzero(pipeline->child_pids, sizeof(pid_t) * pipeline->n_cmds);
+	previous_read = -1;
 	cmd_index = 0;
 	while (cmd_index < pipeline->n_cmds)
 	{
-		compute_cmd_fds(cmd_index, pipeline, &pipe_in, &pipe_out);
+		if (open_next_pipe_if_needed(cmd_index, pipeline->n_cmds, &next_read, &next_write) < 0)
+		{
+			if (previous_read >= 0)
+				close(previous_read);
+			kill_and_reap_children(pipeline->child_pids, cmd_index);
+			free (pipeline->child_pids);
+			return (1); //TODO ERROR MSG
+		}
 		pipeline->child_pids[cmd_index] = spawn_cmd(&pipeline->cmds[cmd_index],					
-				pipe_in, pipe_out, shell);
-		close_parent_unused_ends(cmd_index, pipeline->n_cmds, pipeline->pipe_pairs);
+				previous_read, next_write, shell);
+		if (pipeline->child_pids[cmd_index] < 0)
+		{
+			if (next_write >= 0)
+				close(next_write);
+			if (next_read  >= 0)
+				close(next_read);
+			if (previous_read  >= 0)
+				close(previous_read);
+			kill_and_reap_children(pipeline->child_pids, cmd_index);
+			free (pipeline->child_pids);
+			return (1); //TODO ERROR MSG
+		}
+		if (previous_read >= 0)
+			close(previous_read);
+		if (next_write >= 0)
+			close (next_write);
+		previous_read = next_read;
 		cmd_index++;
 	}
-	close_all_pipes(pipeline->pipe_pairs, pipeline->n_cmds);
-	free(pipeline->pipe_pairs);
+	if (previous_read >= 0)
+		close(previous_read);
 	shell->last_status = wait_all_and_last_status(pipeline->child_pids, pipeline->n_cmds,
 			pipeline->child_pids[pipeline->n_cmds - 1]);
 	free(pipeline->child_pids);
 	free_allocs(shell);
 	return (shell->last_status);
 }
+
+
