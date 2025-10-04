@@ -1,5 +1,25 @@
 #include "minishell.h"
 
+static void coloring()
+{
+	static int color;
+	if (color == 0)
+		printf(CYAN"");
+	if (color == 1)
+		printf(YELLOW"");
+	if (color == 2)
+		printf(MAGENTA"");
+	if (color == 3)
+		printf(WHITE"");
+	if (color == 4)
+		printf (RED"");
+	if (color == 5)
+		printf(GREEN"");
+	color++;
+	if (color == 6)
+		color = 0;
+}
+
 int	main(int argc, char *argv[], char *envp[])
 {
 	(void)	argc;
@@ -19,9 +39,10 @@ int	main(int argc, char *argv[], char *envp[])
 		if (env_list_to_array(shell.env_head, &shell) == -1)
 			continue ;
 		getworkindir(cwd, sizeof(cwd));
-		shell.buf = ft_strjoin(cwd, "~:$");
+		shell.buf = ft_strjoin(cwd,"~:$");
 		if (!shell.buf)
 			break ;
+		coloring();
 		line = read_with_mode_check(shell.buf);
 		free_str_ptr(&shell.buf);
 		if (!line) // CTR:+D
