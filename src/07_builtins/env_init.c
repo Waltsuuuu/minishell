@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/05 12:19:58 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/05 12:53:48 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,15 @@ int	split_key_and_value(char *line, char **key_out, char **value_out)
 	return (0);
 }
 
+static void free_env_node(t_env *node)
+{
+    if (!node)
+        return ;
+    free(node->key);
+    free(node->value);
+    free(node);
+}
+
 /**
  * Builds env list from envp.
  *
@@ -69,12 +78,9 @@ t_env	*env_init_from_envp(char **envp)
 			node = create_new_env_node(key, value);
 			if (!node || append_env_node(&env_head, node) != 0)
 			{
-				free (key);
-				free (value);
-				free (node->key);
-				free(node->value);
-				free (node);
-				return (NULL);
+				free_env_node(node);
+				clean_env(&env_head);
+				return (free (key), free (value), NULL);
 			}
 			free (key);
 			free (value);
@@ -104,7 +110,7 @@ t_env	*create_new_env_node(const char *key, const char *value)
 	if (value)
 		env_node->value = ft_strdup(value);
 	else if (!value)
-		env_node->value =ft_strdup("");
+		env_node->value = ft_strdup("");
 	env_node->assigned = 1;
 	env_node->next = NULL;
 	if (!env_node->key || !env_node->value)
@@ -149,7 +155,6 @@ int	append_env_node(t_env **head, t_env *new_env_node)
  */
 int	env_list_to_array(t_env *head, t_shell *shell)
 {
-	// char	**env_arr;
 	int		counter;
 	t_env	*env_list;
 	char	*pair;
@@ -162,7 +167,7 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 		counter++;
 		env_list = env_list->next;
 	}
-	free_split(&shell->env_arr); //Clean before building
+	free_split(&shell->env_arr);
 	shell->env_arr = NULL;
 	shell->env_size = 0;
 	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
@@ -302,7 +307,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 	char	*result_str;
 	size_t	counter;
 
-	if (!s1) //if null treat as an empty string
+	if (!s1)
 		s1 = "";
 	if (!s2)
 		s2 = "";
@@ -322,11 +327,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 }
 
 /**
- * Joins key and value into "KEY=VALUE".
- *
- * @param s1 key (NULL treated as "")
- * @param s2 value (NULL treated as "")
- * @return newly allocated string, or NULL on error
+ * Frees the whole env list
  */
 void	clean_env(t_env **head)
 {
