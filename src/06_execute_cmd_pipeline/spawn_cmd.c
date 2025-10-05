@@ -63,6 +63,20 @@ static void	clean(char **directories, t_shell *shell, pid_t *child_pids)
 	clean_env(&shell->env_head);
 	free_split(&shell->env_arr);
 }
+
+static void	path_exec(char **argv, t_shell *shell)
+{
+	char	path[PATH_MAX];
+	char	*temp;
+	char	*full;
+
+	getcwd(path, sizeof(path)); 
+	temp = ft_strjoin(path, "/");
+	full = ft_strjoin(temp, argv[0]);
+	free (temp);
+	execve(full, argv, shell->env_arr);
+
+}
 //
 static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 {
@@ -70,9 +84,16 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	char	*candidate_path;
 	int		path_index;
 
-	if (argv && argv[0] && has_slash(argv[0]))
-		direct_exec(argv, shell, shell->pipeline.child_pids);
-	printf("TESTING");
+	if (argv && argv[0])
+	{
+    	if (has_slash(argv[0]))
+    	{
+        	direct_exec(argv, shell, shell->pipeline.child_pids);
+        	return ; //TODO RETURN
+    	}
+    	path_exec(argv, shell);
+	}
+
 	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0] && path_directories)
 	{
