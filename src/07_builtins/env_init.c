@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_init.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/05 12:19:58 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -11,32 +23,26 @@
  */
 int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
-	int		counter;
-	char	*start;
+	int		equal;
+	int		key_len;
+	char	*val_start;
 
-	start = line;
-	counter = 0;
-	while (*line && *line != '=')
-	{
-		counter++;
-		line++;
-	}
-	*key_out = malloc(counter + 1);
+	equal = find_equal_sign(line);
+	if (equal >= 0)
+		key_len = equal;
+	else
+		key_len = (int)ft_strlen(line);
+	*key_out = (char *)malloc(key_len + 1);
 	if (!*key_out)
 		return (1);
-	ft_strlcpy(*key_out, start, counter +1);
-	if (*line == '=')
-	{
-		*value_out = ft_strdup(line + 1);
-		if (!*value_out)
-			return (free (*key_out),1);
-	}
+	ft_strlcpy(*key_out, line, key_len + 1);
+	if (equal >= 0)
+		val_start = &line[equal + 1];
 	else
-	{
-		*value_out = ft_strdup("");
-		if (!*value_out)
-			return (free (*key_out), 1);
-	}
+		val_start = "";
+	*value_out = ft_strdup(val_start);
+	if (!*value_out)
+		return (free(*key_out), 1);
 	return (0);
 }
 
