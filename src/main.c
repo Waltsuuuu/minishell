@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+/*
 static void coloring()
 {
 	static int color;
@@ -18,7 +19,7 @@ static void coloring()
 	color++;
 	if (color == 6)
 		color = 0;
-}
+}*/
 
 int	main(int argc, char *argv[], char *envp[])
 {
@@ -42,7 +43,7 @@ int	main(int argc, char *argv[], char *envp[])
 		shell.buf = ft_strjoin(cwd,"~:$");
 		if (!shell.buf)
 			break ;
-		coloring();
+		//coloring();
 		line = read_with_mode_check(shell.buf);
 		free_str_ptr(&shell.buf);
 		if (!line) // CTR:+D

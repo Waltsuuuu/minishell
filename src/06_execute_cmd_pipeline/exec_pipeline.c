@@ -29,9 +29,11 @@ int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 	ft_bzero(pipeline->child_pids, sizeof(pid_t) * pipeline->n_cmds);
 	previous_read = -1;
 	cmd_index = 0;
+	shell->pipeline.pipe_pair[0] = -1; //initialize the pipes
+	shell->pipeline.pipe_pair[1] = -1;
 	while (cmd_index < pipeline->n_cmds)
 	{
-		if (open_next_pipe_if_needed(cmd_index, pipeline->n_cmds, &next_read, &next_write) < 0)
+		if (open_next_pipe_if_needed(cmd_index, shell, &next_read, &next_write) < 0)
 		{
 			if (previous_read >= 0)
 				close(previous_read);
@@ -41,6 +43,7 @@ int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 		}
 		pipeline->child_pids[cmd_index] = spawn_cmd(&pipeline->cmds[cmd_index],					
 				previous_read, next_write, shell);
+		//close parent pipes
 		if (pipeline->child_pids[cmd_index] < 0)
 		{
 			if (next_write >= 0)

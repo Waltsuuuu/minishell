@@ -1,19 +1,23 @@
 #include "minishell.h"
 
  //returns 0 if ok (or no next), -1 on error; sets next_r/next_w or -1/-1 
-int open_next_pipe_if_needed(int cmd_index, int n_cmds, int *next_read, int *next_write)
+int open_next_pipe_if_needed(int cmd_index, t_shell *shell, int *next_read, int *next_write)
 {
-	int pipepair[2];
 
-	*next_read = -1;
-	*next_write = -1;
-	if (cmd_index >= n_cmds - 1)
-		return (0);
-	if (pipe(pipepair) < 0)
-		return (-1);
-	*next_read = pipepair[0];
-	*next_write = pipepair[1];
-	return (0);
+	 if (cmd_index < shell->pipeline.n_cmds - 1)
+    {
+        if (pipe(shell->pipeline.pipe_pair) < 0)
+            return (-1);
+        *next_read = shell->pipeline.pipe_pair[0];
+        *next_write = shell->pipeline.pipe_pair[1];
+        return (0);
+    }
+    *next_read = -1;
+    *next_write = -1;
+
+    shell->pipeline.pipe_pair[0] = -1;
+    shell->pipeline.pipe_pair[1] = -1;
+    return (0);
 }
 /*
 

@@ -15,6 +15,20 @@ static int	has_slash(char *input)
 	return (0);
 }
 
+static	void child_close_all_pipes(t_shell *shell)
+{
+
+	if (!shell)
+		return ;
+		
+	if (shell->pipeline.pipe_pair[0] >= 3)
+		close (shell->pipeline.pipe_pair[0]);
+			
+	else if (shell->pipeline.pipe_pair[1] >= 3)
+		close (shell->pipeline.pipe_pair[1]);
+
+}
+
 static void direct_exec(char **argv, t_shell *shell, pid_t *child_pids)
 {
 		execve(argv[0], argv, shell->env_arr);
@@ -208,8 +222,7 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 			close(final_out);
 		}
 	
-		//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
-
+		child_close_all_pipes(shell);
 		if (cmd && cmd->argv && cmd->argv[0] //betarunning builtins
 			&& is_builtin_name(cmd->argv[0]))
 		{
