@@ -75,6 +75,27 @@ static void	path_exec(char **argv, t_shell *shell)
 	full = ft_strjoin(temp, argv[0]);
 	free (temp);
 	execve(full, argv, shell->env_arr);
+	free(shell->pipeline.child_pids);
+	if (errno == ENOENT || errno == ENOTDIR)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(argv[0], STDERR_FILENO);
+		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
+		free_allocs(shell);
+		_exit(127);
+	}
+	else
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(*argv, STDERR_FILENO);
+		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
+		free_allocs(shell);
+		_exit(126);
+	}
 
 }
 //
@@ -84,6 +105,7 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	char	*candidate_path;
 	int		path_index;
 
+	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0])
 	{
     	if (has_slash(argv[0]))
@@ -91,10 +113,10 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
         	direct_exec(argv, shell, shell->pipeline.child_pids);
         	return ; //TODO RETURN
     	}
-    	path_exec(argv, shell);
+		if (!path_directories)
+    		path_exec(argv, shell);
 	}
 
-	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0] && path_directories)
 	{
 		path_index = 0;
