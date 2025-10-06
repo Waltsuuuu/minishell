@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/05 12:53:48 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/06 09:41:44 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ int	split_key_and_value(char *line, char **key_out, char **value_out)
 	return (0);
 }
 
-static void free_env_node(t_env *node)
+static void	free_env_node(t_env *node)
 {
-    if (!node)
-        return ;
-    free(node->key);
-    free(node->value);
-    free(node);
+	if (!node)
+		return ;
+	free(node->key);
+	free(node->value);
+	free(node);
 }
 
 /**
@@ -159,7 +159,6 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 	t_env	*env_list;
 	char	*pair;
 
-
 	env_list = head;
 	counter = 0;
 	while (env_list)
@@ -198,6 +197,63 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 	return (0);
 }
 
+/*
+ * Builds: KEY="VALUE"
+ * Uses your ft_strjoin + free pattern. Returns NULL on error.
+ */
+static char	*key_and_value_format(t_env *env_list)
+{
+	char		*tmp;
+	char		*pair;
+	const char	*val;
+
+	if (!env_list || !env_list->key)
+		return (NULL);
+	val = env_list->value;
+	if (!val)
+		val = "";
+	tmp = ft_strjoin(env_list->key, "=\"");
+	if (!tmp)
+		return (NULL);
+	pair = ft_strjoin(tmp, val);
+	free(tmp);
+	if (!pair)
+		return (NULL);
+	tmp = ft_strjoin(pair, "\"");
+	free(pair);
+	if (!tmp)
+		return (NULL);
+	return (tmp);
+}
+
+static int	pair_format_for_export_display(t_shell *shell, t_env *head)
+{
+	int		counter;
+	char	*pair;
+	t_env	*env_list;
+
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		if (env_list->key == NULL)
+			return (free_partial(shell->env_arr, counter), -1);
+		if (env_list->assigned == 0)
+			pair = ft_strdup(env_list->key);
+		else if (env_list->value[0] == '\0')
+			pair = ft_strjoin(env_list->key, "=\"\"");
+		else
+			pair = key_and_value_format(env_list);
+		if (!pair)
+			return (free_partial(shell->env_arr, counter), -1);
+		shell->env_arr[counter] = pair;
+		env_list = env_list->next;
+		counter++;
+	}
+	shell->env_arr[counter] = NULL;
+	return (0);
+}
+
 /**
  * @brief Build a printable array for `export` output.
  *
@@ -216,12 +272,8 @@ int	env_list_to_array(t_env *head, t_shell *shell)
  */
 int	env_list_to_export_display_array(t_env *head, t_shell *shell)
 {
-
-	int		counter;
 	t_env	*env_list;
-	char	*pair;
-	char	*tmp;
-
+	int		counter;
 
 	env_list = head;
 	counter = 0;
@@ -230,66 +282,19 @@ int	env_list_to_export_display_array(t_env *head, t_shell *shell)
 		counter++;
 		env_list = env_list->next;
 	}
-	free_split(&shell->env_arr); //Clean before building
+	free_split(&shell->env_arr);
 	shell->env_arr = NULL;
 	shell->env_size = 0;
 	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
 	if (!shell->env_arr)
 		return (-1);
 	shell->env_size = counter;
-	env_list = head;
-	counter = 0;
-	while (env_list)
+	if (pair_format_for_export_display(shell, head) != 0)
 	{
-		if (env_list->key == NULL)
-		{
-			free_partial(shell->env_arr, counter);
-			return (-1);
-		}
-		if (env_list->assigned == 0)
-		{
-			pair = ft_strdup(env_list->key);                      /* KEY */
-		}
-		else if (env_list->value[0] == '\0')
-		{
-			pair = ft_strjoin(env_list->key, "=\"\"");            /* KEY="" */
-		}
-		else
-		{
-			/* KEY="VALUE" */
-			tmp = ft_strjoin(env_list->key, "=\"");
-			if (!tmp)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			pair = ft_strjoin(tmp, env_list->value);
-			free(tmp);
-			if (!pair)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			tmp = ft_strjoin(pair, "\"");
-			free(pair);
-			if (!tmp)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			pair = tmp;
-		}
-
-		if (!pair)
-		{
-			free_partial(shell->env_arr, counter);
-			return (-1);
-		}
-		shell->env_arr[counter] = pair;
-		env_list = env_list->next;
-		counter++;
+		shell->env_arr = NULL;
+		shell->env_size = 0;
+		return (-1);
 	}
-	shell->env_arr[counter] = NULL;
 	return (0);
 }
 
