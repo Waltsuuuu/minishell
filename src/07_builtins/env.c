@@ -1,15 +1,22 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/06 12:53:59 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/06 12:55:01 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-	//with env builtin we just print the env
-	// but there is a rule, that we only print keys which has values
-	//so if value = NULL, then we skip printing
+#include "minishell.h"
 
 void	print_env(t_shell *shell)
 {
 	t_env	*env_list;
 
 	env_list = shell->env_head;
-	
 	while (env_list)
 	{
 		if (env_list->key && env_list->value)
@@ -20,10 +27,9 @@ void	print_env(t_shell *shell)
 
 char	*env_get(t_shell *shell, const char *key)
 {
-	t_env *env;
+	t_env	*env;
 
 	env = shell->env_head;
-
 	while (env)
 	{
 		if (env->key && key && !ft_strncmp(env->key, key, ft_strlen(key)))
