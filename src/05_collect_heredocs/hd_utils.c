@@ -30,6 +30,6 @@ void	free_line_close_fds(int fds[2], char *line)
 // back to their original state before fork().
 void	restore_tty_and_sig(t_hd_state *state)
 {
-	restore_terminal_state(state);
-	restore_parent_sig_handlers(state);
+	restore_terminal_state(&state->tty);
+	restore_parent_sig_handlers(&state->old_quit, &state->old_int);
 }

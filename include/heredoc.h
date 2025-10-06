@@ -32,16 +32,10 @@ int		expand_write_line(int fd, char *line, int last_status, char **envp);
 void	write_line_nl(int fd, char *line);
 
 // HD_SIGNAL_UTILS
-void	ignore_parent_sig_handlers(t_hd_state *state);
 void	heredoc_child_sighandler(void);
 int		wait_child(t_hd_state *state);
-void	restore_parent_sig_handlers(t_hd_state *state);
 int		handle_child_status(t_hd_state *state, t_shell *shell);
 void	close_stdin_on_sigint(int sig_num);
-
-// HD_TTY_UTILS
-void	save_terminal_state(struct termios *tty);
-void	restore_terminal_state(t_hd_state *state);
 
 // HD_UTILS
 void	init_hd_state(t_hd_state *state);

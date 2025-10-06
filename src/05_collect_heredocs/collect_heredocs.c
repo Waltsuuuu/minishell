@@ -46,11 +46,11 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 		return (-1);
 	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
 	{
-		restore_terminal_state(&state);
+		restore_terminal_state(&state.tty);
 		return(close_pipe_err(&state));
 	}
 	close(state.fds[1]);  // Parent only reads
-	ignore_parent_sig_handlers(&state);
+	ignore_parent_sig_handlers(&state.ign, &state.old_quit, &state.old_int);
 	if (wait_child(&state) == -1)
 	{
 		restore_tty_and_sig(&state);
