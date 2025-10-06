@@ -42,6 +42,7 @@ int	handle_child_status(t_hd_state *state, t_shell *shell)
 	{
 		close(state->fds[0]);
 		shell->last_status = 130;
+		// g_signal = 0;
 		return (-1);
 	}
 	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// Normal exit (WIFEXITED = true), but non-zero (failure).

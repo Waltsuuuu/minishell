@@ -28,7 +28,7 @@ int	main(int argc, char *argv[], char *envp[])
 	char	*line;
 	t_shell	shell = {0};
 	char	cwd[PATH_MAX];
-	
+
 	setup_signal_handlers_for_prompt();
 	if (isatty(STDIN_FILENO))
 		print_msh_banner();

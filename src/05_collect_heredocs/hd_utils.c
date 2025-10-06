@@ -7,6 +7,7 @@ void	init_hd_state(t_hd_state *state)
 	state->fds[0] = -1;
 	state->fds[1] = -1;
 	state->line = NULL;
+	state->pipe_bytes_written = 0;
 }
 
 // Closes both ends of the pipe and returns -1

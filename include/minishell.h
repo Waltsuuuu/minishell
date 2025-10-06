@@ -25,6 +25,8 @@
 # include "../libft/get_next_line/get_next_line.h"
 # include "limits.h"
 
+# define PIPE_BUF_MAX 63000
+
 extern volatile sig_atomic_t g_signal;
 
 typedef struct s_env

@@ -79,7 +79,7 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		{
 			if (readline_and_check_eof(state, redir) == 1)
 				break ;
-			if (handle_heredoc_line(state->fds[1], state->line, redir, shell->last_status, envp) == -1)
+			if (handle_heredoc_line(state, state->fds[1], state->line, redir, shell->last_status, envp) == -1)
 			{
 				free(state->line);
 				close(state->fds[1]);
