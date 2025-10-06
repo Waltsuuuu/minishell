@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/06 12:02:01 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/06 12:03:16 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	run_builtin(t_command *cmd, t_shell *shell)
@@ -29,14 +41,13 @@ int	is_builtin_name(const char *name)
 		return (1);
 	if (ft_strcmp(name, "cd") == 0)
 		return (1);
-	 if (ft_strcmp(name, "exit") == 0)
-	 	return (1);
+	if (ft_strcmp(name, "exit") == 0)
+		return (1);
 	if (ft_strcmp(name, "echo") == 0)
 		return (1);
 	if (ft_strcmp(name, "pwd") == 0)
 		return (1);
 	return (0);
-
 }
 
 int	is_parent_builtin(const char *name)
@@ -50,6 +61,6 @@ int	is_parent_builtin(const char *name)
 	if (ft_strcmp(name, "cd") == 0)
 		return (1);
 	if (ft_strcmp(name, "exit") == 0)
-	 	return (1);
+		return (1);
 	return (0);
 }
