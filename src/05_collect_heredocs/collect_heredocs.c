@@ -73,9 +73,9 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		return(-1);
 	if (state->pid == 0)
 	{
-		set_default_sig_handling();
+		heredoc_child_sighandler();
 		close(state->fds[0]); //Child only writes.
-		while (1)
+		while (g_signal == 0)
 		{
 			if (readline_and_check_eof(state, redir) == 1)
 				break ;
@@ -94,6 +94,12 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		free_split(&shell->env_arr);
 		clean_env(&shell->env_head);
 		close(state->fds[1]);
+		if (g_signal == SIGINT)
+		{
+			signal(SIGINT, SIG_DFL);
+			kill(getpid(), SIGINT);
+			_exit(130);
+		}
 		_exit(0);
 	}
 	return(0);

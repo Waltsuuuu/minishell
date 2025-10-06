@@ -4,8 +4,8 @@
 int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 {
 	state->line = readline("heredoc>");				// Take a line of input from the user.
-	if (!state->line)								
-		return (1);					
+	if (!state->line)
+		return (1);
 	if (ft_strcmp(state->line, redir->target) == 0)	// Check if line == EOF delimiter.
 	{
 		free(state->line);							// Free the delimiter line.		

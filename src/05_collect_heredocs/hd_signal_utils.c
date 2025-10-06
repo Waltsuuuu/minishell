@@ -10,16 +10,22 @@ void	ignore_parent_sig_handlers(t_hd_state *state)
 	sigaction(SIGQUIT, &state->ign, &state->old_quit);
 }
 
-// In child - Set SIGINT and SIGQUIT handlers to default (SIGDFL).
-void	set_default_sig_handling(void)
+void	heredoc_child_sighandler(void)
 {
 	struct sigaction	sa;
 
 	ft_bzero(&sa, sizeof(sa));
-	sa.sa_handler = SIG_DFL;
+	sa.sa_handler = close_stdin_on_sigint;
 	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void	close_stdin_on_sigint(int sig_num)
+{
+	g_signal = sig_num;
+	close(STDIN_FILENO);
 }
 
 // Waits for the child process to finish, retrying if interrupted by a signal. 
@@ -51,14 +57,12 @@ int	handle_child_status(t_hd_state *state, t_shell *shell)
 {
 	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// Child terminated by signal && Signal was SIGINT.
 	{
-		write(STDOUT_FILENO, "\n", 1);
 		close(state->fds[0]);
 		shell->last_status = 130;
 		return (-1);
 	}
 	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// Normal exit (WIFEXITED = true), but non-zero (failure).
 	{
-		write(STDOUT_FILENO, "\n", 1);
 		close(state->fds[0]);
 		return (-1);
 	}
