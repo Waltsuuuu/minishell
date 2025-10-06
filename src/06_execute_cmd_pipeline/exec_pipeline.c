@@ -1,19 +1,6 @@
 #include "minishell.h"
 
-/**
- * Executes a p of commands.
- * Spawns one child per command, wires pipes between them, closes unused FDs
- * in the parent, and waits for all children. Returns the exit status of the
- * last command in the p (bash-compatible).
- *
- * @param argv_per_cmd array of argv arrays; argv_per_cmd[i][0] is command i
- * @param p->n_cmds number of commands in the p (N)
- * @param envp environment vector passed to each execve
- * @return normalized exit status (0–255) of the last command; 1 on setup error
- *
- * @note On failure to allocate/create pipes or PIDs, cleans up and returns 1.
- *       Caller owns argv_per_cmd contents; this function does not free them.
- */
+
 int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 {
 	int		cmd_index;

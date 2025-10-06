@@ -27,7 +27,7 @@ int	main(int argc, char *argv[], char *envp[])
 	(void) (argv);
 	char	*line;
 	t_shell	shell = {0};
-	char	cwd[BUFSIZ];
+	char	cwd[PATH_MAX];
 	
 	setup_signal_handlers_for_prompt();
 	if (isatty(STDIN_FILENO))

@@ -19,7 +19,7 @@ int	builtin_cd(char **argv, t_shell *shell)
 		path = argv[1];
 
 	if (!getcwd(oldbuf, sizeof(oldbuf)))
-		return (ft_putstr_fd("cd: getwcd\n", 2), 1);
+		ft_putstr_fd("cd: getwcd\n", 2);
 
 	if (chdir(path) < 0)
 		return (ft_putstr_fd("cd error\n", 2), 1);
