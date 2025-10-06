@@ -10,6 +10,5 @@ int	builtin_pwd(void)
 		return(perror("pwd"), 1);
 	ft_putstr_fd(cwd, STDOUT_FILENO);
 	ft_putstr_fd("\n", STDOUT_FILENO);
-	// printf("%s\n", cwd);
 	return (0);
 }

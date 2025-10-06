@@ -52,7 +52,9 @@ int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 	if (!cmd || !shell)
 		return (1);
 	if (apply_redirs_in_parent(cmd, saved) != 0)
+	{
 		return (1);
+	}
 	if (!cmd->argv[1] || (cmd->argv[1][0] == '\0'))
 	{
 		env_sort_and_print(shell);
