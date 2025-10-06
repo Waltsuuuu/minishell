@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/06 09:41:44 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/06 09:55:04 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,33 +146,12 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	return (0);
 }
 
-/**
- * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
- *
- * @param head env list head
- * @param size out param: number of entries (no NULL)
- * @return newly allocated array, or NULL on error
- */
-int	env_list_to_array(t_env *head, t_shell *shell)
+static int	pair_format_for_env(t_shell *shell, t_env *head)
 {
 	int		counter;
 	t_env	*env_list;
 	char	*pair;
-
-	env_list = head;
-	counter = 0;
-	while (env_list)
-	{
-		counter++;
-		env_list = env_list->next;
-	}
-	free_split(&shell->env_arr);
-	shell->env_arr = NULL;
-	shell->env_size = 0;
-	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
-	if (!shell->env_arr)
-		return (-1);
-	shell->env_size = counter;
+	
 	env_list = head;
 	counter = 0;
 	while (env_list)
@@ -193,7 +172,40 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 		counter++;
 	}
 	shell->env_arr[counter] = NULL;
+	return (0);
+}
+/**
+ * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
+ *
+ * @param head env list head
+ * @param size out param: number of entries (no NULL)
+ * @return newly allocated array, or NULL on error
+ */
+int	env_list_to_array(t_env *head, t_shell *shell)
+{
+	int		counter;
+	t_env	*env_list;
 
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		counter++;
+		env_list = env_list->next;
+	}
+	free_split(&shell->env_arr);
+	shell->env_arr = NULL;
+	shell->env_size = 0;
+	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
+	if (!shell->env_arr)
+		return (-1);
+	shell->env_size = counter;
+	if (pair_format_for_env(shell, head) != 0)
+	{
+		shell->env_arr = NULL;
+		shell->env_size = 0;
+		return (-1);
+	}
 	return (0);
 }
 
