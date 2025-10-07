@@ -2,7 +2,7 @@
 
 void	print_msh_banner(void)
 {
-		printf( 
+		ft_printf( 
 "         #             #           #             ###    ###   \n"
 "                                    #               #      #   \n"
 "                                    #               #      #   \n"

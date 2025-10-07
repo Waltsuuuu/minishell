@@ -24,6 +24,11 @@ void	free_partial(char **arr, size_t n);
 void	setup_signal_handlers_for_prompt();
 void	setup_signal_handlers_for_child();
 void	handle_sig(int signum);
+void	ignore_parent_sig_handlers(struct sigaction *ign,
+	struct sigaction *old_quit,
+	struct sigaction *old_int);
+void	restore_parent_sig_handlers(struct sigaction *old_quit,
+		struct sigaction *old_int);
 
 // Parsing for exit
 int		ft_strtoll(const char *str, long long *out);
@@ -34,5 +39,9 @@ int	count_heredocs(t_input *input);
 // Mode check
 char	*read_with_mode_check(const char *buf);
 void	remove_nl(char *str);
+
+// Tty
+void	save_terminal_state(struct termios *tty);
+void	restore_terminal_state(struct termios *tty);
 
 #endif

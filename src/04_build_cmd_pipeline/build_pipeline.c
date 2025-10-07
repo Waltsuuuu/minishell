@@ -139,9 +139,9 @@ int	bp_finalize_command(t_seg *seg, int cmd_i, t_shell *shell, int i)
 {
 	if (seg->argc == 0 && seg->redirs == NULL)
 	{
-		if (cmd_i + 1 == shell->pipeline.n_cmds)
-			ft_putstr_fd("Syntax error near newline", STDERR_FILENO);
-		else
+		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
+			ft_putstr_fd("Syntax error near newline\n", STDERR_FILENO);
+		else										// Between pipes
 			tok_syntax_err(&shell->input.tokens[i], shell);
 		return (-1);
 	}

@@ -11,8 +11,8 @@ void	save_terminal_state(struct termios *tty)
 
 // If stdin is a TTY, restore the termios settings from the TTY struct.
 // TCSANOW = Apply settings immeditaely 
-void	restore_terminal_state(t_hd_state *state)
+void	restore_terminal_state(struct termios *tty)
 {
 	if (isatty(STDIN_FILENO))
-		tcsetattr(STDIN_FILENO, TCSANOW, &state->tty);
+		tcsetattr(STDIN_FILENO, TCSANOW, tty);
 }

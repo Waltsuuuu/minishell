@@ -13,10 +13,10 @@ void	handle_sig(int signum)
 {
 	g_signal = signum;
 	write(STDOUT_FILENO, "\n", 1);
+	rl_done = 1;
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	
 }
 /**
  * @brief Setup signal handlers for minishell prompt
@@ -53,4 +53,24 @@ void	setup_signal_handlers_for_child()
 	sigaction(SIGINT,  &sa_child, NULL);
 	sigaction(SIGQUIT, &sa_child, NULL);
 					
+}
+
+// Ignore SIGINT and SIGQUIT in parent during waitpid().
+void	ignore_parent_sig_handlers(struct sigaction *ign,
+	struct sigaction *old_quit,
+	struct sigaction *old_int)
+{
+	ft_bzero(ign, sizeof(*ign));
+	ign->sa_handler = SIG_IGN;
+	sigemptyset(&ign->sa_mask);
+	sigaction(SIGINT,  ign, old_int);
+	sigaction(SIGQUIT, ign, old_quit);
+}
+
+// Restore SIGINT and SIGQUIT handlers in parent (stop ignoring) after waitpid().
+void	restore_parent_sig_handlers(struct sigaction *old_quit,
+	struct sigaction *old_int)
+{
+	sigaction(SIGINT,  old_int,  NULL);
+	sigaction(SIGQUIT, old_quit, NULL);
 }

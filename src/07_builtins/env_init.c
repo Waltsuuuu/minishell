@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_init.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/06 12:53:14 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -11,33 +23,36 @@
  */
 int	split_key_and_value(char *line, char **key_out, char **value_out)
 {
-	int		counter;
-	char	*start;
+	int		equal;
+	int		key_len;
+	char	*val_start;
 
-	start = line;
-	counter = 0;
-	while (*line && *line != '=')
-	{
-		counter++;
-		line++;
-	}
-	*key_out = malloc(counter + 1);
+	equal = find_equal_sign(line);
+	if (equal >= 0)
+		key_len = equal;
+	else
+		key_len = (int)ft_strlen(line);
+	*key_out = (char *)malloc(key_len + 1);
 	if (!*key_out)
 		return (1);
-	ft_strlcpy(*key_out, start, counter +1);
-	if (*line == '=')
-	{
-		*value_out = ft_strdup(line + 1);
-		if (!*value_out)
-			return (free (*key_out),1);
-	}
+	ft_strlcpy(*key_out, line, key_len + 1);
+	if (equal >= 0)
+		val_start = &line[equal + 1];
 	else
-	{
-		*value_out = ft_strdup("");
-		if (!*value_out)
-			return (free (*key_out), 1);
-	}
+		val_start = "";
+	*value_out = ft_strdup(val_start);
+	if (!*value_out)
+		return (free(*key_out), 1);
 	return (0);
+}
+
+static void	free_env_node(t_env *node)
+{
+	if (!node)
+		return ;
+	free(node->key);
+	free(node->value);
+	free(node);
 }
 
 /**
@@ -63,12 +78,9 @@ t_env	*env_init_from_envp(char **envp)
 			node = create_new_env_node(key, value);
 			if (!node || append_env_node(&env_head, node) != 0)
 			{
-				free (key);
-				free (value);
-				free (node->key);
-				free(node->value);
-				free (node);
-				return (NULL);
+				free_env_node(node);
+				clean_env(&env_head);
+				return (free (key), free (value), NULL);
 			}
 			free (key);
 			free (value);
@@ -98,7 +110,7 @@ t_env	*create_new_env_node(const char *key, const char *value)
 	if (value)
 		env_node->value = ft_strdup(value);
 	else if (!value)
-		env_node->value =ft_strdup("");
+		env_node->value = ft_strdup("");
 	env_node->assigned = 1;
 	env_node->next = NULL;
 	if (!env_node->key || !env_node->value)
@@ -134,35 +146,12 @@ int	append_env_node(t_env **head, t_env *new_env_node)
 	return (0);
 }
 
-/**
- * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
- *
- * @param head env list head
- * @param size out param: number of entries (no NULL)
- * @return newly allocated array, or NULL on error
- */
-int	env_list_to_array(t_env *head, t_shell *shell)
+static int	pair_format_for_env(t_shell *shell, t_env *head)
 {
-	// char	**env_arr;
 	int		counter;
 	t_env	*env_list;
 	char	*pair;
 
-
-	env_list = head;
-	counter = 0;
-	while (env_list)
-	{
-		counter++;
-		env_list = env_list->next;
-	}
-	free_split(&shell->env_arr); //Clean before building
-	shell->env_arr = NULL;
-	shell->env_size = 0;
-	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
-	if (!shell->env_arr)
-		return (-1);
-	shell->env_size = counter;
 	env_list = head;
 	counter = 0;
 	while (env_list)
@@ -183,7 +172,98 @@ int	env_list_to_array(t_env *head, t_shell *shell)
 		counter++;
 	}
 	shell->env_arr[counter] = NULL;
+	return (0);
+}
 
+/**
+ * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
+ *
+ * @param head env list head
+ * @param size out param: number of entries (no NULL)
+ * @return newly allocated array, or NULL on error
+ */
+int	env_list_to_array(t_env *head, t_shell *shell)
+{
+	int		counter;
+	t_env	*env_list;
+
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		counter++;
+		env_list = env_list->next;
+	}
+	free_split(&shell->env_arr);
+	shell->env_arr = NULL;
+	shell->env_size = 0;
+	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
+	if (!shell->env_arr)
+		return (-1);
+	shell->env_size = counter;
+	if (pair_format_for_env(shell, head) != 0)
+	{
+		shell->env_arr = NULL;
+		shell->env_size = 0;
+		return (-1);
+	}
+	return (0);
+}
+
+/*
+ * Builds: KEY="VALUE"
+ * Uses your ft_strjoin + free pattern. Returns NULL on error.
+ */
+static char	*key_and_value_format(t_env *env_list)
+{
+	char		*tmp;
+	char		*pair;
+	const char	*val;
+
+	if (!env_list || !env_list->key)
+		return (NULL);
+	val = env_list->value;
+	if (!val)
+		val = "";
+	tmp = ft_strjoin(env_list->key, "=\"");
+	if (!tmp)
+		return (NULL);
+	pair = ft_strjoin(tmp, val);
+	free(tmp);
+	if (!pair)
+		return (NULL);
+	tmp = ft_strjoin(pair, "\"");
+	free(pair);
+	if (!tmp)
+		return (NULL);
+	return (tmp);
+}
+
+static int	pair_format_for_export_display(t_shell *shell, t_env *head)
+{
+	int		counter;
+	char	*pair;
+	t_env	*env_list;
+
+	env_list = head;
+	counter = 0;
+	while (env_list)
+	{
+		if (env_list->key == NULL)
+			return (free_partial(shell->env_arr, counter), -1);
+		if (env_list->assigned == 0)
+			pair = ft_strdup(env_list->key);
+		else if (env_list->value[0] == '\0')
+			pair = ft_strjoin(env_list->key, "=\"\"");
+		else
+			pair = key_and_value_format(env_list);
+		if (!pair)
+			return (free_partial(shell->env_arr, counter), -1);
+		shell->env_arr[counter] = pair;
+		env_list = env_list->next;
+		counter++;
+	}
+	shell->env_arr[counter] = NULL;
 	return (0);
 }
 
@@ -205,12 +285,8 @@ int	env_list_to_array(t_env *head, t_shell *shell)
  */
 int	env_list_to_export_display_array(t_env *head, t_shell *shell)
 {
-
-	int		counter;
 	t_env	*env_list;
-	char	*pair;
-	char	*tmp;
-
+	int		counter;
 
 	env_list = head;
 	counter = 0;
@@ -219,66 +295,19 @@ int	env_list_to_export_display_array(t_env *head, t_shell *shell)
 		counter++;
 		env_list = env_list->next;
 	}
-	free_split(&shell->env_arr); //Clean before building
+	free_split(&shell->env_arr);
 	shell->env_arr = NULL;
 	shell->env_size = 0;
 	shell->env_arr = malloc((counter + 1) * (sizeof(*shell->env_arr)));
 	if (!shell->env_arr)
 		return (-1);
 	shell->env_size = counter;
-	env_list = head;
-	counter = 0;
-	while (env_list)
+	if (pair_format_for_export_display(shell, head) != 0)
 	{
-		if (env_list->key == NULL)
-		{
-			free_partial(shell->env_arr, counter);
-			return (-1);
-		}
-		if (env_list->assigned == 0)
-		{
-			pair = ft_strdup(env_list->key);                      /* KEY */
-		}
-		else if (env_list->value[0] == '\0')
-		{
-			pair = ft_strjoin(env_list->key, "=\"\"");            /* KEY="" */
-		}
-		else
-		{
-			/* KEY="VALUE" */
-			tmp = ft_strjoin(env_list->key, "=\"");
-			if (!tmp)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			pair = ft_strjoin(tmp, env_list->value);
-			free(tmp);
-			if (!pair)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			tmp = ft_strjoin(pair, "\"");
-			free(pair);
-			if (!tmp)
-			{
-				free_partial(shell->env_arr, counter);
-				return (-1);
-			}
-			pair = tmp;
-		}
-
-		if (!pair)
-		{
-			free_partial(shell->env_arr, counter);
-			return (-1);
-		}
-		shell->env_arr[counter] = pair;
-		env_list = env_list->next;
-		counter++;
+		shell->env_arr = NULL;
+		shell->env_size = 0;
+		return (-1);
 	}
-	shell->env_arr[counter] = NULL;
 	return (0);
 }
 
@@ -296,7 +325,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 	char	*result_str;
 	size_t	counter;
 
-	if (!s1) //if null treat as an empty string
+	if (!s1)
 		s1 = "";
 	if (!s2)
 		s2 = "";
@@ -316,11 +345,7 @@ char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2)
 }
 
 /**
- * Joins key and value into "KEY=VALUE".
- *
- * @param s1 key (NULL treated as "")
- * @param s2 value (NULL treated as "")
- * @return newly allocated string, or NULL on error
+ * Frees the whole env list
  */
 void	clean_env(t_env **head)
 {

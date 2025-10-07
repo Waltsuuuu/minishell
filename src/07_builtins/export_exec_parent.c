@@ -52,7 +52,9 @@ int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 	if (!cmd || !shell)
 		return (1);
 	if (apply_redirs_in_parent(cmd, saved) != 0)
+	{
 		return (1);
+	}
 	if (!cmd->argv[1] || (cmd->argv[1][0] == '\0'))
 	{
 		env_sort_and_print(shell);
@@ -63,6 +65,12 @@ int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 	shell->last_status = builtin_export(cmd->argv, shell);
 	restore_stdio(saved);
 	return (shell->last_status);
+}
+
+static void	init_parent_fds(int *in_fd, int *out_fd)
+{
+	*in_fd = STDIN_FILENO;
+	*out_fd = STDOUT_FILENO;
 }
 
 /**
@@ -82,8 +90,7 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 
 	if (save_stdio(saved) < 0)
 		return (-1);
-	in_fd = STDIN_FILENO;
-	out_fd = STDOUT_FILENO;
+	init_parent_fds(&in_fd, &out_fd);
 	node = cmd->redirs;
 	while (node)
 	{
@@ -94,7 +101,7 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 			return (restore_stdio(saved), -1);
 		if (r && r->type == REDIR_IN && apply_redir_in(r, &in_fd) < 0)
 			return (restore_stdio(saved), -1);
-		if (r && r->type == REDIR_HEREDOC && apply_redir_in(r, &in_fd) < 0)
+		if (r && r->type == REDIR_HEREDOC && apply_redir_heredoc(r, &in_fd) < 0)
 			return (restore_stdio(saved), -1);
 		node = node->next;
 	}

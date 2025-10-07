@@ -7,28 +7,28 @@
  * @param out_raw_status pointer to store the raw wait status
  * @return 0 on success (child finished or no child), -1 on unexpected error
  */
-int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
-{
-	int	raw_status;
-	int	wait_result;
+// int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
+// {
+// 	int	raw_status;
+// 	int	wait_result;
 
-	if (target_pid <= 0)
-		return (0);
-	while (1)
-	{
-		wait_result = waitpid(target_pid, &raw_status, 0);
-		if (wait_result == target_pid)
-		{
-			*out_raw_status = raw_status;
-			return (0);
-		}
-		if (wait_result == -1 && errno == EINTR)
-			continue ;
-		if (wait_result == -1 && errno == ECHILD)
-			return (0);
-		return (-1);
-	}
-}
+// 	if (target_pid <= 0)
+// 		return (0);
+// 	while (1)
+// 	{
+// 		wait_result = waitpid(target_pid, &raw_status, 0);
+// 		if (wait_result == target_pid)
+// 		{
+// 			*out_raw_status = raw_status;
+// 			return (0);
+// 		}
+// 		if (wait_result == -1 && errno == EINTR)
+// 			continue ;
+// 		if (wait_result == -1 && errno == ECHILD)
+// 			return (0);
+// 		return (-1);
+// 	}
+// }
 
 /**
  * Normalizes a raw wait status into a shell-style exit code.
@@ -54,20 +54,30 @@ static int	normalize_raw_status(int raw_status)
  * @param last_child_pid the PID of the last command in a pipeline
  * @return normalized exit status of the last child process
  */
-int	wait_all_and_last_status(pid_t *child_pids, int child_count,
+int	wait_all_and_last_status( int child_count,
 			pid_t last_child_pid)
 {
 	int	index;
 	int	raw_status;
 	int	last_status;
+	pid_t pid;
+
 
 	index = 0;
 	last_status = 0;
 	while (index < child_count)
 	{
-		if (wait_for_pid_once(child_pids[index], &raw_status) == 0)
-			if (child_pids[index] == last_child_pid)
-				last_status = normalize_raw_status(raw_status);
+		pid = waitpid(-1, &raw_status, 0);
+		if (pid == -1)
+		{
+			if (errno == EINTR)
+				continue ;
+			if (errno == ECHILD)
+				break ;
+			return (1);
+		}
+		if (pid == last_child_pid)
+			last_status = normalize_raw_status(raw_status);
 		index++;
 	}
 	return (last_status);

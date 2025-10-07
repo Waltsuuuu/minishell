@@ -30,7 +30,7 @@ typedef struct s_pipeline
 {
 	int			n_cmds;
 	t_command	*cmds;
-	int			(*pipe_pairs)[2]; //Osoitin taulukko pareista ns putket
+	int			pipe_pair[2];
 	pid_t		*child_pids;
 }	t_pipeline;
 

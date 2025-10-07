@@ -25,6 +25,8 @@
 # include "../libft/get_next_line/get_next_line.h"
 # include "limits.h"
 
+# define PIPE_BUF_MAX 63000
+
 extern volatile sig_atomic_t g_signal;
 
 typedef struct s_env
@@ -73,17 +75,17 @@ char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
 int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
-void	close_parent_unused_ends(int stage_index, int cmd_count,
-int		(*pipe_pairs)[2]);
+//void	close_parent_unused_ends(int stage_index, int cmd_count,
+//int		(*pipe_pairs)[2]);
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 int 	*in_fd, int *out_fd);
-void	close_all_pipes(int (*pipe_pairs)[2], int cmd_count);
-int		(*allocate_pipes(int cmd_count))[2];
+//void	close_all_pipes(int pipe_pairs[2], int cmd_count);
+int 	open_next_pipe_if_needed(int cmd_index, t_shell *shell, int *next_read, int *next_write);
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
-int		wait_all_and_last_status(pid_t *child_pids, int child_count,
-		pid_t last_child_pid);
+int	wait_all_and_last_status( int child_count,
+	pid_t last_child_pid);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
@@ -125,13 +127,13 @@ int		append_env_node(t_env **head, t_env *new_env_node);
 void	clean_env(t_env **head);
 int		env_list_to_array(t_env *head, t_shell *shell);
 char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
-void	print_env(t_shell *shell);
-void	env_sort_and_print(t_shell *shell);
+int		print_env(t_command *cmd, t_shell *shell);
+int		env_sort_and_print(t_shell *shell);
 int		find_equal_sign(char *str);
 char	*env_get(t_shell *shell, const char *key);
 
 // UTILS
 /*					See utils.h									*/
-
+void	kill_and_reap_children(pid_t *pids, int n);
 
 #endif

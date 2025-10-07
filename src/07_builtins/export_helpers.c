@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_helpers.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 09:34:05 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/07 09:40:03 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 /**
  * Prints env, and frees it after.
@@ -18,23 +30,12 @@ static void	print_env_export(char **env, int size)
 	}
 }
 
-/**
- * Converts env list to array, sorts it, and prints "declare -x KEY=VALUE".
- *
- * @param shell shell state with env_head
- */
-void	env_sort_and_print(t_shell *shell)
+static void	sort_env_array(t_shell *shell)
 {
-	// char	**env;
 	char	*tmp;
 	int		i;
 	int		j;
 
-	if (env_list_to_export_display_array(shell->env_head, shell) == -1) //Creating env in printable form
-	{
-		printf("ERROR creating a env_arr");
-		return ; // Should probably return int aswell to inform of failure.
-	}
 	i = 0;
 	while (i < shell->env_size)
 	{
@@ -51,12 +52,27 @@ void	env_sort_and_print(t_shell *shell)
 		}
 		i++;
 	}
-	print_env_export(shell->env_arr, shell->env_size);
-	if (env_list_to_array(shell->env_head, shell) == -1) //Recreating the right **env for execve usage
+}
+
+/**
+ * Converts env list to array, sorts it, and prints "declare -x KEY=VALUE".
+ * @param shell shell state with env_head
+ */
+int	env_sort_and_print(t_shell *shell)
+{
+	if (env_list_to_export_display_array(shell->env_head, shell) == -1)
 	{
-		printf("ERROR creating a env_arr");
-		return ; // Should probably return int aswell to inform of failure.
+		ft_putstr_fd("ERROR creating a env_arr", 2);
+		return (1);
 	}
+	sort_env_array(shell);
+	print_env_export(shell->env_arr, shell->env_size);
+	if (env_list_to_array(shell->env_head, shell) == -1)
+	{
+		ft_putstr_fd("ERROR creating a env_arr", 2);
+		return (1);
+	}
+	return (0);
 }
 
 /**

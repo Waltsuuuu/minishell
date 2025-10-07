@@ -4,8 +4,8 @@
 int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 {
 	state->line = readline("heredoc>");				// Take a line of input from the user.
-	if (!state->line)								
-		return (1);					
+	if (!state->line)
+		return (1);
 	if (ft_strcmp(state->line, redir->target) == 0)	// Check if line == EOF delimiter.
 	{
 		free(state->line);							// Free the delimiter line.		
@@ -15,11 +15,11 @@ int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 }
 
 // Checks if line has to be expanded before writing to the pipe.
-int	handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp)
+int	handle_heredoc_line(t_hd_state *state, int fd, char *line, t_redir *redir, int last_status, char **envp)
 {
 	if (redir->no_expand == 0)										// Delimiter was not quoted - Expand
 	{
-		if (expand_write_line(fd, line, last_status, envp) == -1)	// Rebuild the line with status and var expanded. Rebuilds the line even if there is nothing to expand :)
+		if (expand_write_line(state, fd, line, last_status, envp) == -1)	// Rebuild the line with status and var expanded. Rebuilds the line even if there is nothing to expand :)
 			return (-1);
 	}
 	else															// Delimiter was quoted - NO expansion
@@ -27,7 +27,7 @@ int	handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, cha
 	return (0);
 }
 
-int	expand_write_line(int fd, char *line, int last_status, char **envp)
+int	expand_write_line(t_hd_state *state, int fd, char *line, int last_status, char **envp)
 {
 	char *temp1;	// Line with status expanded.
 	char *temp2;	// Line with status and var expaneded.
@@ -39,6 +39,14 @@ int	expand_write_line(int fd, char *line, int last_status, char **envp)
 	if (!temp2)
 	{
 		free(temp1);
+		return (-1);
+	}
+	state->pipe_bytes_written += ft_strlen(temp2);
+	if (state->pipe_bytes_written > PIPE_BUF_MAX)
+	{
+		free(temp1);
+		free(temp2);
+		ft_putstr_fd("minishell: Error! Heredoc max size 63KiB\n", 2);
 		return (-1);
 	}
 	write_line_nl(fd, temp2);					// Write the expaneded line to the pipe.

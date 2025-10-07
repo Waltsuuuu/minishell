@@ -17,6 +17,7 @@ typedef struct s_hd_state
 	struct sigaction	old_int;
 	struct sigaction	old_quit;
 	int					wait_result;
+	int					pipe_bytes_written;
 }	t_hd_state;
 
 // COLLECT_HEREDOCS
@@ -25,22 +26,17 @@ int		collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp);
 int		collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp);
 
 // HD_INPUT_READ_WRITE
-int		handle_heredoc_line(int	fd, char *line, t_redir *redir, int last_status, char **envp);
+int		handle_heredoc_line(t_hd_state *state, int fd, char *line, t_redir *redir, int last_status, char **envp);
 int		fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
 int		readline_and_check_eof(t_hd_state *state, t_redir *redir);
-int		expand_write_line(int fd, char *line, int last_status, char **envp);
+int		expand_write_line(t_hd_state *state, int fd, char *line, int last_status, char **envp);
 void	write_line_nl(int fd, char *line);
 
 // HD_SIGNAL_UTILS
-void	ignore_parent_sig_handlers(t_hd_state *state);
-void	set_default_sig_handling(void);
+void	heredoc_child_sighandler(void);
 int		wait_child(t_hd_state *state);
-void	restore_parent_sig_handlers(t_hd_state *state);
 int		handle_child_status(t_hd_state *state, t_shell *shell);
-
-// HD_TTY_UTILS
-void	save_terminal_state(struct termios *tty);
-void	restore_terminal_state(t_hd_state *state);
+void	close_stdin_on_sigint(int sig_num);
 
 // HD_UTILS
 void	init_hd_state(t_hd_state *state);

@@ -46,11 +46,11 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 		return (-1);
 	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
 	{
-		restore_terminal_state(&state);
+		restore_terminal_state(&state.tty);
 		return(close_pipe_err(&state));
 	}
 	close(state.fds[1]);  // Parent only reads
-	ignore_parent_sig_handlers(&state);
+	ignore_parent_sig_handlers(&state.ign, &state.old_quit, &state.old_int);
 	if (wait_child(&state) == -1)
 	{
 		restore_tty_and_sig(&state);
@@ -73,13 +73,13 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		return(-1);
 	if (state->pid == 0)
 	{
-		set_default_sig_handling();
+		heredoc_child_sighandler();
 		close(state->fds[0]); //Child only writes.
-		while (1)
+		while (g_signal == 0)
 		{
 			if (readline_and_check_eof(state, redir) == 1)
 				break ;
-			if (handle_heredoc_line(state->fds[1], state->line, redir, shell->last_status, envp) == -1)
+			if (handle_heredoc_line(state, state->fds[1], state->line, redir, shell->last_status, envp) == -1)
 			{
 				free(state->line);
 				close(state->fds[1]);
@@ -94,6 +94,12 @@ int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char 
 		free_split(&shell->env_arr);
 		clean_env(&shell->env_head);
 		close(state->fds[1]);
+		if (g_signal == SIGINT)
+		{
+			signal(SIGINT, SIG_DFL);
+			kill(getpid(), SIGINT);
+			_exit(130);
+		}
 		_exit(0);
 	}
 	return(0);
