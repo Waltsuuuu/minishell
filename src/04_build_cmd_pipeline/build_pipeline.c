@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:51:42 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 18:42:20 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/07 19:10:09 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,9 +139,9 @@ int	bp_finalize_command(t_seg *seg, int cmd_i, t_shell *shell, int i)
 {
 	if (seg->argc == 0 && seg->redirs == NULL)
 	{
-		if (cmd_i + 1 == pipeline->n_cmds)			// After trailing pipe
+		if (cmd_i + 1 == shell->pipeline.n_cmds)
 			ft_putstr_fd("Syntax error near newline\n", STDERR_FILENO);
-		else										// Between pipes
+		else
 			tok_syntax_err(&shell->input.tokens[i], shell);
 		return (-1);
 	}
