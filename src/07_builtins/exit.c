@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:55:49 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/06 12:57:55 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 07:47:48 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,14 @@ static int	is_interactive(t_shell *shell)
 	if (shell && shell->interactive)
 		return (1);
 	return (isatty(STDIN_FILENO));
+}
+
+static void	cleanup(t_shell *shell)
+{
+	free_allocs(shell);
+	free_split(&shell->env_arr);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
 }
 
 int	builtin_exit(t_command *cmd, t_shell *shell)
@@ -31,19 +39,13 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		status = (unsigned char)shell->last_status;
 		if (shell->in_child)
 		{
-			free_allocs(shell);
-			free_split(&shell->env_arr);
-			clean_env(&shell->env_head);
-			free_split(&shell->env_arr);
+			cleanup(shell);
 			free(shell->pipeline.child_pids);
 			_exit(status);
 		}
 		if (is_interactive(shell))
 			ft_putstr_fd("exit\n",1);
-		free_allocs(shell);
-		free_split(&shell->env_arr);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
+		cleanup(shell);
 		exit(status);
 	}
 	if (!ft_strtoll(cmd->argv[1], &value)) //ARGUMENT VALIDATION
@@ -53,10 +55,7 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(cmd->argv[1] ,2);
 		ft_putstr_fd(": numeric argument required\n", 2);
-		free_allocs(shell);
-		free_split(&shell->env_arr);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
+		cleanup(shell);
 		if (shell->in_child)
 		{
 			free(shell->pipeline.child_pids);
@@ -73,19 +72,13 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 	status = (unsigned char)value;
 	if (shell->in_child)
 	{
-		free_allocs(shell);
-		free_split(&shell->env_arr);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
+		cleanup(shell);
 		free(shell->pipeline.child_pids);
 		_exit(status);
 	}
 	if (is_interactive(shell))
 		ft_putstr_fd("exit\n", 1);
-	free_allocs(shell);
-	free_split(&shell->env_arr);
-	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
+	cleanup(shell);
 	exit(status);
 }
 

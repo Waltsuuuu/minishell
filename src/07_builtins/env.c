@@ -6,19 +6,26 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:53:59 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 07:40:36 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 08:01:11 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	print_env(t_shell *shell)
+int	print_env(t_command *cmd, t_shell *shell)
 {
 	t_env	*env_list;
-	
+
 	if (!shell)
 		return (-1);
 	env_list = shell->env_head;
+	if (cmd->argc > 1)
+	{
+		ft_putstr_fd("env: ", 2);
+		ft_putstr_fd(cmd->argv[1] ,2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (127);
+	}
 	while (env_list)
 	{
 		if (env_list->key && env_list->value && env_list->assigned == 1)

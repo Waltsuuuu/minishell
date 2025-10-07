@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:02:01 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 07:37:13 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 07:58:30 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	run_builtin(t_command *cmd, t_shell *shell)
 	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 		return (builtin_pwd());
 	if (ft_strcmp(cmd->argv[0], "env") == 0)
-		return (print_env(shell));
+		return (print_env(cmd, shell));
 	return (127);
 }
 
