@@ -6,25 +6,25 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 10:28:06 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/06 10:32:45 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 17:01:18 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 //returns 0 if ok (or no next), -1 on error; sets next_r/next_w or -1/-1
-int	open_next_pipe_if_needed(int cmd_index, t_shell *s, int *read, int *write)
+int	open_next_pipe_if_needed(t_shell *s, t_exec *exec)
 {
-	if (cmd_index < s->pipeline.n_cmds - 1)
+	if (exec->cmd_index < s->pipeline.n_cmds - 1)
 	{
 		if (pipe(s->pipeline.pipe_pair) < 0)
 			return (-1);
-		*read = s->pipeline.pipe_pair[0];
-		*write = s->pipeline.pipe_pair[1];
+		exec->next_read = s->pipeline.pipe_pair[0];
+		exec->next_write = s->pipeline.pipe_pair[1];
 		return (0);
 	}
-	*read = -1;
-	*write = -1;
+	exec->next_read = -1;
+	exec->next_write = -1;
 	s->pipeline.pipe_pair[0] = -1;
 	s->pipeline.pipe_pair[1] = -1;
 	return (0);
