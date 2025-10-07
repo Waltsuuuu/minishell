@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tok_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 12:48:25 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 12:48:53 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -70,7 +82,8 @@ int	get_operator_len(const char *string)
  * On allocation failure, frees 'text'.
  * @return 0 on success, -1 on error (NULL args or malloc failure).
  */
-int	append_token_node(t_tokenizer_state *state, TokType type, char *text, int pos)
+int	append_token_node(t_tokenizer_state *state, TokType type,
+		char *text, int pos)
 {
 	t_toknode	*node;
 
@@ -109,7 +122,7 @@ TokType	get_operator_type(const char *string, int len)
 		if (string[0] == '<')
 			return (TOK_REDIR_IN);
 		if (string[0] == '>')
-			return (TOK_REDIR_OUT);	
+			return (TOK_REDIR_OUT);
 	}
 	else if (len == 2)
 	{

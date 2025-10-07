@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenize.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 12:48:59 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 12:50:18 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -5,13 +17,13 @@
  * Tokens are delimited by spaces or tabs,
  * except inside single or double quotes.
  * Operators |, <, >, <<, >> always form their own separate tokens.
- * @return 0 on success, -1 on error (frees memory that was allocated inside function). 
+ * @return 0 on success, -1 on error. 
  */
 int	tokenize_line(const char *line, t_input *input)
 {
-	t_tokenizer_state state;
+	t_tokenizer_state	state;
 
-	if (!line|| !input)
+	if (!line || !input)
 		return (-1);
 	input->tokens = NULL;
 	input->n_tokens = 0;
@@ -48,7 +60,7 @@ int	run_tokenizer(t_tokenizer_state *state)
 {
 	if (!state)
 		return (-1);
-	while (state->line[state->index] != '\0')	
+	while (state->line[state->index] != '\0')
 	{
 		state->index = skip_blanks(state->line, state->index);
 		if (state->line[state->index] == '\0')
@@ -59,7 +71,7 @@ int	run_tokenizer(t_tokenizer_state *state)
 				return (-1);
 		}
 		else
-			if (set_word(state) == -1 )
+			if (set_word(state) == -1)
 				return (-1);
 	}
 	return (0);
@@ -104,7 +116,7 @@ int	set_word(t_tokenizer_state *state)
 	if (state->word_start == -1)
 		state->word_start = state->index;
 	state->index = scan_word_end(state->line, state->index,
-				&state->in_single, &state->in_double);
+			&state->in_single, &state->in_double);
 	len = state->index - state->word_start;
 	text = ft_substr(state->line, state->word_start, len);
 	if (!text)
