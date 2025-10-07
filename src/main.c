@@ -43,7 +43,8 @@ int	main(int argc, char *argv[], char *envp[])
 		shell.buf = ft_strjoin(cwd,"~:$");
 		if (!shell.buf)
 			break ;
-		//coloring();
+		//coloring();	
+	
 		line = read_with_mode_check(shell.buf);
 		free_str_ptr(&shell.buf);
 		if (!line) // CTR:+D
@@ -78,10 +79,7 @@ int	main(int argc, char *argv[], char *envp[])
 		if (count_heredocs(&shell.input) >= 16)
 		{
 			ft_putstr_fd("minishell: maximum here-document count exceeded\n", STDERR_FILENO);
-			free_str_ptr(&line);
-			free_allocs(&shell);
-			free_split(&shell.env_arr);
-			continue ;
+			break ;
 		}
 		if (expand_tokens(&shell.input, shell.last_status, shell.env_arr) == -1)
 		{

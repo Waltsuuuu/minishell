@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_builtin.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 09:13:32 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/07 09:14:08 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
@@ -30,6 +42,22 @@ int	builtin_export(char **argv, t_shell *shell)
 	return (status);
 }
 
+static int	add_key_only(char *argv, t_shell *shell)
+{
+	t_env	*node;
+
+	node = env_find(shell->env_head, argv);
+	if (!node)
+	{
+		if (env_set(&shell->env_head, argv, "") != 0)
+			return (1);
+		node = env_find(shell->env_head, argv);
+		if (node)
+			node->assigned = 0;
+	}
+	return (0);
+}
+
 /**
  * Processes one export argument (KEY=VALUE or KEY).
  * Validates identifier and updates env accordingly.
@@ -43,7 +71,6 @@ int	process_export_arg(char *argv, t_shell *shell)
 	char	*key;
 	char	*value;
 	int		equal;
-	t_env	*node;
 
 	if (!is_builtin_valid(argv))
 	{
@@ -61,17 +88,8 @@ int	process_export_arg(char *argv, t_shell *shell)
 		return (shell->last_status);
 	}
 	else
-	{
-		node = env_find(shell->env_head, argv);
-		if (!node)
-		{
-			if (env_set(&shell->env_head, argv, "") != 0)
-				return (1);
-			node = env_find(shell->env_head, argv);
-			if (node)
-				node->assigned = 0;      // NEW: created by `export KEY`
-		}
-	}
+		if (add_key_only(argv, shell) == 1)
+			return (1);
 	return (0);
 }
 
@@ -116,7 +134,6 @@ void	print_invalid_identifier(char *builtin, char *key)
 	ft_putstr_fd(": `", STDERR_FILENO);
 	ft_putstr_fd(key, STDERR_FILENO);
 	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-	// ft_printf("%s: `%s': not a valid identifier\n", builtin, key);
 }
 
 /**

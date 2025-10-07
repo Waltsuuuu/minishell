@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/05 11:53:45 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/06 09:55:04 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/06 12:53:14 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ static int	pair_format_for_env(t_shell *shell, t_env *head)
 	int		counter;
 	t_env	*env_list;
 	char	*pair;
-	
+
 	env_list = head;
 	counter = 0;
 	while (env_list)
@@ -174,6 +174,7 @@ static int	pair_format_for_env(t_shell *shell, t_env *head)
 	shell->env_arr[counter] = NULL;
 	return (0);
 }
+
 /**
  * Converts env list to a NULL-terminated array of "KEY=VALUE" strings.
  *

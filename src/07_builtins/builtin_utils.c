@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/06 12:02:01 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/07 07:58:30 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	run_builtin(t_command *cmd, t_shell *shell)
@@ -16,6 +28,8 @@ int	run_builtin(t_command *cmd, t_shell *shell)
 		return (builtin_echo(cmd));
 	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 		return (builtin_pwd());
+	if (ft_strcmp(cmd->argv[0], "env") == 0)
+		return (print_env(cmd, shell));
 	return (127);
 }
 
@@ -29,14 +43,15 @@ int	is_builtin_name(const char *name)
 		return (1);
 	if (ft_strcmp(name, "cd") == 0)
 		return (1);
-	 if (ft_strcmp(name, "exit") == 0)
-	 	return (1);
+	if (ft_strcmp(name, "exit") == 0)
+		return (1);
 	if (ft_strcmp(name, "echo") == 0)
 		return (1);
 	if (ft_strcmp(name, "pwd") == 0)
 		return (1);
+	if (ft_strcmp(name, "env") == 0)
+		return (1);
 	return (0);
-
 }
 
 int	is_parent_builtin(const char *name)
@@ -50,6 +65,6 @@ int	is_parent_builtin(const char *name)
 	if (ft_strcmp(name, "cd") == 0)
 		return (1);
 	if (ft_strcmp(name, "exit") == 0)
-	 	return (1);
+		return (1);
 	return (0);
 }

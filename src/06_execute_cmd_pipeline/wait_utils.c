@@ -7,7 +7,7 @@
  * @param out_raw_status pointer to store the raw wait status
  * @return 0 on success (child finished or no child), -1 on unexpected error
  */
-int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
+/*int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
 {
 	int	raw_status;
 	int	wait_result;
@@ -28,7 +28,7 @@ int	wait_for_pid_once(pid_t target_pid, int *out_raw_status)
 			return (0);
 		return (-1);
 	}
-}
+}*/
 
 /**
  * Normalizes a raw wait status into a shell-style exit code.
@@ -65,8 +65,9 @@ int	wait_all_and_last_status(pid_t *child_pids, int child_count,
 	last_status = 0;
 	while (index < child_count)
 	{
-		if (wait_for_pid_once(child_pids[index], &raw_status) == 0)
-			if (child_pids[index] == last_child_pid)
+		//if (wait_for_pid_once(child_pids[index], &raw_status) == 0)
+		waitpid(-1, &raw_status, 0);	
+		if (child_pids[index] == last_child_pid)
 				last_status = normalize_raw_status(raw_status);
 		index++;
 	}
