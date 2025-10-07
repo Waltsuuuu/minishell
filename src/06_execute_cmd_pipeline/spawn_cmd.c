@@ -147,141 +147,150 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	_exit(127);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*static void	pipe_initialization(int *final_in, int pipe_in, int *final_out, int pipe_out)
+static void	set_child_fds_from_pipes(int *final_in, int *final_out,
+									int pipe_in, int pipe_out)
 {
-		*final_in = STDIN_FILENO;
-		if (pipe_in >= 0)
-			final_in = &pipe_in;
-		*final_out = STDOUT_FILENO;
-		if (pipe_out >= 0)
-			final_out = &pipe_out;
-}*/
+	*final_in = STDIN_FILENO;
+	if (pipe_in >= 0)
+		*final_in = pipe_in;
+
+	*final_out = STDOUT_FILENO;
+	if (pipe_out >= 0)
+		*final_out = pipe_out;
+}
+static void	print_redir_error(t_redir *redir)
+{
+	if (redir && redir->target)
+		perror(redir->target);
+	else
+		perror("redir");
+}
+
+static void	handle_redir_error(t_shell *shell, t_redir *redir)
+{
+	print_redir_error(redir);
+	free_allocs(shell);
+	free(shell->pipeline.child_pids);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
+	_exit(1);
+}
+
+static void	handle_redir_out(t_redir *r, int *final_out, t_shell *shell)
+{
+	if (r && r->type == REDIR_OUT)
+	{
+		if (apply_redir_out(r, final_out) < 0)
+			handle_redir_error(shell, r);
+	}
+}
+
+static void	handle_redir_append(t_redir *r, int *final_out, t_shell *shell)
+{
+	if (r && r->type == REDIR_APPEND)
+	{
+		if (apply_redir_append(r, final_out) < 0)
+			handle_redir_error(shell, r);
+	}
+}
+
+static void	handle_redir_in(t_redir *r, int *final_in, t_shell *shell)
+{
+	if (r && r->type == REDIR_IN)
+	{
+		if (apply_redir_in(r, final_in) < 0)
+			handle_redir_error(shell, r);
+	}
+}
+
+static void	handle_redir_heredoc(t_redir *r, int *final_in, t_shell *shell)
+{
+	if (r && r->type == REDIR_HEREDOC)
+	{
+		if (apply_redir_heredoc(r, final_in) < 0)
+			handle_redir_error(shell, r);
+	}
+}
+static void	child_cleanup_and_exit(t_shell *shell, int status)
+{
+	free_allocs(shell);
+	free(shell->pipeline.child_pids);
+	clean_env(&shell->env_head);
+	free_split(&shell->env_arr);
+	_exit(status);
+}
+
+static void	replug_child_stdin(int final_in)
+{
+	if (final_in != STDIN_FILENO)
+	{
+		if (dup2(final_in, STDIN_FILENO) < 0)
+			_exit(1);
+		close(final_in);
+	}
+}
+
+static void	replug_child_stdout(int final_out)
+{
+	if (final_out != STDOUT_FILENO)
+	{
+		if (dup2(final_out, STDOUT_FILENO) < 0)
+			_exit(1);
+		close(final_out);
+	}
+}
+
+static void	child_finalize_pipes(t_shell *shell)
+{
+	child_close_all_pipes(shell);
+}
+
+static void	maybe_run_builtin_and_exit(t_command *cmd, t_shell *shell)
+{
+	if (cmd && cmd->argv && cmd->argv[0] && is_builtin_name(cmd->argv[0]))
+	{
+		shell->last_status = run_builtin(cmd, shell);
+		child_cleanup_and_exit(shell, shell->last_status);
+	}
+}
+
+static void	process_all_redirs(t_list *redirs, int *final_in,
+								int *final_out, t_shell *shell)
+{
+	t_list	*node;
+	t_redir	*redir;
+
+	node = redirs;
+	while (node)
+	{
+		redir = (t_redir *)node->content;
+
+		handle_redir_out(redir, final_out, shell);
+		handle_redir_append(redir, final_out, shell);
+		handle_redir_in(redir, final_in, shell);
+		handle_redir_heredoc(redir, final_in, shell);
+
+		node = node->next;
+	}
+}
 
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 {
 	pid_t	pid;
 	int		final_in;
 	int		final_out;
-	t_list	*node;
-	t_redir	*redir;
 
 	pid = fork();
 	if (pid == 0)
 	{
 		shell->in_child = 1;
 		setup_signal_handlers_for_child();
-
-		// 1. Aloitus oletuksilla (putkista jos on, muuten stdin/stdout)
-		//pipe_initialization(&final_in, pipe_in, &final_out, pipe_out); //TODO
-		final_in = STDIN_FILENO;
-		if (pipe_in >= 0)
-			final_in = pipe_in;
-		final_out = STDOUT_FILENO;
-		if (pipe_out >= 0)
-			final_out = pipe_out;
-
-
-		// 2. Käy läpi redirit: tässä vaiheessa
-		node = cmd->redirs;
-		while (node)
-		{
-			redir = (t_redir *)node->content;
-
-			if (redir && redir->type == REDIR_OUT) 
-			{
-				if (apply_redir_out(redir, &final_out) < 0)  // Tarkistetaan onnnistuisko avaus
-				{
-    				if (redir->target)
-        				perror(redir->target);
-    				else
-					{
-        				perror("redir");
-					}
-					free_allocs(shell);
-					free(shell->pipeline.child_pids);
-					clean_env(&shell->env_head);
-					free_split(&shell->env_arr);
-					_exit(1);
-				}
-
-			}
-
-			if (redir && redir->type == REDIR_APPEND)
-			{
-				if (apply_redir_append(redir, &final_out) < 0)
-				{
-					if (redir->target)
-						perror(redir->target);
-					else
-						perror("redir");
-					free_allocs(shell);
-					free(shell->pipeline.child_pids);
-					clean_env(&shell->env_head);
-					free_split(&shell->env_arr);
-					_exit(1);
-				}
-			}
-
-			if (redir && redir->type == REDIR_IN)
-			{
-				if (apply_redir_in(redir, &final_in) < 0)
-				{
-					if (redir->target)
-						perror(redir->target);
-					else
-						perror("redir");
-					free_allocs(shell);
-					free(shell->pipeline.child_pids);
-					clean_env(&shell->env_head);
-					free_split(&shell->env_arr);
-					_exit(1);
-				}
-			}
-
-			if (redir && redir->type == REDIR_HEREDOC)
-			{
-				if (apply_redir_heredoc(redir, &final_in) < 0)
-				{
-					if (redir->target)
-						perror(redir->target);
-					else
-						perror("redir");
-					free_allocs(shell);
-					free(shell->pipeline.child_pids);
-					clean_env(&shell->env_head);
-					free_split(&shell->env_arr);
-					_exit(1);
-				}
-			}
-
-			node = node->next;
-		}
-
-		/* 3. Tee dup2 lopullisille fd:ille ja sulje ylimääräiset */
-		if (final_in != STDIN_FILENO)
-		{
-			if (dup2(final_in, STDIN_FILENO) < 0)
-				_exit(1);
-			close(final_in);
-		}
-		if (final_out != STDOUT_FILENO)
-		{
-			if (dup2(final_out, STDOUT_FILENO) < 0)
-				_exit(1);
-			close(final_out);
-		}
-	
-		child_close_all_pipes(shell);
-		if (cmd && cmd->argv && cmd->argv[0]
-			&& is_builtin_name(cmd->argv[0]))
-		{
-			shell->last_status = run_builtin(cmd, shell);
-			free_allocs(shell);
-			free(shell->pipeline.child_pids);
-			clean_env(&shell->env_head);
-			free_split(&shell->env_arr);
-			_exit(shell->last_status);
-		}
+		set_child_fds_from_pipes(&final_in, &final_out, pipe_in, pipe_out);
+		process_all_redirs(cmd->redirs, &final_in, &final_out, shell);
+		replug_child_stdin(final_in);
+		replug_child_stdout(final_out);
+		child_finalize_pipes(shell);
+		maybe_run_builtin_and_exit(cmd, shell);
 		exec_with_path_search(cmd->argc, cmd->argv, shell);
 		_exit(127);
 	}
