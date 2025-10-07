@@ -84,8 +84,8 @@ int 	open_next_pipe_if_needed(int cmd_index, t_shell *shell, int *next_read, int
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
-int		wait_all_and_last_status(pid_t *child_pids, int child_count,
-		pid_t last_child_pid);
+int	wait_all_and_last_status( int child_count,
+	pid_t last_child_pid);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);

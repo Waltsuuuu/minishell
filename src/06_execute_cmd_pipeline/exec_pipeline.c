@@ -60,7 +60,7 @@ int	exec_pipeline(t_pipeline *pipeline, t_shell *shell)
 	}
 	if (previous_read >= 0)
 		close(previous_read);
-	shell->last_status = wait_all_and_last_status(pipeline->child_pids, pipeline->n_cmds,
+	shell->last_status = wait_all_and_last_status(pipeline->n_cmds,
 			pipeline->child_pids[pipeline->n_cmds - 1]);
 	restore_parent_sig_handlers(&old_quit, &old_int);
 	restore_terminal_state(&tty);
