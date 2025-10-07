@@ -1,12 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   03_expand_variable.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 14:27:38 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 17:32:24 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
- * @brief Expand $VAR in text using envp. 
- * @param text  Input string (may be NULL).
- * @param envp  Environment variable array.
+ * @brief Rebuilds token.text, expanding $VAR (KEY) to its value.
+ * If KEY is invalid, it is appended as it is.
+ * If KEY is valid but is not declared, KEY is expanded to
+ * an empty string.
+ * While not inside quotes, a '$' preceeding a quoted segment is skipped.
+ * No expansion inside single quotes.
  * @return Newly allocated expanded string, or NULL on error.
  */
-char *expand_variable(char *text, char **envp)
+char	*expand_variable(char *text, char **envp)
 {
 	char	*exp_text;
 
@@ -19,73 +34,76 @@ char *expand_variable(char *text, char **envp)
 	{
 		free(exp_text);
 		return (NULL);
-	} 
+	}
 	return (exp_text);
 }
 
 /**
- * @brief Rebuilds token.text, expands $VAR if found. 
- * @param text     Source string to scan.
- * @param exp_text Destination string pointer.
- * @param envp     Environment variable array.
+ * @brief Iterates over token.text, rebuilds the string while searching for
+ * a valid "$VAR" segment to expand.
+ * Keeps track of quote state. Does not expand inside single quotes.
  * @return 0 on success, -1 on error.
  */
 int	create_exp_var_text(char *text, char **exp_text, char **envp)
 {
-	t_expand_state st;
+	t_expand_state	st;
 
-	init_expand_state(&st);													// Inits iterator + in_single and in_double quote flags.
+	init_expand_state(&st);
 	while (text[st.i] != '\0')
 	{
-		st.quote_handled = process_quote_char(text[st.i], &st.in_single,	// Appends quote char to exp_text string.
-				&st.in_double, exp_text);									// And keeps track of quote state.
-		if (st.quote_handled == -1)											// -1 == Failure.
+		st.quote_handled = process_quote_char(text[st.i], &st.in_single,
+				&st.in_double, exp_text);
+		if (st.quote_handled == -1)
 			return (-1);
-		if (st.quote_handled == 1)											// 1 == quote char found and handled.
+		if (st.quote_handled == 1)
 		{
 			st.i++;
 			continue ;
 		}
-		st.expanded = handle_var_expansion(text, exp_text, &st.i,			// Checks if current char is the beginning of a $VAR to expand
-				envp, st.in_single, st.in_double);
-		if (st.expanded == -1)												// -1 == Failure
+		st.expanded = handle_var_expansion(&st, text, exp_text, envp);
+		if (st.expanded == -1)
 			return (-1);
-		if (st.expanded == 1)												// 1 if found something to expand.
+		if (st.expanded == 1)
 			continue ;
-		if (process_char(exp_text, text[st.i]) == -1)						// If not a quote or var, append char to exp_text string.
+		if (append_char(exp_text, text[st.i]) == -1)
 			return (-1);
-		st.i++;																// Move to next char.
+		st.i++;
 	}
 	return (0);
 }
 
 /**
- * @brief Skips $ char in cases of $".." and $'..' (When not already inside quotes)
- * If at a $VAR start (and not in single quotes), expand it via process_var_expansion.
- * Increments the iterator as needed.
- * @return 1 if handled, 0 if not applicable, -1 on error.
+ * @brief Checks if we are dealing with a valid $VAR (KEY) segment.
+ * If valid: Expand $VAR to its value and append it to the string.
+ * Valid: $ followed by a '_' or alpha char.
+ * @note:
+ * - While not inside quotes, a '$' preceeding a quoted segment is skipped.
+ * - Increments the iterator as needed.
+ * @return 1 handled, 0 if invalid segment, -1 on error.
  */
-int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int in_single, int in_double)
+int	handle_var_expansion(t_expand_state *st, char *text,
+		char **exp_text, char **envp)
 {
 	int	status;
 
-	// Skip $ in case of locale-specific transltion input
-	if (!in_single && !in_double && text[*i] == '$' && text[*i + 1] == '\"')
+	if (!st->in_single && !st->in_double
+		&& text[st->i] == '$' && text[st->i + 1] == '\"')
 	{
-		(*i)++;
+		st->i++;
 		return (1);
 	}
-	// Skip $ in case of ANSI-C Quoting
-	if (!in_single && !in_double && text[*i] == '$' && text[*i + 1] == '\'')
+	if (!st->in_single && !st->in_double && text[st->i] == '$'
+		&& text[st->i + 1] == '\'')
 	{
-		(*i)++;
+		st->i++;
 		return (1);
 	}
 	status = 0;
-	if (!in_single && text[*i] == '$' && valid_start_char(text[*i + 1]) == 1)
+	if (!st->in_single && text[st->i] == '$'
+		&& valid_start_char(text[st->i + 1]) == 1)
 	{
-		(*i)++;
-		status = process_var_expansion(text, exp_text, i, envp);
+		st->i++;
+		status = process_var_expansion(text, exp_text, &st->i, envp);
 		if (status == -1)
 			return (-1);
 		return (1);
@@ -94,31 +112,33 @@ int	handle_var_expansion(char *text, char **exp_text, int *i, char **envp, int i
 }
 
 /**
- * @brief Read KEY after '$' and append its env value if found.
- * @return 1 if expanded, 0 if missing in env, -1 on error.
+ * @brief Extracts the $VAR KEY and searches for a match in the
+ * environment array.
+ * If match found, extract the VALUE and append it to the exp_text string.
+ * If no match found, the "$VAR" segment is skipped ("Expands to empty").
+ * @return 1 if expanded, 0 if KEY is not declared, -1 on error.
  */
 int	process_var_expansion(char *text, char **exp_text, int *i, char **envp)
 {
- 	char	*key;															// "KEY=" buffer ex. USER= or PATH=
- 	int		key_len;														// length of key
- 	int		start_i;														// Index where KEY starts in text string.
- 	int		env_i;															// Iterator for envp array.
+	char	*key;
+	int		key_len;
+	int		start_i;
+	int		env_i;
 
-	key = NULL;
-	if (extract_key(text, i, &key, &key_len, &start_i) == -1)				// Parses the KEY from text.
+	key = extract_key(text, i, &key_len, &start_i);
+	if (!key)
 		return (-1);
-	env_i = find_env_index(envp, key, key_len);								// Searches for matching KEY in envp array and returns its index.
-	if (env_i >= 0)															// -1 if no matching KEY found, > 0 if matching KEY found.
+	env_i = find_env_index(envp, key, key_len);
+	if (env_i >= 0)
 	{
-		if (process_expanded_str(exp_text, &envp[env_i][key_len + 1]) == -1)	// Appends the VALUE section of the KEY=VALUE string to exp_text.
-		{																		// -1  == Failure.
+		if (append_expanded_str(exp_text, &envp[env_i][key_len + 1]) == -1)
+		{
 			free(key);
 			return (-1);
 		}
 		free(key);
-		return (1);																// Return 1 to signal successful VAR expansion and append OK.
+		return (1);
 	}
 	free(key);
-	return (0);																	// 0 if VAR not found.
+	return (0);
 }
-

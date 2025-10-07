@@ -1,72 +1,88 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   02_expand_status.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 12:54:41 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 17:32:17 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
- * @brief Expand "$?" using last_status into a new string.
- * @param text         Input string (can be NULL).
- * @param last_status  Exit status used for "$?".
+ * @brief Rebuilds token.text, expanding $? to the
+ * last_status.
  * @return Newly allocated expanded string, or NULL on error.
- * @note Expansion is skipped inside single quotes; quote chars are preserved.
  */
-char *expand_status(char *text, int last_status)
+char	*expand_status(char *text, int last_status)
 {
 	char	*exp_text;
 	char	*status_str;
 
-	if (!text)														// If text == NULL
-		return (ft_strdup(""));										// Return empty string (Nothing to be expanded)
-	exp_text = ft_strdup("");										// Init exp_text as an empty string.
+	if (!text)
+		return (ft_strdup(""));
+	exp_text = ft_strdup("");
 	if (!exp_text)
 		return (NULL);
-	status_str = ft_itoa(last_status);								// Convert int (last_status) to string
+	status_str = ft_itoa(last_status);
 	if (!status_str)
 	{
 		free(exp_text);
 		return (NULL);
 	}
-	if (create_exp_status_text(text, &exp_text, status_str) == -1)  // Builds the expaneded token.text string
+	if (create_exp_status_text(text, &exp_text, status_str) == -1)
 	{
 		free(status_str);
 		free(exp_text);
 		return (NULL);
 	}
-	free(status_str);												// Free the status string		
-	return (exp_text);												// Return the token.text in expanded form
+	free(status_str);
+	return (exp_text);
 }
 
 /**
- * @brief Replace "$?" in text with status_str while preserving quote state.
- * @param text       Source string to scan.
- * @param exp_text   [in,out] Destination string pointer.
- * @param status_str Status string to insert.
+ * @brief Iterates over token.text, rebuilds the string while
+ * searching for a "$?" segment to expand.
+ * Keeps track of quote state. Does not expand inside single quotes.
  * @return 0 on success, -1 on error.
- * @note Skips expansion inside single quotes; appends quote chars as seen.
  */
 int	create_exp_status_text(char *text, char **exp_text, char *status_str)
 {
-	t_expand_state st;
+	t_expand_state	st;
 
-	init_expand_state(&st);													// Inits iterator + in_single and in_double quote flags.
-	while (text[st.i] != '\0')
+	init_expand_state(&st);
+	if (loop_rebuild_expand(text, exp_text, status_str, &st) == -1)
+		return (-1);
+	return (0);
+}
+
+int	loop_rebuild_expand(char *text, char **exp_text, char *status_str,
+		t_expand_state *st)
+{
+	while (text[st->i] != '\0')
 	{
-		st.quote_handled = process_quote_char(text[st.i], &st.in_single,	// Appends quote char to the exp_text string.
-			 &st.in_double, exp_text); 										// And keeps track of quote state. 
-		if (st.quote_handled == -1)											// -1 == Failure.
+		st->quote_handled = process_quote_char(text[st->i], &st->in_single,
+				&st->in_double, exp_text);
+		if (st->quote_handled == -1)
 			return (-1);
-		if (st.quote_handled == 1)											// 1 == quote char found and handled.
-		{																	
-			st.i++;
-			continue ;
-		}																    // 0 == current char is not a quote -> move to next checks.		
-		if (!st.in_single && text[st.i] == '$' && text[st.i + 1] == '?')	// If status marker ($?) found, and not inside single quotes.
+		if (st->quote_handled == 1)
 		{
-			if (process_expanded_str(exp_text, status_str) == -1)			// Append the status string to the exp_text string.
-				return (-1);
-			st.i += 2;														// Skips over the $ and ? chars.
+			st->i++;
 			continue ;
 		}
-		if (process_char(exp_text, text[st.i]) == -1)						// Append any other char to exp_text string.
+		if (!st->in_single && text[st->i] == '$' && text[st->i + 1] == '?')
+		{
+			if (append_expanded_str(exp_text, status_str) == -1)
+				return (-1);
+			st->i += 2;
+			continue ;
+		}
+		if (append_char(exp_text, text[st->i]) == -1)
 			return (-1);
-		st.i++;																// Move to next char.
+		st->i++;
 	}
 	return (0);
 }

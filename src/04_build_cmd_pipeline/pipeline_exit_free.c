@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipeline_exit_free.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 18:47:18 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 18:48:48 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	err_exit_build_pipeline(t_pipeline *pipeline, t_seg *seg, int built_count)
@@ -62,7 +74,7 @@ void	free_partial_seg(t_seg *seg)
 
 void	del_redir(void *content)
 {
-	t_redir *redir;
+	t_redir	*redir;
 
 	if (!content)
 		return ;
@@ -73,4 +85,3 @@ void	del_redir(void *content)
 		free(redir->target);
 	free(redir);
 }
-

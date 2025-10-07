@@ -13,6 +13,6 @@ int	quotes_unbalanced(const char *string);
 int		remove_quotes(t_input *input);
 char	*handle_quote_removal(char *text, int *was_quoted);
 int		create_unquoted_text(char *text, char **unquoted_text, int *was_quoted);
-int		remove_outer_quote(char c, int *in_single, int *in_double);
+int		detect_outer_quote(char c, int *in_single, int *in_double);
 
 #endif

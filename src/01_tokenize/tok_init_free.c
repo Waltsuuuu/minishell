@@ -1,5 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tok_init_free.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 12:48:17 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 12:48:18 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
+/**
+ * @brief Initializes the tokenize_line() variables.
+ * Line is set to the raw input line.
+ * Word_start is set to -1 (No active word).
+ * All other variables set to 0 / NULL.
+ * @return 0 on success, -1 if state is NULL. 
+ */
 int	init_tokenizer_state(t_tokenizer_state *state, const char *line)
 {
 	if (!state)

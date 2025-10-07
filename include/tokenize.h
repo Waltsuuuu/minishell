@@ -52,7 +52,7 @@ int		clear_struct_on_failure(t_input *input);
 void	free_tokens(t_input *input);
 
 /*					tokenize.c						*/
-int		tokenize_line(const char *line, t_token **out, int *out_count);
+int		tokenize_line(const char *line, t_input *input);
 int		run_tokenizer(t_tokenizer_state *state);
 int		set_operator(t_tokenizer_state *state);
 int		set_word(t_tokenizer_state *state);

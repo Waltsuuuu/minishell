@@ -1,13 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipeline_args.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 18:43:19 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/07 18:46:39 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 /**
- * Append tokens[i].text to seg->args list.
+ * @brief Appends a TOK_WORD token.text to a temporary
+ * linked list of argments for a command segment.
  * @return 0 on success, -1 on alloc error.
  */
 int	append_arg(t_token *tokens, int i, t_seg *seg)
 {
 	t_list	*node;
-	char 	*arg;
+	char	*arg;
 
 	arg = ft_strdup(tokens[i].text);
 	if (!arg)
@@ -23,7 +36,8 @@ int	append_arg(t_token *tokens, int i, t_seg *seg)
 }
 
 /**
- * Move 'seg->args' linked list nodes content into 'pipeline->cmds[cmd_i].argv' array.
+ * Move 'seg->args' linked list nodes content
+ * into 'pipeline->cmds[cmd_i].argv' array.
  * Frees the node, but not the content.
  * Null-terminates argv and clears seg->args.
  * @return 0 on success, -1 on alloc error.

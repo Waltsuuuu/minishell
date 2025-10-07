@@ -38,15 +38,14 @@ typedef struct s_seg {
 	t_list *args; 
 	int     argc;
 	t_list *redirs;
-	int     start;
 } t_seg;
 
 // build_pipeline.c
 int		build_pipeline(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline);
 int		bp_prepare(t_shell *shell, t_input *input, t_token *tokens, t_pipeline *pipeline);
-void	bp_seg_init(t_seg *seg, int start);
-int		bp_fill_segment(t_shell *shell, t_input *input, t_token *tokens, t_seg *seg, int *i);
-int		bp_finalize_command(t_seg *seg, t_pipeline *pipeline, int cmd_i, t_shell *shell, int i);
+void	bp_seg_init(t_seg *seg);
+int		bp_fill_segment(t_shell *shell, t_input *input, t_seg *seg, int *i);
+int		bp_finalize_command(t_seg *seg, int cmd_i, t_shell *shell, int i);
 
 // pipeline_utils.c
 int		get_redir_type(TokType type, t_redir_type *t_type);
