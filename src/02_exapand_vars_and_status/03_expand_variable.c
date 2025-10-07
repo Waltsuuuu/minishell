@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 14:27:38 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 17:22:58 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/07 17:32:24 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	create_exp_var_text(char *text, char **exp_text, char **envp)
 			return (-1);
 		if (st.expanded == 1)
 			continue ;
-		if (process_char(exp_text, text[st.i]) == -1)
+		if (append_char(exp_text, text[st.i]) == -1)
 			return (-1);
 		st.i++;
 	}
@@ -131,7 +131,7 @@ int	process_var_expansion(char *text, char **exp_text, int *i, char **envp)
 	env_i = find_env_index(envp, key, key_len);
 	if (env_i >= 0)
 	{
-		if (process_expanded_str(exp_text, &envp[env_i][key_len + 1]) == -1)
+		if (append_expanded_str(exp_text, &envp[env_i][key_len + 1]) == -1)
 		{
 			free(key);
 			return (-1);

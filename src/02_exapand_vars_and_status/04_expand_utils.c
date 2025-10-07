@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 13:20:21 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 13:33:21 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/07 17:31:55 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	valid_start_char(char c)
  * @param str String to append.
  * @return 0 on success, -1 on error.
  */
-int	process_expanded_str(char **exp_text, const char *str)
+int	append_expanded_str(char **exp_text, const char *str)
 {
 	char	*joined;
 
@@ -68,14 +68,14 @@ int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text)
 	if (c == '\'' && !*in_double)
 	{
 		*in_single = !*in_single;
-		if (process_char(exp_text, '\'') == -1)
+		if (append_char(exp_text, '\'') == -1)
 			return (-1);
 		return (1);
 	}
 	if (c == '\"' && !*in_single)
 	{
 		*in_double = !*in_double;
-		if (process_char(exp_text, '\"') == -1)
+		if (append_char(exp_text, '\"') == -1)
 			return (-1);
 		return (1);
 	}
@@ -87,7 +87,7 @@ int	process_quote_char(char c, int *in_single, int *in_double, char **exp_text)
  * keeping the string NULL-terminated.
  * @return 0 on success, -1 on error.
  */
-int	process_char(char **exp_text, char c)
+int	append_char(char **exp_text, char c)
 {
 	char	buf[2];
 	char	*joined;

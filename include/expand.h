@@ -29,9 +29,9 @@ int		process_var_expansion(char *text, char **exp_text, int *i, char **envp);
 /* 					04_expand_utils.c							*/
 int		valid_cont_char(char c);
 int		valid_start_char(char c);
-int		process_expanded_str(char **exp_text, const char *str);
+int		append_expanded_str(char **exp_text, const char *str);
 int		process_quote_char(char c, int *in_single, int *in_double, char **exp_text);
-int		process_char(char **exp_text, char c);
+int		append_char(char **exp_text, char c);
 
 /* 					05_expand_utils2.c							*/
 void	init_expand_state(t_expand_state *st);

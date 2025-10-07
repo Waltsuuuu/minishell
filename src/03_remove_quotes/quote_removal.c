@@ -13,7 +13,7 @@ int	remove_quotes(t_input *input)
 	if (!input || !input->tokens)
 		return (-1);
 	i = 0;
-	while (i < input->n_tokens)											// Loop through all tokens
+	while (i < input->n_tokens)
 	{
 		if (input->tokens[i].type == TOK_WORD)							// Only remove quotes on WORD tokens
 		{
@@ -77,7 +77,7 @@ int	create_unquoted_text(char *text, char **unquoted_text, int *was_quoted)
 			i++;
 			continue ;
 		}							// 0 ==  not a quote char / nested quote.
-		if (process_char(unquoted_text, text[i]) == -1)	// If char was not a quote char - Append it to the unquoted_text string
+		if (append_char(unquoted_text, text[i]) == -1)	// If char was not a quote char - Append it to the unquoted_text string
 			return (-1);
 		i++;
 	}

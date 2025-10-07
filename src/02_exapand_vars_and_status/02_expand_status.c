@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 12:54:41 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 13:45:25 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/07 17:32:17 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,12 @@ int	loop_rebuild_expand(char *text, char **exp_text, char *status_str,
 		}
 		if (!st->in_single && text[st->i] == '$' && text[st->i + 1] == '?')
 		{
-			if (process_expanded_str(exp_text, status_str) == -1)
+			if (append_expanded_str(exp_text, status_str) == -1)
 				return (-1);
 			st->i += 2;
 			continue ;
 		}
-		if (process_char(exp_text, text[st->i]) == -1)
+		if (append_char(exp_text, text[st->i]) == -1)
 			return (-1);
 		st->i++;
 	}
