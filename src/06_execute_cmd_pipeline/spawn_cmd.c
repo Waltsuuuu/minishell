@@ -98,27 +98,13 @@ static void	path_exec(char **argv, t_shell *shell)
 	}
 
 }
-//
-static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
+
+static void	exec_with_candidate_path(char **argv, char **path_directories, t_shell *shell)
 {
-	char	**path_directories;
 	char	*candidate_path;
 	int		path_index;
 
-	path_directories = find_from_path(shell->env_arr);
-	if (argv && argv[0])
-	{
-    	if (has_slash(argv[0]))
-    	{
-        	direct_exec(argv, shell, shell->pipeline.child_pids);
-        	return ; //TODO RETURN
-    	}
-		if (!path_directories)
-    		path_exec(argv, shell);
-	}
 
-	if (argv && argv[0] && path_directories)
-	{
 		path_index = 0;
 		while (path_directories[path_index])
 		{
@@ -132,7 +118,25 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 			execve(candidate_path, argv, shell->env_arr);
 			free(candidate_path);
 			path_index++;
-		}
+
+	}
+}
+
+static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
+{
+	char	**path_directories;
+
+	path_directories = find_from_path(shell->env_arr);
+	if (argv && argv[0])
+	{
+    	if (has_slash(argv[0]))
+			direct_exec(argv, shell, shell->pipeline.child_pids);
+		if (!path_directories)
+			path_exec(argv, shell);
+	}
+	if (argv && argv[0] && path_directories)
+	{
+		exec_with_candidate_path(argv, path_directories, shell);
 	}
 	if (argc != 0)
 	{
@@ -142,7 +146,16 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	clean(path_directories, shell, shell->pipeline.child_pids);
 	_exit(127);
 }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*static void	pipe_initialization(int *final_in, int pipe_in, int *final_out, int pipe_out)
+{
+		*final_in = STDIN_FILENO;
+		if (pipe_in >= 0)
+			final_in = &pipe_in;
+		*final_out = STDOUT_FILENO;
+		if (pipe_out >= 0)
+			final_out = &pipe_out;
+}*/
 
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 {
@@ -155,10 +168,11 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		shell->in_child = 1; //Tag that we are in child
+		shell->in_child = 1;
 		setup_signal_handlers_for_child();
 
 		// 1. Aloitus oletuksilla (putkista jos on, muuten stdin/stdout)
+		//pipe_initialization(&final_in, pipe_in, &final_out, pipe_out); //TODO
 		final_in = STDIN_FILENO;
 		if (pipe_in >= 0)
 			final_in = pipe_in;
@@ -167,7 +181,7 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 			final_out = pipe_out;
 
 
-		// 2. Käy läpi redirit: tässä vaiheessa vain '>'
+		// 2. Käy läpi redirit: tässä vaiheessa
 		node = cmd->redirs;
 		while (node)
 		{
@@ -177,16 +191,14 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 			{
 				if (apply_redir_out(redir, &final_out) < 0)  // Tarkistetaan onnnistuisko avaus
 				{
-    				if (redir->target) // Tarkistetaan onko kohdenimi olemassa 
+    				if (redir->target)
         				perror(redir->target);
     				else
 					{
         				perror("redir");
 					}
-					//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
 					free_allocs(shell);
 					free(shell->pipeline.child_pids);
-					//free(shell->pipeline.pipe_pair);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -202,10 +214,8 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 						perror(redir->target);
 					else
 						perror("redir");
-					//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
 					free_allocs(shell);
 					free(shell->pipeline.child_pids);
-					//free(shell->pipeline.pipe_pair);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -220,10 +230,8 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 						perror(redir->target);
 					else
 						perror("redir");
-					//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
 					free_allocs(shell);
 					free(shell->pipeline.child_pids);
-					//free(shell->pipeline.pipe_pair);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -238,10 +246,8 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 						perror(redir->target);
 					else
 						perror("redir");
-					//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
 					free_allocs(shell);
 					free(shell->pipeline.child_pids);
-					//free(shell->pipeline.pipe_pair);
 					clean_env(&shell->env_head);
 					free_split(&shell->env_arr);
 					_exit(1);
@@ -266,20 +272,16 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 		}
 	
 		child_close_all_pipes(shell);
-		if (cmd && cmd->argv && cmd->argv[0] //betarunning builtins
+		if (cmd && cmd->argv && cmd->argv[0]
 			&& is_builtin_name(cmd->argv[0]))
 		{
 			shell->last_status = run_builtin(cmd, shell);
-			//close_all_pipes(shell->pipeline.pipe_pair, shell->pipeline.n_cmds);
 			free_allocs(shell);
 			free(shell->pipeline.child_pids);
-			//free(shell->pipeline.pipe_pair);
 			clean_env(&shell->env_head);
 			free_split(&shell->env_arr);
 			_exit(shell->last_status);
 		}
-
-		/* 4. Aja komento */
 		exec_with_path_search(cmd->argc, cmd->argv, shell);
 		_exit(127);
 	}
