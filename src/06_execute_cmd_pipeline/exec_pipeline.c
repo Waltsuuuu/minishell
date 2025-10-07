@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:16:43 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 17:37:05 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 17:40:31 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ static int	alloc_child_pids(t_pipeline *pl)
 
 static void	init_parent_pipe_pair(t_shell *shell)
 {
-	shell->pl.pipe_pair[0] = -1;
-	shell->pl.pipe_pair[1] = -1;
+	shell->pipeline.pipe_pair[0] = -1;
+	shell->pipeline.pipe_pair[1] = -1;
 }
 
 static void	close_if_nonneg(int fd)
