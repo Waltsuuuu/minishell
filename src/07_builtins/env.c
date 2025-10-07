@@ -6,23 +6,26 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:53:59 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/06 12:55:01 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/07 07:40:36 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_env(t_shell *shell)
+int	print_env(t_shell *shell)
 {
 	t_env	*env_list;
-
+	
+	if (!shell)
+		return (-1);
 	env_list = shell->env_head;
 	while (env_list)
 	{
-		if (env_list->key && env_list->value)
+		if (env_list->key && env_list->value && env_list->assigned == 1)
 			ft_printf("%s=%s\n", env_list->key, env_list->value);
 		env_list = env_list->next;
 	}
+	return (0);
 }
 
 char	*env_get(t_shell *shell, const char *key)

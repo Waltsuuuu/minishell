@@ -125,7 +125,7 @@ int		append_env_node(t_env **head, t_env *new_env_node);
 void	clean_env(t_env **head);
 int		env_list_to_array(t_env *head, t_shell *shell);
 char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
-void	print_env(t_shell *shell);
+int		print_env(t_shell *shell);
 void	env_sort_and_print(t_shell *shell);
 int		find_equal_sign(char *str);
 char	*env_get(t_shell *shell, const char *key);
