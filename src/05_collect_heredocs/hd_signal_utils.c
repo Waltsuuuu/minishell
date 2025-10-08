@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hd_signal_utils.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/08 17:18:00 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/08 17:18:01 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	heredoc_child_sighandler(void)
@@ -18,34 +30,30 @@ void	close_stdin_on_sigint(int sig_num)
 	close(STDIN_FILENO);
 }
 
-// Waits for the child process to finish, retrying if interrupted by a signal. 
 int	wait_child(t_hd_state *state)
 {
 	while (1)
 	{
 		state->wait_result = waitpid(state->pid, &state->status, 0);
-		if (state->wait_result == -1 && errno == EINTR) // Interrupted signal call.
-			continue ;							 		//  - Retry.
-		break;									 		// Success or real error.
+		if (state->wait_result == -1 && errno == EINTR)
+			continue ;
+		break;
 	}
-	if (state->wait_result == -1)						// waitpid() error (not EINTR).
-		return (-1);									// 	- Return error.
-	return (0);											// Return success.
+	if (state->wait_result == -1)
+		return (-1);
+	return (0);
 }
 
-// Interprets child status: 
-// if SIGINT or nonzero exit - returns -1;
-// otherwise returns 0.
+
 int	handle_child_status(t_hd_state *state, t_shell *shell)
 {
-	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)	// Child terminated by signal && Signal was SIGINT.
+	if (WIFSIGNALED(state->status) && WTERMSIG(state->status) == SIGINT)
 	{
 		close(state->fds[0]);
 		shell->last_status = 130;
-		// g_signal = 0;
 		return (-1);
 	}
-	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)		// Normal exit (WIFEXITED = true), but non-zero (failure).
+	if (!WIFEXITED(state->status) || WEXITSTATUS(state->status) != 0)
 	{
 		close(state->fds[0]);
 		return (-1);
