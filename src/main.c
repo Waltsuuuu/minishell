@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 12:39:10 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 14:40:12 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 17:50:36 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,7 +152,7 @@ int	build_pipeline_collect_hd(t_shell *shell)
 		free_on_failure(shell);
 		return (-1) ;
 	}
-	if (collect_heredocs(&shell->pipeline, shell, shell->env_arr) == -1)
+	if (collect_heredocs(&shell->pipeline, shell) == -1)
 	{
 		free_on_failure(shell);
 		return (-1) ;

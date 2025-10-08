@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 17:18:00 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 17:18:01 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 18:10:43 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,12 @@ int	wait_child(t_hd_state *state)
 		state->wait_result = waitpid(state->pid, &state->status, 0);
 		if (state->wait_result == -1 && errno == EINTR)
 			continue ;
-		break;
+		break ;
 	}
 	if (state->wait_result == -1)
 		return (-1);
 	return (0);
 }
-
 
 int	handle_child_status(t_hd_state *state, t_shell *shell)
 {

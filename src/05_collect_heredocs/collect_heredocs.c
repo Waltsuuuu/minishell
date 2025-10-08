@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 17:17:53 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 17:36:39 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 18:07:33 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
  * and calls collect_cmd_heredocs() for each command.
  * @return 0 on success, -1 on error.
  */
-int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
+int	collect_heredocs(t_pipeline *pipeline, t_shell *shell)
 {
 	int	cmd_i;
 
@@ -26,7 +26,7 @@ int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
 	cmd_i = 0;
 	while (cmd_i < pipeline->n_cmds)
 	{
-		if (collect_cmd_heredocs(&pipeline->cmds[cmd_i], shell, envp) == -1)
+		if (collect_cmd_heredocs(&pipeline->cmds[cmd_i], shell) == -1)
 			return (-1);
 		cmd_i++;
 	}
@@ -39,7 +39,7 @@ int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
  * If found, calls collect_heredoc_body().
  * @return 0 on success, -1 on error.
  */
-int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
+int	collect_cmd_heredocs(t_command *cmd, t_shell *shell)
 {
 	t_list		*current;
 	t_redir		*redir;
@@ -50,7 +50,7 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 		redir = (t_redir *)current->content;
 		if (redir && redir->type == REDIR_HEREDOC)
 		{
-			if (collect_heredoc_body(redir, shell, envp) == -1)
+			if (collect_heredoc_body(redir, shell) == -1)
 				return (-1);
 		}
 		current = current->next;
@@ -69,7 +69,7 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
  * and restored once the child returns.
  * @return 0 on success, -1 on error.
  */
-int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
+int	collect_heredoc_body(t_redir *redir, t_shell *shell)
 {
 	t_hd_state	state;
 
@@ -77,7 +77,7 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	save_terminal_state(&state.tty);
 	if (pipe(state.fds) == -1)
 		return (-1);
-	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
+	if (fork_and_collect_hd(&state, shell, redir) == -1)
 	{
 		restore_terminal_state(&state.tty);
 		return (close_pipe_err(&state));
@@ -102,17 +102,17 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
  * @return Exits on success, returns -1 on fork error.
  */
 int	fork_and_collect_hd(t_hd_state *state, t_shell *shell,
-		t_redir *redir, char **envp)
+		t_redir *redir)
 {
 	state->pid = fork();
 	if (state->pid < 0)
 		return (-1);
 	if (state->pid == 0)
-		collect_hd(state, shell, redir, envp);
+		collect_hd(state, shell, redir);
 	return (0);
 }
 
-int	collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
+int	collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir)
 {
 	heredoc_child_sighandler();
 	close(state->fds[0]);
@@ -120,8 +120,8 @@ int	collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
 	{
 		if (readline_and_check_eof(state, redir) == 1)
 			break ;
-		if (handle_heredoc_line(state, state->fds[1], state->line,
-				redir, shell->last_status, envp) == -1)
+		if (handle_heredoc_line(state, state->line,
+				redir, shell) == -1)
 		{
 			free(state->line);
 			close(state->fds[1]);
