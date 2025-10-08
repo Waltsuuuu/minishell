@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 17:17:53 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 17:17:54 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 17:36:39 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int	collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp)
  */
 int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 {
-	t_list 	*current;
-	t_redir	*redir;
+	t_list		*current;
+	t_redir		*redir;
 
 	current = cmd->redirs;
 	while (current)
@@ -55,8 +55,9 @@ int	collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp)
 		}
 		current = current->next;
 	}
-	return (0);						
+	return (0);
 }
+
 /**
  * @brief Prompts and collects new input from user.
  * New input is written into a pipe.
@@ -79,7 +80,7 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
 	if (fork_and_collect_hd(&state, shell, redir, envp) == -1)
 	{
 		restore_terminal_state(&state.tty);
-		return(close_pipe_err(&state));
+		return (close_pipe_err(&state));
 	}
 	close(state.fds[1]);
 	ignore_parent_sig_handlers(&state.ign, &state.old_quit, &state.old_int);
@@ -100,14 +101,15 @@ int	collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp)
  * @brief Forks and collects the new input in a child process.
  * @return Exits on success, returns -1 on fork error.
  */
-int	fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
+int	fork_and_collect_hd(t_hd_state *state, t_shell *shell,
+		t_redir *redir, char **envp)
 {
 	state->pid = fork();
 	if (state->pid < 0)
-		return(-1);
+		return (-1);
 	if (state->pid == 0)
 		collect_hd(state, shell, redir, envp);
-	return(0);
+	return (0);
 }
 
 int	collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
@@ -118,7 +120,8 @@ int	collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp)
 	{
 		if (readline_and_check_eof(state, redir) == 1)
 			break ;
-		if (handle_heredoc_line(state, state->fds[1], state->line, redir, shell->last_status, envp) == -1)
+		if (handle_heredoc_line(state, state->fds[1], state->line,
+				redir, shell->last_status, envp) == -1)
 		{
 			free(state->line);
 			close(state->fds[1]);
