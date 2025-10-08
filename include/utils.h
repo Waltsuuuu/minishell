@@ -31,7 +31,7 @@ void	restore_parent_sig_handlers(struct sigaction *old_quit,
 		struct sigaction *old_int);
 
 // Parsing for exit
-int		ft_strtoll(const char *str, long long *out);
+int		ft_strtoll(const char *str, long long *out_value);
 
 // Count heredocs
 int	count_heredocs(t_input *input);
