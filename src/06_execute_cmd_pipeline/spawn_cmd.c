@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/08 07:44:10 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/08 17:31:27 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,8 @@ static void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids)
 static void	clean(char **directories, t_shell *shell, pid_t *child_pids)
 {
 	free_split(&directories);
-	free_allocs(shell);
+	free_shell(shell);
 	free(child_pids);
-	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
 }
 
 static void	path_exec(char **argv, t_shell *shell)
@@ -125,11 +123,12 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 {
 	char	**path_directories;
 
-	path_directories = find_from_path(shell->env_arr);
+	path_directories = NULL;
 	if (argv && argv[0])
 	{
 		if (has_slash(argv[0]))
 			direct_exec(argv, shell, shell->pipeline.child_pids);
+		path_directories = find_from_path(shell->env_arr);		
 		if (!path_directories)
 			path_exec(argv, shell);
 	}

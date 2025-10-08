@@ -21,15 +21,16 @@ typedef struct s_hd_state
 }	t_hd_state;
 
 // COLLECT_HEREDOCS
-int		collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp);
-int		collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp);
-int		collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp);
+int		collect_heredocs(t_pipeline *pipeline, t_shell *shell);
+int		collect_cmd_heredocs(t_command *cmd, t_shell *shell);
+int		collect_heredoc_body(t_redir *redir, t_shell *shell);
+int		collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir);
 
 // HD_INPUT_READ_WRITE
-int		handle_heredoc_line(t_hd_state *state, int fd, char *line, t_redir *redir, int last_status, char **envp);
-int		fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
+int		handle_heredoc_line(t_hd_state *state, char *line, t_redir *redir, t_shell *shell);
+int		fork_and_collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir);
 int		readline_and_check_eof(t_hd_state *state, t_redir *redir);
-int		expand_write_line(t_hd_state *state, int fd, char *line, int last_status, char **envp);
+int		expand_write_line(t_hd_state *state, char *line, t_shell *shell);
 void	write_line_nl(int fd, char *line);
 
 // HD_SIGNAL_UTILS

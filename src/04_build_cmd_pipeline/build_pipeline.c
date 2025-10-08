@@ -6,14 +6,14 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:51:42 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 19:10:09 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 15:01:55 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /**
- * Parses tokens into structured commands (t_command).
+ * @brief Parses tokens into structured commands (t_command).
  * Modifies t_pipeline *pipeline in place.
  * @return 0 on success, -1 on syntax/alloc error.
  */
