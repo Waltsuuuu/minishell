@@ -49,6 +49,8 @@ typedef struct s_shell
 	char		*buf;
 	int			in_child;
 	int			interactive;
+	char		*line;
+	int			status;
 }   t_shell;
 
 typedef struct s_exec
@@ -63,6 +65,14 @@ typedef struct s_exec
     struct termios      tty;
 
 } t_exec;
+
+void	init_shell(t_shell *shell, char *envp[]);
+int		run_shell(t_shell *shell);
+int		prompt(t_shell *shell);
+int		parse(t_shell *shell);
+int		parse_tokenize(t_shell *shell);
+int		parse_rm_quotes_and_expand(t_shell *shell);
+int		build_pipeline_collect_hd(t_shell *shell);
 
 // 00_BALANCE_QUOTES
 /*					See quotes.h 								*/

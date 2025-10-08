@@ -11,6 +11,8 @@ void	getworkindir(char *buf, size_t size);
 /*					free_allocs.c								*/
 void	free_allocs(t_shell *shell);
 void	free_str_ptr(char **str_ptr);
+void	free_on_failure(t_shell *shell);
+void	free_shell(t_shell *shell);
 
 /*					print_msh_banner.c							*/
 void	print_msh_banner(void);
