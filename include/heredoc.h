@@ -24,6 +24,7 @@ typedef struct s_hd_state
 int		collect_heredocs(t_pipeline *pipeline, t_shell *shell, char **envp);
 int		collect_cmd_heredocs(t_command *cmd, t_shell *shell, char **envp);
 int		collect_heredoc_body(t_redir *redir, t_shell *shell, char **envp);
+int		collect_hd(t_hd_state *state, t_shell *shell, t_redir *redir, char **envp);
 
 // HD_INPUT_READ_WRITE
 int		handle_heredoc_line(t_hd_state *state, int fd, char *line, t_redir *redir, int last_status, char **envp);
