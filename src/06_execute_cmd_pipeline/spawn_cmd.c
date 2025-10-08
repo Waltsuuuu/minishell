@@ -1,10 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   spawn_cmd.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/08 07:44:10 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-/**
- * Checks whether a string contains a '/' character.
- *
- * @param input the string to scan (program name or path)
- * @return 1 if a slash is present, 0 otherwise
- */
+
 static int	has_slash(char *input)
 {
 	if (!input)
@@ -15,44 +22,49 @@ static int	has_slash(char *input)
 	return (0);
 }
 
-static	void child_close_all_pipes(t_shell *shell)
+static	void	child_close_all_pipes(t_shell *shell)
 {
-
 	if (!shell)
 		return ;
-		
 	if (shell->pipeline.pipe_pair[0] >= 3)
 		close (shell->pipeline.pipe_pair[0]);
-			
 	else if (shell->pipeline.pipe_pair[1] >= 3)
 		close (shell->pipeline.pipe_pair[1]);
-
 }
 
-static void direct_exec(char **argv, t_shell *shell, pid_t *child_pids)
+static void	execve_error_and_exit(t_shell *shell, char **argv,
+									pid_t *child_pids, int saved_errno)
 {
-		execve(argv[0], argv, shell->env_arr);
+	if (child_pids)
 		free(child_pids);
-		if (errno == ENOENT || errno == ENOTDIR)
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(argv[0], STDERR_FILENO);
-			ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
-			clean_env(&shell->env_head);
-			free_split(&shell->env_arr);
-			free_allocs(shell);
-			_exit(127);
-		}
-		else
-		{
-			ft_putstr_fd("minishell: ", STDERR_FILENO);
-			ft_putstr_fd(*argv, STDERR_FILENO);
-			ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
-			clean_env(&shell->env_head);
-			free_split(&shell->env_arr);
-			free_allocs(shell);
-			_exit(126);
-		}
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(argv[0], STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	if (saved_errno == ENOENT || saved_errno == ENOTDIR)
+	{
+		ft_putstr_fd("No such file or directory\n", STDERR_FILENO);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
+		free_allocs(shell);
+		_exit(127);
+	}
+	else
+	{
+		ft_putstr_fd("Is a directory\n", STDERR_FILENO);
+		clean_env(&shell->env_head);
+		free_split(&shell->env_arr);
+		free_allocs(shell);
+		_exit(126);
+	}
+}
+
+static void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids)
+{
+	int	err;
+
+	execve(argv[0], argv, shell->env_arr);
+	err = errno;
+	execve_error_and_exit(shell, argv, child_pids, err);
 }
 
 static void	clean(char **directories, t_shell *shell, pid_t *child_pids)
@@ -69,56 +81,43 @@ static void	path_exec(char **argv, t_shell *shell)
 	char	path[PATH_MAX];
 	char	*temp;
 	char	*full;
+	int		err;
 
-	getcwd(path, sizeof(path)); 
+	if (!argv || !argv[0])
+		_exit(0);
+	if (!getcwd(path, sizeof(path)))
+		_exit(1);
 	temp = ft_strjoin(path, "/");
+	if (!temp)
+		_exit(1);
 	full = ft_strjoin(temp, argv[0]);
 	free (temp);
+	if (!full)
+		_exit(1);
 	execve(full, argv, shell->env_arr);
-	free(shell->pipeline.child_pids);
-	if (errno == ENOENT || errno == ENOTDIR)
-	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(argv[0], STDERR_FILENO);
-		ft_putstr_fd(": No such file or directory\n", STDERR_FILENO);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
-		free_allocs(shell);
-		_exit(127);
-	}
-	else
-	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(*argv, STDERR_FILENO);
-		ft_putstr_fd(": Is a directory\n", STDERR_FILENO);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
-		free_allocs(shell);
-		_exit(126);
-	}
-
+	err = errno;
+	free (full);
+	execve_error_and_exit(shell, argv, shell->pipeline.child_pids, err);
 }
 
-static void	exec_with_candidate_path(char **argv, char **path_directories, t_shell *shell)
+static void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s)
 {
 	char	*candidate_path;
 	int		path_index;
 
-
-		path_index = 0;
-		while (path_directories[path_index])
+	path_index = 0;
+	while (path_dirs[path_index])
+	{
+		candidate_path = join_cmd_to_path(path_dirs[path_index],
+				argv[0]);
+		if (!candidate_path)
 		{
-			candidate_path = join_cmd_to_path(path_directories[path_index],
-					argv[0]);
-			if (!candidate_path)
-			{	
-				clean(path_directories, shell, shell->pipeline.child_pids);
-				_exit(1);
-			}
-			execve(candidate_path, argv, shell->env_arr);
-			free(candidate_path);
-			path_index++;
-
+			clean(path_dirs, s, s->pipeline.child_pids);
+			_exit(1);
+		}
+		execve(candidate_path, argv, s->env_arr);
+		free(candidate_path);
+		path_index++;
 	}
 }
 
@@ -129,7 +128,7 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	path_directories = find_from_path(shell->env_arr);
 	if (argv && argv[0])
 	{
-    	if (has_slash(argv[0]))
+		if (has_slash(argv[0]))
 			direct_exec(argv, shell, shell->pipeline.child_pids);
 		if (!path_directories)
 			path_exec(argv, shell);
@@ -146,18 +145,18 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	clean(path_directories, shell, shell->pipeline.child_pids);
 	_exit(127);
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 static void	set_child_fds_from_pipes(int *final_in, int *final_out,
 									int pipe_in, int pipe_out)
 {
 	*final_in = STDIN_FILENO;
 	if (pipe_in >= 0)
 		*final_in = pipe_in;
-
 	*final_out = STDOUT_FILENO;
 	if (pipe_out >= 0)
 		*final_out = pipe_out;
 }
+
 static void	print_redir_error(t_redir *redir)
 {
 	if (redir && redir->target)
@@ -211,6 +210,7 @@ static void	handle_redir_heredoc(t_redir *r, int *final_in, t_shell *shell)
 			handle_redir_error(shell, r);
 	}
 }
+
 static void	child_cleanup_and_exit(t_shell *shell, int status)
 {
 	free_allocs(shell);
@@ -264,12 +264,10 @@ static void	process_all_redirs(t_list *redirs, int *final_in,
 	while (node)
 	{
 		redir = (t_redir *)node->content;
-
 		handle_redir_out(redir, final_out, shell);
 		handle_redir_append(redir, final_out, shell);
 		handle_redir_in(redir, final_in, shell);
 		handle_redir_heredoc(redir, final_in, shell);
-
 		node = node->next;
 	}
 }
@@ -314,7 +312,7 @@ int	apply_redir_out(const t_redir *redir, int *final_out)
 
 int	apply_redir_in(const t_redir *redir, int *final_in)
 {
-		int	fd;
+	int	fd;
 
 	if (!redir || !redir->target || !final_in)
 		return (-1);
@@ -327,7 +325,7 @@ int	apply_redir_in(const t_redir *redir, int *final_in)
 	return (0);
 }
 
-int apply_redir_append(const t_redir *redir, int *final_out)
+int	apply_redir_append(const t_redir *redir, int *final_out)
 {
 	int	fd;
 
@@ -344,7 +342,7 @@ int apply_redir_append(const t_redir *redir, int *final_out)
 
 int	apply_redir_heredoc(const t_redir *redir, int *final_in)
 {
-	int fd;
+	int	fd;
 
 	if (!redir || !redir->target || !final_in)
 		return (-1);
@@ -355,6 +353,4 @@ int	apply_redir_heredoc(const t_redir *redir, int *final_in)
 		close(*final_in);
 	*final_in = fd;
 	return (0);
-	
 }
-
