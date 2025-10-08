@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:53:59 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 08:01:11 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/08 09:24:48 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	print_env(t_command *cmd, t_shell *shell)
 	if (cmd->argc > 1)
 	{
 		ft_putstr_fd("env: ", 2);
-		ft_putstr_fd(cmd->argv[1] ,2);
+		ft_putstr_fd(cmd->argv[1], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		return (127);
 	}
