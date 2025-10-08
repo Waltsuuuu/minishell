@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 09:18:40 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/08 09:22:28 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/08 14:39:59 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-volatile sig_atomic_t	g_signal = 0; //global varable fr signal handling
 
 /**
  * @brief Handle incoming signals during a prompt.

@@ -6,11 +6,13 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 12:39:10 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 12:40:22 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 14:40:12 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+volatile sig_atomic_t	g_signal = 0;
 
 int	main(int argc, char *argv[], char *envp[])
 {
