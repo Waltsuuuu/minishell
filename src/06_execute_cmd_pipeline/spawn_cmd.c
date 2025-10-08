@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/08 17:31:27 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/08 18:23:35 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	{
 		if (has_slash(argv[0]))
 			direct_exec(argv, shell, shell->pipeline.child_pids);
-		path_directories = find_from_path(shell->env_arr);		
+		path_directories = find_from_path(shell->env_arr);
 		if (!path_directories)
 			path_exec(argv, shell);
 	}

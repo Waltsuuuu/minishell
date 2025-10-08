@@ -2,6 +2,8 @@
 
 /* ---------- debug printers for pipeline ---------- */
 
+// print_cmds(&shell.pipeline);						// Pipeline cmds debug
+
 const char	*redir_type_name(t_redir_type t)
 {
 	if (t == REDIR_IN)

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_allocs.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/08 18:21:28 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/08 18:24:10 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	free_shell(t_shell *shell)
@@ -9,6 +21,7 @@ void	free_shell(t_shell *shell)
 	free_split(&shell->env_arr);
 	clear_history();
 }
+
 void	free_on_failure(t_shell *shell)
 {
 	free_str_ptr(&shell->line);

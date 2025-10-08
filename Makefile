@@ -5,7 +5,7 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-SRC         :=  src/main.c \
+SRC         :=  src/main/main.c src/main/main_parse.c \
                 src/00_check_quote_balance/quote_check.c \
                 src/01_tokenize/parse_input.c src/01_tokenize/tokenize.c src/01_tokenize/tok_init_free.c src/01_tokenize/tok_utils.c \
                 src/02_exapand_vars_and_status/01_expansion.c src/02_exapand_vars_and_status/02_expand_status.c src/02_exapand_vars_and_status/03_expand_variable.c src/02_exapand_vars_and_status/04_expand_utils.c src/02_exapand_vars_and_status/05_expand_utils_2.c \

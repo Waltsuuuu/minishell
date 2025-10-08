@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 10:28:06 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 17:01:18 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/08 18:23:16 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void	kill_and_reap_children(pid_t *child_pids, int spawned_count)
 {
 	send_signal_children(child_pids, spawned_count, SIGTERM);
 	reap_children(child_pids, spawned_count);
-	/* If any survived (e.g. ignored SIGTERM), SIGKILL and reap again. */
 	send_signal_children(child_pids, spawned_count, SIGKILL);
 	reap_children(child_pids, spawned_count);
 }

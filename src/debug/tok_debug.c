@@ -16,3 +16,5 @@ void print_tokens(const t_input *in)
  		i++;
  	}
  }
+
+// print_tokens(&shell.input);						// Token debug
