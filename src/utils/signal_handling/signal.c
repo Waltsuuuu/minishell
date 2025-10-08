@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/08 09:18:40 by mhirvasm          #+#    #+#             */
+/*   Updated: 2025/10/08 09:22:28 by mhirvasm         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
-volatile sig_atomic_t g_signal = 0; //global varable fr signal handling
+volatile sig_atomic_t	g_signal = 0; //global varable fr signal handling
 
 /**
  * @brief Handle incoming signals during a prompt.
@@ -18,41 +29,40 @@ void	handle_sig(int signum)
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
+
 /**
  * @brief Setup signal handlers for minishell prompt
  * Configures SIGINT to call handle_sig and ignores SIGQUIT
  */
-void	setup_signal_handlers_for_prompt()
+void	setup_signal_handlers_for_prompt(void)
 {
-	struct	sigaction sa_prompt;
-	
-	ft_bzero(&sa_prompt, sizeof(sa_prompt)); // initaialize all values to 0
-	rl_catch_signals = 0; //these 2 lines overwrites the readlines own handlers
-	rl_catch_sigwinch = 0;
+	struct sigaction	sa_prompt;
 
-	sigemptyset(&sa_prompt.sa_mask); //masks off
+	ft_bzero(&sa_prompt, sizeof(sa_prompt));
+	rl_catch_signals = 0;
+	rl_catch_sigwinch = 0;
+	sigemptyset(&sa_prompt.sa_mask);
 	sa_prompt.sa_flags = SA_RESTART;
 	sa_prompt.sa_handler = handle_sig;
-	
-	sigaction(SIGINT, &sa_prompt, NULL); //Ctrl + C
-	signal(SIGQUIT, SIG_IGN); //Ctrl + \'
+	sigaction(SIGINT, &sa_prompt, NULL);
+	signal(SIGQUIT, SIG_IGN);
 }
+
 /**
  * @brief Setup default signal handlers for child processes.
  *
  * Restores default handling of SIGINT and SIGQUIT for child
  * processes so they behave like in a normal shell execution.
  */
-void	setup_signal_handlers_for_child()
+void	setup_signal_handlers_for_child(void)
 {
-	struct sigaction sa_child;
-					
+	struct sigaction	sa_child;
+
 	ft_bzero(&sa_child, sizeof(sa_child));
 	sa_child.sa_handler = SIG_DFL;
 	sigemptyset(&sa_child.sa_mask);
-	sigaction(SIGINT,  &sa_child, NULL);
+	sigaction(SIGINT, &sa_child, NULL);
 	sigaction(SIGQUIT, &sa_child, NULL);
-					
 }
 
 // Ignore SIGINT and SIGQUIT in parent during waitpid().
@@ -63,14 +73,15 @@ void	ignore_parent_sig_handlers(struct sigaction *ign,
 	ft_bzero(ign, sizeof(*ign));
 	ign->sa_handler = SIG_IGN;
 	sigemptyset(&ign->sa_mask);
-	sigaction(SIGINT,  ign, old_int);
+	sigaction(SIGINT, ign, old_int);
 	sigaction(SIGQUIT, ign, old_quit);
 }
 
-// Restore SIGINT and SIGQUIT handlers in parent (stop ignoring) after waitpid().
+// Restore SIGINT and SIGQUIT handlers in parent 
+//(stop ignoring) after waitpid().
 void	restore_parent_sig_handlers(struct sigaction *old_quit,
 	struct sigaction *old_int)
 {
-	sigaction(SIGINT,  old_int,  NULL);
+	sigaction(SIGINT, old_int, NULL);
 	sigaction(SIGQUIT, old_quit, NULL);
 }

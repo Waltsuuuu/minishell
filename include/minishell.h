@@ -51,6 +51,19 @@ typedef struct s_shell
 	int			interactive;
 }   t_shell;
 
+typedef struct s_exec
+{
+	int                 cmd_index;
+    int                 previous_read;
+    int                 next_read;
+    int                 next_write;
+    struct sigaction    ign;
+    struct sigaction    old_quit;
+    struct sigaction    old_int;
+    struct termios      tty;
+
+} t_exec;
+
 // 00_BALANCE_QUOTES
 /*					See quotes.h 								*/
 
@@ -80,7 +93,7 @@ int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 int 	*in_fd, int *out_fd);
 //void	close_all_pipes(int pipe_pairs[2], int cmd_count);
-int 	open_next_pipe_if_needed(int cmd_index, t_shell *shell, int *next_read, int *next_write);
+int 	open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
