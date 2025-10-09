@@ -128,6 +128,13 @@ void	replug_child_stdin(int final_in);
 void	set_child_fds_from_pipes(int *final_in, int *final_out,
 									int pipe_in, int pipe_out);
 void	child_close_all_pipes(t_shell *shell);
+void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
+void	path_exec(char **argv, t_shell *shell);
+void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s);
+void	exec_with_path_search(int argc, char **argv, t_shell *shell);
+
+
+
 
 
 
@@ -180,5 +187,11 @@ char	*env_get(t_shell *shell, const char *key);
 // UTILS
 /*					See utils.h									*/
 void	kill_and_reap_children(pid_t *pids, int n);
+void	execve_error_and_exit(t_shell *shell, char **argv,
+									pid_t *child_pids, int saved_errno);
+int		has_slash(char *input);
+void	clean(char **directories, t_shell *shell, pid_t *child_pids);
+
+
 
 #endif
