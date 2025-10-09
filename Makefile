@@ -17,7 +17,7 @@ SRC         :=  src/main/main.c src/main/main_parse.c \
                 src/utils/free_allocs.c src/utils/free_split.c src/utils/get_working_dir.c src/utils/print_msh_banner.c src/utils/signal_handling/signal.c	src/07_builtins/unset.c src/07_builtins/builtin_utils.c src/07_builtins/cd.c src/07_builtins/pwd.c \
 				src/07_builtins/echo.c src/utils/ft_strtoll.c src/07_builtins/exit.c src/07_builtins/env_array_build.c src/utils/env_utils.c src/06_execute_cmd_pipeline/exec_pipeline_utils.c src/06_execute_cmd_pipeline/pipe_utils2.c \
 				src/utils/count_heredocs.c src/utils/mode_check.c src/utils/tty.c src/06_execute_cmd_pipeline/handle_redirs.c src/06_execute_cmd_pipeline/apply_redirs.c src/06_execute_cmd_pipeline/exec_direct_and_path.c \
-				src/debug/pipeline_debugger.c src/debug/tok_debug.c src/06_execute_cmd_pipeline/exec_utils.c src/utils/error_utils.c 
+				src/debug/pipeline_debugger.c src/debug/tok_debug.c src/06_execute_cmd_pipeline/exec_utils.c src/utils/error_utils.c src/07_builtins/apply_redirs_parent.c
 OBJ         := $(SRC:.c=.o)
 
 # =========================

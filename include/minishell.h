@@ -170,6 +170,9 @@ int		builtin_echo(t_command *cmd);
 int 	exec_exit_in_parent(t_command *cmd, t_shell *shell);
 int		builtin_exit(t_command *cmd, t_shell *shell);
 int		exec_echo_in_parent(t_command *cmd, t_shell *shell);
+void	restore_stdio(int saved[2]);
+void	init_parent_fds(int *in_fd, int *out_fd);
+int		replug_stdio_pair(int in_fd, int out_fd, int saved[2]);
 
 
 /*					ENV											*/
@@ -191,6 +194,7 @@ void	execve_error_and_exit(t_shell *shell, char **argv,
 									pid_t *child_pids, int saved_errno);
 int		has_slash(char *input);
 void	clean(char **directories, t_shell *shell, pid_t *child_pids);
+int		is_interactive(t_shell *shell);
 
 
 

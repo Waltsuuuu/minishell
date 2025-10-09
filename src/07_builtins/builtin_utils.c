@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:02:01 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 07:58:30 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 09:39:55 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,11 @@ int	is_parent_builtin(const char *name)
 	if (ft_strcmp(name, "exit") == 0)
 		return (1);
 	return (0);
+}
+
+int	is_interactive(t_shell *shell)
+{
+	if (shell && shell->interactive)
+		return (1);
+	return (isatty(STDIN_FILENO));
 }

@@ -6,18 +6,11 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:55:49 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 08:49:10 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 09:39:18 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	is_interactive(t_shell *shell)
-{
-	if (shell && shell->interactive)
-		return (1);
-	return (isatty(STDIN_FILENO));
-}
 
 static void	cleanup(t_shell *shell)
 {
