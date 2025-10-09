@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:05:08 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:20:04 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 10:47:00 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int	apply_redir_heredoc(const t_redir *redir, int *final_in)
 	*final_in = fd;
 	return (0);
 }
+
 int	apply_redir_out(const t_redir *redir, int *final_out)
 {
 	int	fd;

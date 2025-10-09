@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:41:09 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:42:56 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 10:49:24 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,4 +129,3 @@ void	restore_stdio(int saved[2])
 		close(saved[1]);
 	}
 }
-

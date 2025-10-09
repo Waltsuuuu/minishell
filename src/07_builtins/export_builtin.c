@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 09:13:32 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/07 09:14:08 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 10:48:35 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,20 +120,6 @@ int	is_builtin_valid(const char *key)
 	}
 	else
 		return (0);
-}
-
-/**
- * Prints "not a valid identifier" message for a builtin.
- *
- * @param builtin  builtin name ("export", etc.)
- * @param key      offending key string
- */
-void	print_invalid_identifier(char *builtin, char *key)
-{
-	ft_putstr_fd(builtin, STDERR_FILENO);
-	ft_putstr_fd(": `", STDERR_FILENO);
-	ft_putstr_fd(key, STDERR_FILENO);
-	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 }
 
 /**

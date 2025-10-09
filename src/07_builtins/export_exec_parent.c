@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 09:24:57 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:41:49 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 10:48:59 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,3 @@ int	exec_export_in_parent(t_command *cmd, t_shell *shell)
 	restore_stdio(saved);
 	return (shell->last_status);
 }
-

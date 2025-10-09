@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:32:40 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 10:46:09 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ static void	child_cleanup_and_exit(t_shell *shell, int status)
 	free_split(&shell->env_arr);
 	_exit(status);
 }
-
-
 
 static void	maybe_run_builtin_and_exit(t_command *cmd, t_shell *shell)
 {
@@ -72,4 +70,3 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 	}
 	return (pid);
 }
-
