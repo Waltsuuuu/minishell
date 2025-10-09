@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/08 18:23:35 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 09:13:14 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,6 @@ static int	has_slash(char *input)
 		if (*input++ == '/')
 			return (1);
 	return (0);
-}
-
-static	void	child_close_all_pipes(t_shell *shell)
-{
-	if (!shell)
-		return ;
-	if (shell->pipeline.pipe_pair[0] >= 3)
-		close (shell->pipeline.pipe_pair[0]);
-	else if (shell->pipeline.pipe_pair[1] >= 3)
-		close (shell->pipeline.pipe_pair[1]);
 }
 
 static void	execve_error_and_exit(t_shell *shell, char **argv,
@@ -145,69 +135,12 @@ static void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	_exit(127);
 }
 
-static void	set_child_fds_from_pipes(int *final_in, int *final_out,
-									int pipe_in, int pipe_out)
-{
-	*final_in = STDIN_FILENO;
-	if (pipe_in >= 0)
-		*final_in = pipe_in;
-	*final_out = STDOUT_FILENO;
-	if (pipe_out >= 0)
-		*final_out = pipe_out;
-}
-
-static void	print_redir_error(t_redir *redir)
+void	print_redir_error(t_redir *redir)
 {
 	if (redir && redir->target)
 		perror(redir->target);
 	else
 		perror("redir");
-}
-
-static void	handle_redir_error(t_shell *shell, t_redir *redir)
-{
-	print_redir_error(redir);
-	free_allocs(shell);
-	free(shell->pipeline.child_pids);
-	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
-	_exit(1);
-}
-
-static void	handle_redir_out(t_redir *r, int *final_out, t_shell *shell)
-{
-	if (r && r->type == REDIR_OUT)
-	{
-		if (apply_redir_out(r, final_out) < 0)
-			handle_redir_error(shell, r);
-	}
-}
-
-static void	handle_redir_append(t_redir *r, int *final_out, t_shell *shell)
-{
-	if (r && r->type == REDIR_APPEND)
-	{
-		if (apply_redir_append(r, final_out) < 0)
-			handle_redir_error(shell, r);
-	}
-}
-
-static void	handle_redir_in(t_redir *r, int *final_in, t_shell *shell)
-{
-	if (r && r->type == REDIR_IN)
-	{
-		if (apply_redir_in(r, final_in) < 0)
-			handle_redir_error(shell, r);
-	}
-}
-
-static void	handle_redir_heredoc(t_redir *r, int *final_in, t_shell *shell)
-{
-	if (r && r->type == REDIR_HEREDOC)
-	{
-		if (apply_redir_heredoc(r, final_in) < 0)
-			handle_redir_error(shell, r);
-	}
 }
 
 static void	child_cleanup_and_exit(t_shell *shell, int status)
@@ -219,30 +152,7 @@ static void	child_cleanup_and_exit(t_shell *shell, int status)
 	_exit(status);
 }
 
-static void	replug_child_stdin(int final_in)
-{
-	if (final_in != STDIN_FILENO)
-	{
-		if (dup2(final_in, STDIN_FILENO) < 0)
-			_exit(1);
-		close(final_in);
-	}
-}
 
-static void	replug_child_stdout(int final_out)
-{
-	if (final_out != STDOUT_FILENO)
-	{
-		if (dup2(final_out, STDOUT_FILENO) < 0)
-			_exit(1);
-		close(final_out);
-	}
-}
-
-static void	child_finalize_pipes(t_shell *shell)
-{
-	child_close_all_pipes(shell);
-}
 
 static void	maybe_run_builtin_and_exit(t_command *cmd, t_shell *shell)
 {
@@ -294,62 +204,3 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 	return (pid);
 }
 
-int	apply_redir_out(const t_redir *redir, int *final_out)
-{
-	int	fd;
-
-	if (!redir || !redir->target || !final_out)
-		return (-1);
-	fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd < 0)
-		return (-1);
-	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
-		close(*final_out);
-	*final_out = fd;
-	return (0);
-}
-
-int	apply_redir_in(const t_redir *redir, int *final_in)
-{
-	int	fd;
-
-	if (!redir || !redir->target || !final_in)
-		return (-1);
-	fd = open(redir->target, O_RDONLY);
-	if (fd < 0)
-		return (-1);
-	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
-		close(*final_in);
-	*final_in = fd;
-	return (0);
-}
-
-int	apply_redir_append(const t_redir *redir, int *final_out)
-{
-	int	fd;
-
-	if (!redir || !redir->target || !final_out)
-		return (-1);
-	fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (fd < 0)
-		return (-1);
-	if (*final_out != STDOUT_FILENO && *final_out >= 0 && *final_out != fd)
-		close(*final_out);
-	*final_out = fd;
-	return (0);
-}
-
-int	apply_redir_heredoc(const t_redir *redir, int *final_in)
-{
-	int	fd;
-
-	if (!redir || !redir->target || !final_in)
-		return (-1);
-	fd = redir->hd_fd;
-	if (fd < 0)
-		return (-1);
-	if (*final_in != STDIN_FILENO && *final_in >= 0 && *final_in != fd)
-		close(*final_in);
-	*final_in = fd;
-	return (0);
-}

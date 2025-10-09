@@ -104,7 +104,6 @@ int 	*in_fd, int *out_fd);
 //void	close_all_pipes(int pipe_pairs[2], int cmd_count);
 int 	open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
-int		apply_redir_out(const t_redir *r, int *final_out);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
 int		wait_all_and_last_status( int child_count,
 	pid_t last_child_pid);
@@ -113,6 +112,30 @@ int 	apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
 int		run_builtin(t_command *cmd, t_shell *shell);
+int		alloc_child_pids(t_pipeline *pl);
+void	init_parent_pipe_pair(t_shell *shell);
+void	close_if_nonneg(int fd);
+int		on_open_pipe_error(pid_t *pids, t_exec *exec);
+int		on_spawn_error(t_pipeline *pl, t_exec *exec);
+void	print_redir_error(t_redir *redir);
+void	handle_redir_heredoc(t_redir *r, int *final_in, t_shell *shell);
+void	handle_redir_in(t_redir *r, int *final_in, t_shell *shell);
+void	handle_redir_append(t_redir *r, int *final_out, t_shell *shell);
+void	handle_redir_out(t_redir *r, int *final_out, t_shell *shell);
+void	child_finalize_pipes(t_shell *shell);
+void	replug_child_stdout(int final_out);
+void	replug_child_stdin(int final_in);
+void	set_child_fds_from_pipes(int *final_in, int *final_out,
+									int pipe_in, int pipe_out);
+void	child_close_all_pipes(t_shell *shell);
+
+
+
+
+
+
+
+
 
 // 07_BUILTINS
 int		is_builtin_name(const char *name);
