@@ -45,4 +45,8 @@ int		close_pipe_err(t_hd_state *state);
 void	free_line_close_fds(int fds[2], char *line);
 void	restore_tty_and_sig(t_hd_state *state);
 
+// HD_EXPAND
+char	*hd_expand_status(char *text, int last_status);
+int		hd_create_exp_status_text(char *text, char **exp_text, char *status_str);
+
 #endif

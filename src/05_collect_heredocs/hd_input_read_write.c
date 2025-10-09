@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 17:17:50 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 18:10:27 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 12:37:08 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	readline_and_check_eof(t_hd_state *state, t_redir *redir)
 int	handle_heredoc_line(t_hd_state *state, char *line,
 		t_redir *redir, t_shell *shell)
 {
-	if (redir->no_expand == 0)
+	if (redir->no_expand == 0)  //Delim was n
 	{
 		if (expand_write_line(state, line, shell) == -1)
 			return (-1);
@@ -43,7 +43,7 @@ int	expand_write_line(t_hd_state *state, char *line, t_shell *shell)
 	char	*temp1;
 	char	*temp2;
 
-	temp1 = expand_status(line, shell->last_status);
+	temp1 = hd_expand_status(line, shell->last_status);
 	if (!temp1)
 		return (-1);
 	temp2 = expand_variable(temp1, shell->env_arr);
