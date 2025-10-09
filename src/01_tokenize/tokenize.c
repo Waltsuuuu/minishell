@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 12:48:59 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 12:50:18 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 11:30:50 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ int	run_tokenizer(t_tokenizer_state *state)
  */
 int	set_operator(t_tokenizer_state *state)
 {
-	int		len;
-	char	*text;
-	TokType	type;
+	int			len;
+	char		*text;
+	e_tok_type	type;
 
 	if (!state)
 		return (-1);

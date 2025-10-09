@@ -6,13 +6,13 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 18:53:28 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/07 18:53:48 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 11:31:04 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	get_redir_type(TokType type, t_redir_type *t_type)
+int	get_redir_type(e_tok_type type, t_redir_type *t_type)
 {
 	if (type == TOK_REDIR_IN)
 		*t_type = REDIR_IN;
@@ -27,7 +27,7 @@ int	get_redir_type(TokType type, t_redir_type *t_type)
 	return (0);
 }
 
-int	is_redir_tok(TokType type)
+int	is_redir_tok(e_tok_type type)
 {
 	if (type == TOK_HEREDOC || type == TOK_REDIR_IN
 		|| type == TOK_REDIR_OUT || type == TOK_REDIR_APP)
