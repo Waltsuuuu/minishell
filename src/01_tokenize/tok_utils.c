@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 12:48:25 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/09 11:30:33 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 18:34:02 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,9 @@
 
 /**
  * SCANS FOR THE END OF A WORD SEGMENT STARTING AT INDEX i.
- * Inside quotes, consumes all characters until the matching closing quote.
- * Outside quotes, stops at a space, tab, or an operator (|, <, >, <<, >>).
- * Updates *in_single / *in_double as it passes opening/closing quotes.
- * If string is NULL, returns i unchanged.
- * @return Index after word end.
+ * Consumes all chars inside matching quotes.
+ * Outside quotes, stops at whitespace or operator chars (|, <, >, <<, >>).
+ * Returns index just after the word end (or i if str is NULL).
  */
 int	scan_word_end(const char *string, int i, int *in_single, int *in_double)
 {

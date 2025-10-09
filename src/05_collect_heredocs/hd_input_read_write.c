@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 17:17:50 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/09 12:37:08 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 18:04:33 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	expand_write_line(t_hd_state *state, char *line, t_shell *shell)
 	temp1 = hd_expand_status(line, shell->last_status);
 	if (!temp1)
 		return (-1);
-	temp2 = expand_variable(temp1, shell->env_arr);
+	temp2 = hd_expand_variable(temp1, shell->env_arr);
 	if (!temp2)
 	{
 		free(temp1);
