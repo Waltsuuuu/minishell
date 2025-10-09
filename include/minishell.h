@@ -157,7 +157,6 @@ int		env_set(t_env **head, const char *key, const char *value);
 t_env	*env_find(t_env *head, const char *key);
 int		find_equal_sign(char *str);
 int		save_stdio(int saved[2]);
-void	restore_stdio(int saved[2]);
 int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
 int		is_parent_builtin(const char *name);
 int		exec_unset_in_parent(t_command *cmd, t_shell *shell);
@@ -170,7 +169,7 @@ int		builtin_echo(t_command *cmd);
 int 	exec_exit_in_parent(t_command *cmd, t_shell *shell);
 int		builtin_exit(t_command *cmd, t_shell *shell);
 int		exec_echo_in_parent(t_command *cmd, t_shell *shell);
-void	restore_stdio(int saved[2]);
+int		restore_stdio(int saved[2]);
 void	init_parent_fds(int *in_fd, int *out_fd);
 int		replug_stdio_pair(int in_fd, int out_fd, int saved[2]);
 

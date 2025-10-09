@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:41:09 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 10:49:24 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 12:25:15 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	save_stdio(int saved[2])
  *
  * @param saved array from save_stdio
  */
-void	restore_stdio(int saved[2])
+int	restore_stdio(int saved[2])
 {
 	if (saved[0] >= 0)
 	{
@@ -128,4 +128,5 @@ void	restore_stdio(int saved[2])
 		dup2(saved[1], STDOUT_FILENO);
 		close(saved[1]);
 	}
+	return (0);
 }

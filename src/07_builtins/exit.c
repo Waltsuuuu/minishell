@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:55:49 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:39:18 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/09 13:00:14 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,18 +82,33 @@ int	builtin_exit(t_command *cmd, t_shell *shell)
 	exit(shell->last_status);
 }
 
+static void	close_saved_stdio(int saved[2])
+{
+	if (saved[0] >= 0)
+		close(saved[0]);
+	if (saved[1] >= 0)
+		close(saved[1]);
+}
+
 int	exec_exit_in_parent(t_command *cmd, t_shell *shell)
 {
 	int	saved[2];
+	long long value = 0;
 
 	if (!cmd || !shell)
 		return (1);
+		
 	shell->in_child = 0;
 	if (apply_redirs_in_parent(cmd, saved) != 0)
-	{
 		return (1);
+	if (cmd->argc > 2 && ft_strtoll(cmd->argv[1], &value))
+	{
+		shell->last_status = builtin_exit(cmd, shell);
+		restore_stdio(saved);
+		return (shell->last_status);
 	}
+	close_saved_stdio(saved);
 	shell->last_status = builtin_exit(cmd, shell);
-	restore_stdio(saved);
+	
 	return (shell->last_status);
 }
