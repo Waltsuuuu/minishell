@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 09:18:40 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/08 14:39:59 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 19:48:13 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@ void	handle_sig(int signum)
 {
 	g_signal = signum;
 	write(STDOUT_FILENO, "\n", 1);
-	rl_done = 1;
-	rl_on_new_line();
 	rl_replace_line("", 0);
+	rl_on_new_line();
 	rl_redisplay();
 }
 

@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 12:39:10 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 18:31:12 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/09 19:49:55 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ int	run_shell(t_shell *shell)
 		{
 			shell->last_status = 130;
 			g_signal = 0;
-			free_str_ptr(&shell->line);
-			continue ;
 		}
 		shell->status = parse(shell);
 		if (shell->status == -1)
