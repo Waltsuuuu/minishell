@@ -28,7 +28,6 @@ char	*hd_expand_variable(char *text, char **envp)
 /**
  * @brief Iterates over token.text, rebuilds the string while searching for
  * a valid "$VAR" segment to expand.
- * Keeps track of quote state. Does not expand inside single quotes.
  * @return 0 on success, -1 on error.
  */
 int	hd_create_exp_var_text(char *text, char **exp_text, char **envp)
