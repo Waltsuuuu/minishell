@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 11:10:30 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/09/20 18:04:42 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/10 14:02:52 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,6 @@ void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstlast(t_list *lst);
 t_list	*ft_lstmap(t_list *lst, void *(f)(void *), void (*del)(void *));
 t_list	*ft_lstnew(void *content);
-int	ft_lstsize(t_list *lst);
+int		ft_lstsize(t_list *lst);
 
 #endif

@@ -6,14 +6,14 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 11:23:32 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:18:00 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/10 13:53:44 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKENIZE_H
 # define TOKENIZE_H
 
-typedef enum e_tok_type
+typedef enum t_tok_type
 {
 	TOK_WORD,
 	TOK_PIPE,
@@ -22,11 +22,11 @@ typedef enum e_tok_type
 	TOK_REDIR_APP,
 	TOK_HEREDOC,
 	TOK_VOID
-}	e_tok_type;
+}	t_tok_type;
 
 typedef struct s_token
 {
-	e_tok_type	type;
+	t_tok_type	type;
 	char		*text;
 	int			pos;
 	int			was_quoted;
@@ -84,8 +84,8 @@ int			scan_word_end(const char *string, int i,
 				int *in_single, int *in_double);
 int			skip_blanks(const char *string, int i);
 int			get_operator_len(const char *string);
-e_tok_type	get_operator_type(const char *string, int len);
+t_tok_type	get_operator_type(const char *string, int len);
 int			append_token_node(t_tokenizer_state *state,
-				e_tok_type type, char *text, int pos);
+				t_tok_type type, char *text, int pos);
 
 #endif

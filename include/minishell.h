@@ -6,35 +6,37 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:26:15 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:35:44 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/10 12:56:59 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "libft.h"
-# include "printf/ft_printf.h"
+# include <readline/readline.h>
+# include <readline/history.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <sys/stat.h>
-# include <sys/types.h>
-# include <sys/wait.h>
 # include <signal.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <termios.h>
+# include <limits.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include "libft.h"
 # include "tokenize.h"
 # include "expand.h"
 # include "pipeline.h"
 # include "heredoc.h"
-# include "utils.h"
 # include "quotes.h"
+# include "execute.h"
+# include "utils.h"
+# include "printf/ft_printf.h"
 # include "../libft/get_next_line/get_next_line.h"
-# include "limits.h"
+# include "builtin.h"
 # include "debug.h" // REMOVE
 
 # define PIPE_BUF_MAX 63000
@@ -65,18 +67,6 @@ typedef struct s_shell
 	int					in_child;
 }	t_shell;
 
-typedef struct s_exec
-{
-	int					cmd_index;
-	int					previous_read;
-	int					next_read;
-	int					next_write;
-	struct sigaction	ign;
-	struct sigaction	old_quit;
-	struct sigaction	old_int;
-	struct termios		tty;
-}	t_exec;
-
 void	init_shell(t_shell *shell, char *envp[]);
 int		run_shell(t_shell *shell);
 int		prompt(t_shell *shell);
@@ -104,84 +94,10 @@ int		build_pipeline_collect_hd(t_shell *shell);
 /*					See heredoc.h								*/
 
 // 06_EXECUTE_CMD_PIPELINE
-int		exec_dispatch(t_pipeline *pipeline, t_shell *shell);
-char	*join_cmd_to_path(const char *path, const char *cmd);
-char	**find_from_path(char *envp[]);
-char	**build_absolute_paths(char **paths, const char *cmd);
-int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
-void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
-			int	*in_fd, int *out_fd);
-int		open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
-int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
-int		wait_all_and_last_status( int child_count,
-			pid_t last_child_pid);
-int		apply_redir_out(const t_redir *r, int *final_out);
-int		apply_redir_append(const t_redir *redir, int *final_out);
-int		apply_redir_in(const t_redir *redir, int *final_in);
-int		apply_redir_heredoc(const t_redir *redir, int *final_in);
-int		run_builtin(t_command *cmd, t_shell *shell);
-int		alloc_child_pids(t_pipeline *pl);
-void	init_parent_pipe_pair(t_shell *shell);
-void	close_if_nonneg(int fd);
-int		on_open_pipe_error(pid_t *pids, t_exec *exec);
-int		on_spawn_error(t_pipeline *pl, t_exec *exec);
-void	print_redir_error(t_redir *redir);
-void	handle_redir_heredoc(t_redir *r, int *final_in, t_shell *shell);
-void	handle_redir_in(t_redir *r, int *final_in, t_shell *shell);
-void	handle_redir_append(t_redir *r, int *final_out, t_shell *shell);
-void	handle_redir_out(t_redir *r, int *final_out, t_shell *shell);
-void	child_finalize_pipes(t_shell *shell);
-void	replug_child_stdout(int final_out);
-void	replug_child_stdin(int final_in);
-void	set_child_fds_from_pipes(int *final_in, int *final_out,
-			int pipe_in, int pipe_out);
-void	child_close_all_pipes(t_shell *shell);
-void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
-void	path_exec(char **argv, t_shell *shell);
-void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s);
-void	exec_with_path_search(int argc, char **argv, t_shell *shell);
+/*					See execute.h								*/
 
 // 07_BUILTINS
-int		is_builtin_name(const char *name);
-int		builtin_export(char **argv, t_shell *shell);
-int		split_key_and_value(char *line, char **key_out, char **value_out);
-int		exec_export_in_parent(t_command *cmd, t_shell *shell);
-int		process_export_arg(char *arg, t_shell *shell);
-int		env_list_to_export_display_array(t_env *head, t_shell *shell);
-int		is_builtin_valid(const char *key);
-void	print_invalid_identifier(char *builtin, char *key);
-int		env_set(t_env **head, const char *key, const char *value);
-t_env	*env_find(t_env *head, const char *key);
-int		find_equal_sign(char *str);
-int		save_stdio(int saved[2]);
-int		apply_redirs_in_parent(t_command *cmd, int saved[2]);
-int		is_parent_builtin(const char *name);
-int		exec_unset_in_parent(t_command *cmd, t_shell *shell);
-int		builtin_unset(char **argv, t_shell *shell);
-int		env_unset(t_shell *shell, const char *key);
-int		builtin_cd(char **argv, t_shell *shell);
-int		exec_cd_in_parent(t_command *cmd, t_shell *shell);
-int		builtin_pwd(void);
-int		builtin_echo(t_command *cmd);
-int		exec_exit_in_parent(t_command *cmd, t_shell *shell);
-int		builtin_exit(t_command *cmd, t_shell *shell);
-int		exec_echo_in_parent(t_command *cmd, t_shell *shell);
-int		restore_stdio(int saved[2]);
-void	init_parent_fds(int *in_fd, int *out_fd);
-int		replug_stdio_pair(int in_fd, int out_fd, int saved[2]);
-
-/*					ENV											*/
-t_env	*env_init_from_envp(char **envp);
-t_env	*create_new_env_node(const char *key, const char *value);
-int		append_env_node(t_env **head, t_env *new_env_node);
-void	clean_env(t_env **head);
-int		env_list_to_array(t_env *head, t_shell *shell);
-char	*ft_strjoin_with_equal_sign(char const *s1, char const *s2);
-int		print_env(t_command *cmd, t_shell *shell);
-int		env_sort_and_print(t_shell *shell);
-int		find_equal_sign(char *str);
-char	*env_get(t_shell *shell, const char *key);
+/*					See builtin.h								*/
 
 // UTILS
 /*					See utils.h									*/

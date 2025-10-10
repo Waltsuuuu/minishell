@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 11:11:27 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/09 11:29:34 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/10 13:53:44 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ int		bp_fill_segment(t_shell *shell, t_input *input, t_seg *seg, int *i);
 int		bp_finalize_command(t_seg *seg, int cmd_i, t_shell *shell, int i);
 
 // pipeline_utils.c
-int		get_redir_type(e_tok_type type, t_redir_type *t_type);
-int		is_redir_tok(e_tok_type type);
+int		get_redir_type(t_tok_type type, t_redir_type *t_type);
+int		is_redir_tok(t_tok_type type);
 int		count_pipes(t_input *input);
 void	tok_syntax_err(t_token *token, t_shell *shell);
 

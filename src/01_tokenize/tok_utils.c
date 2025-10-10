@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 12:48:25 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/09 18:34:02 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/10 13:53:44 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ int	get_operator_len(const char *string)
  * On allocation failure, frees 'text'.
  * @return 0 on success, -1 on error (NULL args or malloc failure).
  */
-int	append_token_node(t_tokenizer_state *state, e_tok_type type,
+int	append_token_node(t_tokenizer_state *state, t_tok_type type,
 		char *text, int pos)
 {
 	t_toknode	*node;
@@ -108,10 +108,10 @@ int	append_token_node(t_tokenizer_state *state, e_tok_type type,
 }
 
 /**
- * Returns the e_tok_type of the passed in string.
- * @return Operator type as enum e_tok_type.
+ * Returns the t_tok_type of the passed in string.
+ * @return Operator type as enum t_tok_type.
  */
-e_tok_type	get_operator_type(const char *string, int len)
+t_tok_type	get_operator_type(const char *string, int len)
 {
 	if (len == 1)
 	{
