@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/10 12:26:15 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/10 12:35:44 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -27,7 +39,7 @@
 
 # define PIPE_BUF_MAX 63000
 
-extern volatile sig_atomic_t g_signal;
+extern volatile sig_atomic_t	g_signal;
 
 typedef struct s_env
 {
@@ -39,32 +51,31 @@ typedef struct s_env
 
 typedef struct s_shell
 {
-    int			last_status;   
-    t_env		*env_head;
-	char		**env_arr;
-	int			env_size;
-    t_input		input;
-    char		*cwd;
-	t_pipeline	pipeline;
-	char		*buf;
-	int			in_child;
-	int			interactive;
-	char		*line;
-	int			status;
-}   t_shell;
+	int					status;
+	char				*cwd;
+	char				*buf;
+	char				*line;
+	t_input				input;
+	t_pipeline			pipeline;
+	int					last_status;
+	int					interactive;
+	t_env				*env_head;
+	char				**env_arr;
+	int					env_size;
+	int					in_child;
+}	t_shell;
 
 typedef struct s_exec
 {
-	int                 cmd_index;
-    int                 previous_read;
-    int                 next_read;
-    int                 next_write;
-    struct sigaction    ign;
-    struct sigaction    old_quit;
-    struct sigaction    old_int;
-    struct termios      tty;
-
-} t_exec;
+	int					cmd_index;
+	int					previous_read;
+	int					next_read;
+	int					next_write;
+	struct sigaction	ign;
+	struct sigaction	old_quit;
+	struct sigaction	old_int;
+	struct termios		tty;
+}	t_exec;
 
 void	init_shell(t_shell *shell, char *envp[]);
 int		run_shell(t_shell *shell);
@@ -98,18 +109,15 @@ char	*join_cmd_to_path(const char *path, const char *cmd);
 char	**find_from_path(char *envp[]);
 char	**build_absolute_paths(char **paths, const char *cmd);
 int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
-//void	close_parent_unused_ends(int stage_index, int cmd_count,
-//int		(*pipe_pairs)[2]);
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
-int 	*in_fd, int *out_fd);
-//void	close_all_pipes(int pipe_pairs[2], int cmd_count);
-int 	open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
+			int	*in_fd, int *out_fd);
+int		open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
 pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
 int		wait_all_and_last_status( int child_count,
-	pid_t last_child_pid);
+			pid_t last_child_pid);
 int		apply_redir_out(const t_redir *r, int *final_out);
-int 	apply_redir_append(const t_redir *redir, int *final_out);
+int		apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
 int		apply_redir_heredoc(const t_redir *redir, int *final_in);
 int		run_builtin(t_command *cmd, t_shell *shell);
@@ -127,30 +135,19 @@ void	child_finalize_pipes(t_shell *shell);
 void	replug_child_stdout(int final_out);
 void	replug_child_stdin(int final_in);
 void	set_child_fds_from_pipes(int *final_in, int *final_out,
-									int pipe_in, int pipe_out);
+			int pipe_in, int pipe_out);
 void	child_close_all_pipes(t_shell *shell);
 void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
 void	path_exec(char **argv, t_shell *shell);
 void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s);
 void	exec_with_path_search(int argc, char **argv, t_shell *shell);
 
-
-
-
-
-
-
-
-
-
-
-
 // 07_BUILTINS
 int		is_builtin_name(const char *name);
 int		builtin_export(char **argv, t_shell *shell);
 int		split_key_and_value(char *line, char **key_out, char **value_out);
 int		exec_export_in_parent(t_command *cmd, t_shell *shell);
-int  	process_export_arg(char *arg, t_shell *shell);
+int		process_export_arg(char *arg, t_shell *shell);
 int		env_list_to_export_display_array(t_env *head, t_shell *shell);
 int		is_builtin_valid(const char *key);
 void	print_invalid_identifier(char *builtin, char *key);
@@ -167,13 +164,12 @@ int		builtin_cd(char **argv, t_shell *shell);
 int		exec_cd_in_parent(t_command *cmd, t_shell *shell);
 int		builtin_pwd(void);
 int		builtin_echo(t_command *cmd);
-int 	exec_exit_in_parent(t_command *cmd, t_shell *shell);
+int		exec_exit_in_parent(t_command *cmd, t_shell *shell);
 int		builtin_exit(t_command *cmd, t_shell *shell);
 int		exec_echo_in_parent(t_command *cmd, t_shell *shell);
 int		restore_stdio(int saved[2]);
 void	init_parent_fds(int *in_fd, int *out_fd);
 int		replug_stdio_pair(int in_fd, int out_fd, int saved[2]);
-
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);
@@ -191,11 +187,9 @@ char	*env_get(t_shell *shell, const char *key);
 /*					See utils.h									*/
 void	kill_and_reap_children(pid_t *pids, int n);
 void	execve_error_and_exit(t_shell *shell, char **argv,
-									pid_t *child_pids, int saved_errno);
+			pid_t *child_pids, int saved_errno);
 int		has_slash(char *input);
 void	clean(char **directories, t_shell *shell, pid_t *child_pids);
 int		is_interactive(t_shell *shell);
-
-
 
 #endif

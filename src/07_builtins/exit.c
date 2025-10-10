@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 12:55:49 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 13:00:14 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/10 12:38:25 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	cleanup(t_shell *shell)
-{
-	free_allocs(shell);
-	free_split(&shell->env_arr);
-	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
-}
 
 static void	argument_validation(t_command *cmd, t_shell *shell)
 {
@@ -92,12 +84,12 @@ static void	close_saved_stdio(int saved[2])
 
 int	exec_exit_in_parent(t_command *cmd, t_shell *shell)
 {
-	int	saved[2];
-	long long value = 0;
+	int			saved[2];
+	long long	value;
 
+	value = 0;
 	if (!cmd || !shell)
 		return (1);
-		
 	shell->in_child = 0;
 	if (apply_redirs_in_parent(cmd, saved) != 0)
 		return (1);
@@ -109,6 +101,5 @@ int	exec_exit_in_parent(t_command *cmd, t_shell *shell)
 	}
 	close_saved_stdio(saved);
 	shell->last_status = builtin_exit(cmd, shell);
-	
 	return (shell->last_status);
 }
