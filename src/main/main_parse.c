@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 18:17:58 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/08 18:32:26 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/13 12:05:37 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 int	parse_tokenize(t_shell *shell)
 {
+	add_history(shell->line);
 	if (check_quote_balance(&shell->line, &shell->last_status) == -1)
 	{
 		free_str_ptr(&shell->line);
 		return (-1);
 	}
-	add_history(shell->line);
 	if (parse_input_line(shell->line, &shell->input) == -1)
 	{
 		free_on_failure(shell);
