@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:26:15 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:56:59 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/13 11:30:22 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,11 +101,5 @@ int		build_pipeline_collect_hd(t_shell *shell);
 
 // UTILS
 /*					See utils.h									*/
-void	kill_and_reap_children(pid_t *pids, int n);
-void	execve_error_and_exit(t_shell *shell, char **argv,
-			pid_t *child_pids, int saved_errno);
-int		has_slash(char *input);
-void	clean(char **directories, t_shell *shell, pid_t *child_pids);
-int		is_interactive(t_shell *shell);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:18:43 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:57:51 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/13 11:29:50 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,12 @@ void	remove_nl(char *str);
 void	save_terminal_state(struct termios *tty);
 void	restore_terminal_state(struct termios *tty);
 
-void	kill_and_reap_children(pid_t *pids, int n);
+// Errorutils
 void	execve_error_and_exit(t_shell *shell, char **argv,
 			pid_t *child_pids, int saved_errno);
+
+// Exec utils
 int		has_slash(char *input);
 void	clean(char **directories, t_shell *shell, pid_t *child_pids);
-int		is_interactive(t_shell *shell);
 
 #endif

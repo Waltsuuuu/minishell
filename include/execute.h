@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:42:59 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 14:03:20 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/13 11:28:33 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,5 +69,6 @@ void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
 void	path_exec(char **argv, t_shell *shell);
 void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s);
 void	exec_with_path_search(int argc, char **argv, t_shell *shell);
+void	kill_and_reap_children(pid_t *pids, int n);
 
 #endif

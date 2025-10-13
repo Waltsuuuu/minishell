@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:51:02 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:56:47 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/13 11:30:00 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ int		exec_echo_in_parent(t_command *cmd, t_shell *shell);
 int		restore_stdio(int saved[2]);
 void	init_parent_fds(int *in_fd, int *out_fd);
 int		replug_stdio_pair(int in_fd, int out_fd, int saved[2]);
+int		is_interactive(t_shell *shell);
 
 /*					ENV											*/
 t_env	*env_init_from_envp(char **envp);
