@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_pipeline.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:16:43 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 08:51:51 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/13 11:54:03 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	finalize_and_return(t_pipeline *pl, t_shell *shell, t_exec *exec)
 			pl->child_pids[pl->n_cmds - 1]);
 	restore_parent_sig_handlers(&exec->old_quit, &exec->old_int);
 	restore_terminal_state(&exec->tty);
-	if (shell->last_status == 130)
+	if (shell->last_status == 130 || shell->last_status == 131)
 		write(1, "\n", 1);
 	free(pl->child_pids);
 	free_allocs(shell);
