@@ -1,7 +1,7 @@
 NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
-INCS        := -I include -I libft -I/usr/include -I/usr/include/readline
+INCS        := -I include -I libft
 LIBS        := -Llibft -lft -lreadline -lncurses 
 SRC			:=  src/00_check_quote_balance/quote_check.c \
 				src/01_tokenize/parse_input.c \
