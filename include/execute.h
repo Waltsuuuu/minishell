@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:42:59 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/13 11:28:33 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/14 14:22:54 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 			int	*in_fd, int *out_fd);
 int		open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell);
+pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, int cmd_index);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
 int		wait_all_and_last_status( int child_count,
 			pid_t last_child_pid);

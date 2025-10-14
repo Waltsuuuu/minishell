@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:16:43 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/14 13:57:23 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/14 14:21:24 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ static int	finalize_and_return(t_pipeline *pl, t_shell *shell, t_exec *exec)
 	return (shell->last_status);
 }
 
+// static void	close_hd_fd(t_list *redirs)
+// {
+	
+// 	// if (redir->hd_fd != -1)
+// 	// 	close(redir->hd_fd);
+// }
+
 int	exec_pipeline(t_pipeline *pl, t_shell *shell)
 {
 	t_exec	exec;
@@ -50,13 +57,17 @@ int	exec_pipeline(t_pipeline *pl, t_shell *shell)
 		if (open_next_pipe_if_needed(shell, &exec) < 0)
 			return (on_open_pipe_error(pl->child_pids, &exec));
 		pl->child_pids[exec.cmd_index] = spawn_cmd(&pl->cmds[exec.cmd_index],
-				exec.previous_read, exec.next_write, shell);
+				exec.previous_read, exec.next_write, shell, exec.cmd_index);
 		if (pl->child_pids[exec.cmd_index] < 0)
 			return (on_spawn_error(pl, &exec));
 		// PARENT Fix!! close the commands hd_fd.
+		// close(3);
+		ft_lstclear(&pl->cmds[exec.cmd_index].redirs, del_redir);
+		// close_hd_fd(&pl->cmds[exec.cmd_index].redirs);
 		after_successful_spawn_parent_close_step(&exec);
 		exec.cmd_index++;
 	}
 	shell->last_status = finalize_and_return(pl, shell, &exec);
 	return (shell->last_status);
 }
+

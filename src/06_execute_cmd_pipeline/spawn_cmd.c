@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/14 13:57:19 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/14 14:26:31 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,35 @@ static void	process_all_redirs(t_list *redirs, int *final_in,
 	}
 }
 
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
+static void	free_unused_hd_fds(t_pipeline *pipeline, int cmd_count, int i)
+{
+	int	j;
+
+	i++;
+	while (i < cmd_count)
+	{
+		if (pipeline->cmds[i].argv)
+		{
+			j = 0;
+			while (pipeline->cmds[i].argv[j])
+			{
+				free(pipeline->cmds[i].argv[j]);
+				j++;
+			}
+			free(pipeline->cmds[i].argv);
+			pipeline->cmds[i].argv = NULL;
+		}
+		if (pipeline->cmds[i].redirs)
+		{
+			ft_lstclear(&pipeline->cmds[i].redirs, del_redir);
+			pipeline->cmds[i].redirs = NULL;
+		}
+		pipeline->cmds[i].argc = 0;
+		i++;
+	}
+}
+
+pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, int cmd_index)
 {
 	pid_t	pid;
 	int		final_in;
@@ -57,7 +85,7 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
-		// CHILD Fix! Close all redir->hd_fds that do not belong to this command.
+		free_unused_hd_fds(&shell->pipeline, shell->pipeline.n_cmds, cmd_index);
 		shell->in_child = 1;
 		setup_signal_handlers_for_child();
 		set_child_fds_from_pipes(&final_in, &final_out, pipe_in, pipe_out);
