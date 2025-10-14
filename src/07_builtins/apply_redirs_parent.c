@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   apply_redirs_parent.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:41:09 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/14 12:55:16 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/14 15:01:08 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ int	apply_redirs_in_parent(t_command *cmd, int saved[2])
 			return (restore_stdio(saved), -1);
 		if (r && r->type == REDIR_HEREDOC && apply_redir_heredoc(r, &in_fd) < 0)
 			return (restore_stdio(saved), -1);
+		node = node->next;
 	}
 	if (replug_stdio_pair(in_fd, out_fd, saved) < 0)
 		return (-1);
