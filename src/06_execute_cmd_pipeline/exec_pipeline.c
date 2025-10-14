@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/07 17:16:43 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/13 11:54:03 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/14 13:57:23 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ int	exec_pipeline(t_pipeline *pl, t_shell *shell)
 				exec.previous_read, exec.next_write, shell);
 		if (pl->child_pids[exec.cmd_index] < 0)
 			return (on_spawn_error(pl, &exec));
+		// PARENT Fix!! close the commands hd_fd.
 		after_successful_spawn_parent_close_step(&exec);
 		exec.cmd_index++;
 	}

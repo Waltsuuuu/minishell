@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 10:46:09 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/14 13:57:19 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell)
 	pid = fork();
 	if (pid == 0)
 	{
+		// CHILD Fix! Close all redir->hd_fds that do not belong to this command.
 		shell->in_child = 1;
 		setup_signal_handlers_for_child();
 		set_child_fds_from_pipes(&final_in, &final_out, pipe_in, pipe_out);
