@@ -69,7 +69,7 @@ OBJ         := $(SRC:.c=.o)
 LIBFT_DIR   := libft
 LIBFT       := $(LIBFT_DIR)/libft.a
 
-.PHONY: all clean fclean re libft
+.PHONY: all clean fclean re
 
 all: $(LIBFT) $(NAME)
 
@@ -91,6 +91,4 @@ fclean: clean
 	rm -f $(NAME)
 	$(MAKE) -C $(LIBFT_DIR) fclean
 
-re:
-	$(MAKE) fclean
-	$(MAKE) all
+re: fclean all
