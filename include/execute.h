@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:42:59 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/14 14:22:54 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/15 14:17:19 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ void	set_child_fds_from_pipes(int *final_in, int *final_out,
 void	child_close_all_pipes(t_shell *shell);
 void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
 void	path_exec(char **argv, t_shell *shell);
-void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s);
+void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s, int *err);
 void	exec_with_path_search(int argc, char **argv, t_shell *shell);
 void	kill_and_reap_children(pid_t *pids, int n);
 

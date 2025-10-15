@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:26:55 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/09 09:27:40 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/15 14:06:27 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,6 @@ void	clean(char **directories, t_shell *shell, pid_t *child_pids)
 {
 	free_split(&directories);
 	free_shell(shell);
-	free(child_pids);
+	if (child_pids)
+		free(child_pids);
 }
