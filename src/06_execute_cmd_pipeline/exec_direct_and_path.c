@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_direct_and_path.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 12:40:26 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:32:49 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,24 +36,25 @@ void	path_exec(char **argv, t_shell *shell)
 	execve_error_and_exit(shell, argv, shell->pipeline.child_pids, err);
 }
 
-void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s, int *err)
+void	exec_with_candidate_path(char **argv, char **dirs, t_shell *s, int *err)
 {
 	char	*candidate_path;
 	int		path_index;
 
 	path_index = 0;
-	while (path_dirs[path_index])
+	while (dirs[path_index])
 	{
-		candidate_path = join_cmd_to_path(path_dirs[path_index],
+		candidate_path = join_cmd_to_path(dirs[path_index],
 				argv[0]);
 		if (!candidate_path)
 		{
-			clean(path_dirs, s, s->pipeline.child_pids);
+			clean(dirs, s, s->pipeline.child_pids);
 			_exit(1);
 		}
 		execve(candidate_path, argv, s->env_arr);
 		*err = errno;
-		if ((*err != ENOENT && *err != ENOTDIR) || access(candidate_path, F_OK) == 0)
+		if ((*err != ENOENT && *err != ENOTDIR)
+			|| access(candidate_path, F_OK) == 0)
 		{
 			free(candidate_path);
 			break ;

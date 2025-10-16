@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:42:59 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/15 14:17:19 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:32:03 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,9 @@ int		exec_pipeline(t_pipeline *pipeline, t_shell *shell);
 void	compute_cmd_fds(int cmd_index, t_pipeline *pipeline,
 			int	*in_fd, int *out_fd);
 int		open_next_pipe_if_needed(t_shell *shell, t_exec *exec);
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, int cmd_index);
+pid_t	spawn_cmd(t_command *cmd, t_exec *exec, t_shell *shell);
 int		wait_for_pid_once(pid_t target_pid, int *out_raw_status);
-int		wait_all_and_last_status( int child_count,
-			pid_t last_child_pid);
+int		wait_all_and_last_status( int child_count, pid_t last_child_pid);
 int		apply_redir_out(const t_redir *r, int *final_out);
 int		apply_redir_append(const t_redir *redir, int *final_out);
 int		apply_redir_in(const t_redir *redir, int *final_in);
@@ -67,7 +66,8 @@ void	set_child_fds_from_pipes(int *final_in, int *final_out,
 void	child_close_all_pipes(t_shell *shell);
 void	direct_exec(char **argv, t_shell *shell, pid_t *child_pids);
 void	path_exec(char **argv, t_shell *shell);
-void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s, int *err);
+void	exec_with_candidate_path(char **argv, char **dirs,
+			t_shell *s, int *err);
 void	exec_with_path_search(int argc, char **argv, t_shell *shell);
 void	kill_and_reap_children(pid_t *pids, int n);
 

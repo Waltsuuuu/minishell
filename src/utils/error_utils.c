@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:23:50 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 12:39:05 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:33:45 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ void	print_redir_error(t_redir *redir)
 		perror("redir");
 }
 
-void	env_path_execve_error_and_exit(t_shell *shell, char **path_directories, int err)
+void	env_path_execve_error_and_exit(t_shell *shell,
+		char **path_directories, int err)
 {
 	if (err == EACCES)
 	{
