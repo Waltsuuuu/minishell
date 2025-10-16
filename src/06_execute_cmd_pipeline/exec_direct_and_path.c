@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 15:32:49 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/16 15:48:49 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,10 @@ static void	check_dot_dotdot(char **argv, t_shell *shell, char **path_dirs)
 	}
 	else if (!(ft_strcmp(argv[0], "")))
 	{
+		ft_putstr_fd(argv[0], STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		clean(path_dirs, shell, shell->pipeline.child_pids);
-		_exit(0);
+		_exit(127);
 	}
 }
 
