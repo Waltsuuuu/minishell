@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 12:23:16 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 12:40:26 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s, int *er
 	}
 }
 
-static void	check_dot_dotdot_and_empty(char **argv, t_shell *shell, char **path_dirs)
+static void	check_dot_dotdot(char **argv, t_shell *shell, char **path_dirs)
 {
 	if (!argv || !argv[0])
 		return ;
@@ -74,11 +74,10 @@ static void	check_dot_dotdot_and_empty(char **argv, t_shell *shell, char **path_
 		clean(path_dirs, shell, shell->pipeline.child_pids);
 		_exit(127);
 	}
-	else if (!ft_strcmp(argv[0], ""))
+	else if (!(ft_strcmp(argv[0], "")))
 	{
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
 		clean(path_dirs, shell, shell->pipeline.child_pids);
-		_exit(127);
+		_exit(0);
 	}
 }
 
@@ -92,7 +91,7 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	path_directories = NULL;
 	if (argv && argv[0])
 	{
-		check_dot_dotdot_and_empty(argv, shell, path_directories);
+		check_dot_dotdot(argv, shell, path_directories);
 		if (has_slash(argv[0]))
 			direct_exec(argv, shell, shell->pipeline.child_pids);
 		path_directories = find_from_path(shell->env_arr);
@@ -101,6 +100,8 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	}
 	if (argv && argv[0] && path_directories)
 		exec_with_candidate_path(argv, path_directories, shell, &err);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(argv[0], STDERR_FILENO);
 	env_path_execve_error_and_exit(shell, path_directories, err);
+	_exit(127);
 }

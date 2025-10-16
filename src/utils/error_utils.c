@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:23:50 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/15 15:22:04 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 12:39:05 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	env_path_execve_error_and_exit(t_shell *shell, char **path_directories, int
 {
 	if (err == EACCES)
 	{
-		ft_putstr_fd(": no permission\n", STDERR_FILENO);
+		ft_putstr_fd(": No permission\n", STDERR_FILENO);
 		clean(path_directories, shell, shell->pipeline.child_pids);
 		_exit(126);
 	}
