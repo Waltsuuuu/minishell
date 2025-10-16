@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/15 16:18:53 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 12:23:16 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	exec_with_candidate_path(char **argv, char **path_dirs, t_shell *s, int *er
 	}
 }
 
-static void	check_dot_and_empty(char **argv, t_shell *shell, char **path_dirs)
+static void	check_dot_dotdot_and_empty(char **argv, t_shell *shell, char **path_dirs)
 {
 	if (!argv || !argv[0])
 		return ;
@@ -92,7 +92,7 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	path_directories = NULL;
 	if (argv && argv[0])
 	{
-		check_dot_and_empty(argv, shell, path_directories);
+		check_dot_dotdot_and_empty(argv, shell, path_directories);
 		if (has_slash(argv[0]))
 			direct_exec(argv, shell, shell->pipeline.child_pids);
 		path_directories = find_from_path(shell->env_arr);
@@ -101,6 +101,6 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	}
 	if (argv && argv[0] && path_directories)
 		exec_with_candidate_path(argv, path_directories, shell, &err);
-	write(2, argv[0], (int)strlen(argv[0]));
+	ft_putstr_fd(argv[0], STDERR_FILENO);
 	env_path_execve_error_and_exit(shell, path_directories, err);
 }
