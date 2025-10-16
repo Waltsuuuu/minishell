@@ -6,7 +6,7 @@
 /*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 15:48:49 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/16 16:00:05 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,8 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	}
 	if (argv && argv[0] && path_directories)
 		exec_with_candidate_path(argv, path_directories, shell, &err);
+	if (argc == 0)
+		_exit (0);
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(argv[0], STDERR_FILENO);
 	env_path_execve_error_and_exit(shell, path_directories, err);
