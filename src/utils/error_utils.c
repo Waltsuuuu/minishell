@@ -3,20 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   error_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:23:50 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/10 12:37:21 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:33:45 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	permission_err_and_exit(void)
-{
-	ft_putstr_fd("No permission\n", STDERR_FILENO);
-	_exit(126);
-}
 
 void	execve_error_and_exit(t_shell *shell, char **argv,
 									pid_t *child_pids, int saved_errno)
@@ -29,19 +23,19 @@ void	execve_error_and_exit(t_shell *shell, char **argv,
 	if (saved_errno == ENOENT || saved_errno == ENOTDIR)
 	{
 		ft_putstr_fd("No such file or directory\n", STDERR_FILENO);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
-		free_allocs(shell);
+		cleanup(shell);
 		_exit(127);
 	}
 	else if (saved_errno == EACCES)
-		permission_err_and_exit();
+	{
+		ft_putstr_fd("No permission\n", STDERR_FILENO);
+		cleanup(shell);
+		_exit(126);
+	}
 	else
 	{
 		ft_putstr_fd("Is a directory\n", STDERR_FILENO);
-		clean_env(&shell->env_head);
-		free_split(&shell->env_arr);
-		free_allocs(shell);
+		cleanup(shell);
 		_exit(126);
 	}
 }
@@ -66,4 +60,33 @@ void	print_redir_error(t_redir *redir)
 		perror(redir->target);
 	else
 		perror("redir");
+}
+
+void	env_path_execve_error_and_exit(t_shell *shell,
+		char **path_directories, int err)
+{
+	if (err == EACCES)
+	{
+		ft_putstr_fd(": No permission\n", STDERR_FILENO);
+		clean(path_directories, shell, shell->pipeline.child_pids);
+		_exit(126);
+	}
+	else if (err == EISDIR)
+	{
+		ft_putstr_fd(": is a directory\n", STDERR_FILENO);
+		clean(path_directories, shell, shell->pipeline.child_pids);
+		_exit(126);
+	}
+	else if (err == ENOEXEC)
+	{
+		ft_putstr_fd(": exec format error\n", STDERR_FILENO);
+		clean(path_directories, shell, shell->pipeline.child_pids);
+		_exit(126);
+	}
+	else
+	{
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		clean(path_directories, shell, shell->pipeline.child_pids);
+		_exit(127);
+	}
 }

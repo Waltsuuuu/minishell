@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spawn_cmd.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 07:03:12 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/14 14:26:31 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:30:42 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static void	free_unused_hd_fds(t_pipeline *pipeline, int cmd_count, int i)
 	}
 }
 
-pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, int cmd_index)
+pid_t	spawn_cmd(t_command *cmd, t_exec *exec, t_shell *shell)
 {
 	pid_t	pid;
 	int		final_in;
@@ -85,10 +85,12 @@ pid_t	spawn_cmd(t_command *cmd, int pipe_in, int pipe_out, t_shell *shell, int c
 	pid = fork();
 	if (pid == 0)
 	{
-		free_unused_hd_fds(&shell->pipeline, shell->pipeline.n_cmds, cmd_index);
+		free_unused_hd_fds(&shell->pipeline,
+			shell->pipeline.n_cmds, exec->cmd_index);
 		shell->in_child = 1;
 		setup_signal_handlers_for_child();
-		set_child_fds_from_pipes(&final_in, &final_out, pipe_in, pipe_out);
+		set_child_fds_from_pipes(&final_in, &final_out,
+			exec->previous_read, exec->next_write);
 		process_all_redirs(cmd->redirs, &final_in, &final_out, shell);
 		replug_child_stdin(final_in);
 		replug_child_stdout(final_out);

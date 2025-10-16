@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:18:43 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/13 11:29:50 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/16 15:29:59 by mhirvasm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ void	restore_terminal_state(struct termios *tty);
 // Errorutils
 void	execve_error_and_exit(t_shell *shell, char **argv,
 			pid_t *child_pids, int saved_errno);
+void	env_path_execve_error_and_exit(t_shell *shell,
+			char **path_directories, int err);
 
 // Exec utils
 int		has_slash(char *input);

@@ -6,7 +6,7 @@
 /*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/08 18:21:28 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/10 12:35:34 by wheino           ###   ########.fr       */
+/*   Updated: 2025/10/15 14:34:52 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	cleanup(t_shell *shell)
 	free_allocs(shell);
 	free_split(&shell->env_arr);
 	clean_env(&shell->env_head);
-	free_split(&shell->env_arr);
 }
 
 void	free_on_failure(t_shell *shell)
