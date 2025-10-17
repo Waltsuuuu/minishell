@@ -3,14 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   exec_direct_and_path.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/09 09:29:38 by mhirvasm          #+#    #+#             */
-/*   Updated: 2025/10/16 16:00:05 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2025/10/17 11:28:55 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	clean_and_exit_num(t_shell *shell, int exit_num)
+{
+	if (shell->pipeline.child_pids)
+		free(shell->pipeline.child_pids);
+	cleanup(shell);
+	_exit(exit_num);
+}
 
 void	path_exec(char **argv, t_shell *shell)
 {
@@ -20,16 +28,16 @@ void	path_exec(char **argv, t_shell *shell)
 	int		err;
 
 	if (!argv || !argv[0])
-		_exit(0);
+		clean_and_exit_num(shell, 0);
 	if (!getcwd(path, sizeof(path)))
-		_exit(1);
+		clean_and_exit_num(shell, 1);
 	temp = ft_strjoin(path, "/");
 	if (!temp)
-		_exit(1);
+		clean_and_exit_num(shell, 1);
 	full = ft_strjoin(temp, argv[0]);
 	free (temp);
 	if (!full)
-		_exit(1);
+		clean_and_exit_num(shell, 1);
 	execve(full, argv, shell->env_arr);
 	err = errno;
 	free (full);
@@ -89,7 +97,6 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	char	**path_directories;
 	int		err;
 
-	(void)argc;
 	err = 0;
 	path_directories = NULL;
 	if (argv && argv[0])
@@ -104,7 +111,10 @@ void	exec_with_path_search(int argc, char **argv, t_shell *shell)
 	if (argv && argv[0] && path_directories)
 		exec_with_candidate_path(argv, path_directories, shell, &err);
 	if (argc == 0)
+	{
+		clean(path_directories, shell, shell->pipeline.child_pids);
 		_exit (0);
+	}
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(argv[0], STDERR_FILENO);
 	env_path_execve_error_and_exit(shell, path_directories, err);
