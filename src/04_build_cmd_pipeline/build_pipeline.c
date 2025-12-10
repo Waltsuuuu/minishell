@@ -1,0 +1,154 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_pipeline.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wheino <wheino@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/07 17:51:42 by wheino            #+#    #+#             */
+/*   Updated: 2025/10/08 15:01:55 by wheino           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+/**
+ * @brief Parses tokens into structured commands (t_command).
+ * Modifies t_pipeline *pipeline in place.
+ * @return 0 on success, -1 on syntax/alloc error.
+ */
+int	build_pipeline(t_shell *shell, t_input *input,
+			t_token *tokens, t_pipeline *pipeline)
+{
+	int		n_cmds;
+	int		tok_i;
+	int		cmd_i;
+	t_seg	seg;
+
+	n_cmds = bp_prepare(shell, input, tokens, pipeline);
+	if (n_cmds <= 0)
+		return (n_cmds);
+	pipeline->n_cmds = n_cmds;
+	tok_i = 0;
+	cmd_i = 0;
+	while (cmd_i < n_cmds)
+	{
+		bp_seg_init(&seg);
+		if (bp_fill_segment(shell, input, &seg, &tok_i) == -1)
+			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
+		if (bp_finalize_command(&seg, cmd_i, shell, tok_i) == -1)
+			return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
+		if (tok_i < input->n_tokens && tokens[tok_i].type == TOK_PIPE)
+			tok_i++;
+		cmd_i++;
+	}
+	if (tok_i != input->n_tokens)
+		return (err_exit_build_pipeline(pipeline, &seg, cmd_i));
+	return (0);
+}
+
+/**
+ * @brief
+ * 1. Counts the number of commands to come, based on the number of pipe tokens.
+ * 2. Allocates the array of t_commands.
+ * 3. Checks that the first token is not a pipe (syntax error).
+ * @return n_cmds, 0 if no tokens, -1 on allocation error. 
+ */
+int	bp_prepare(t_shell *shell, t_input *input,
+			t_token *tokens, t_pipeline *pipeline)
+{
+	int	n_cmds;
+
+	if (!input || !pipeline)
+		return (-1);
+	if (!tokens || input->n_tokens == 0)
+	{
+		pipeline->n_cmds = 0;
+		pipeline->cmds = NULL;
+		return (0);
+	}
+	n_cmds = count_pipes(input) + 1;
+	pipeline->cmds = ft_calloc(n_cmds, sizeof(t_command));
+	if (!pipeline->cmds)
+		return (-1);
+	if (tokens[0].type == TOK_PIPE)
+	{
+		tok_syntax_err(&tokens[0], shell);
+		free(pipeline->cmds);
+		pipeline->cmds = NULL;
+		pipeline->n_cmds = 0;
+		return (-1);
+	}
+	return (n_cmds);
+}
+
+/**
+ * @brief Zero / NULL initilizes the variables
+ * for a single command segment.
+ */
+void	bp_seg_init(t_seg *seg)
+{
+	seg->argc = 0;
+	seg->args = NULL;
+	seg->redirs = NULL;
+}
+
+/**
+ * @brief Creates one command segment.
+ * Consumes tokens until TOK_PIPE / end of token array.
+ * Creates t_redir from redirect + target tokens.
+ * Creates argv from a word tokens.
+ * @return 0 on success, -1 on syntax/alloc error.
+ */
+int	bp_fill_segment(t_shell *shell, t_input *input, t_seg *seg, int *i)
+{
+	while (*i < input->n_tokens && input->tokens[*i].type != TOK_PIPE)
+	{
+		if (is_redir_tok(input->tokens[*i].type))
+		{
+			if ((*i + 1 >= input->n_tokens)
+				|| input->tokens[*i + 1].type != TOK_WORD)
+			{
+				tok_syntax_err(&input->tokens[*i], shell);
+				return (-1);
+			}
+			if (build_and_append_redir(input->tokens, *i, seg) == -1)
+				return (-1);
+			*i += 2;
+		}
+		else if (input->tokens[*i].type == TOK_WORD)
+		{
+			if (append_arg(input->tokens, *i, seg) == -1)
+				return (-1);
+			seg->argc++;
+			*i += 1;
+		}
+		else
+			*i += 1;
+	}
+	return (0);
+}
+
+/**
+ * @brief Checks that command segment is not empty.
+ * Converts the temp argv linked listed to an array.
+ * Passes owernship of the segment to pipeline->cmds.
+ * @return 0 on success, -1 on syntax/alloc error.
+ */
+int	bp_finalize_command(t_seg *seg, int cmd_i, t_shell *shell, int i)
+{
+	if (seg->argc == 0 && seg->redirs == NULL)
+	{
+		if (cmd_i + 1 == shell->pipeline.n_cmds)
+			ft_putstr_fd("Syntax error near newline\n", STDERR_FILENO);
+		else
+			tok_syntax_err(&shell->input.tokens[i], shell);
+		return (-1);
+	}
+	if (arg_ll_to_arr(seg, &shell->pipeline, cmd_i) == -1)
+		return (-1);
+	shell->pipeline.cmds[cmd_i].argc = seg->argc;
+	shell->pipeline.cmds[cmd_i].redirs = seg->redirs;
+	seg->redirs = NULL;
+	return (0);
+}
