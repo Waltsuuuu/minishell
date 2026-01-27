@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhirvasm <mhirvasm@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: wheino <wheino@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 12:18:43 by wheino            #+#    #+#             */
-/*   Updated: 2025/10/16 15:29:59 by mhirvasm         ###   ########.fr       */
+/*   Updated: 2026/01/27 14:57:26 by wheino           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 
+#ifndef PATH_MAX
 # define PATH_MAX 4096
+#endif
 
 /*					get_working_dir.c							*/
 void	getworkindir(char *buf, size_t size);

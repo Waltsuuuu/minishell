@@ -2,7 +2,27 @@ NAME        := minishell
 CC          := cc
 CFLAGS      := -Wall -Wextra -Werror
 INCS        := -I include -I libft
-LIBS        := -Llibft -lft -lreadline -lncurses 
+
+UNAME_S     := $(shell uname -s)
+
+# Try Homebrew readline prefix (works on macOS with brew; empty on Linux)
+READLINE_DIR := $(shell brew --prefix readline 2>/dev/null)
+
+ifeq ($(UNAME_S),Darwin)
+  # macOS: prefer GNU readline from Homebrew (keg-only)
+  ifeq ($(READLINE_DIR),)
+    $(error "GNU readline not found. Run: brew install readline")
+  endif
+  CFLAGS  += -I$(READLINE_DIR)/include
+  LDFLAGS += -L$(READLINE_DIR)/lib
+endif
+
+# Linux: assumes libreadline-dev / readline-devel installed in system paths
+LDLIBS      += -lreadline -lhistory -lncurses
+LIBFT_DIR   := libft
+LIBFT       := $(LIBFT_DIR)/libft.a
+LIBS        := -L$(LIBFT_DIR) -lft
+
 SRC			:=  src/00_check_quote_balance/quote_check.c \
 				src/01_tokenize/parse_input.c \
 				src/01_tokenize/tokenize.c \
@@ -62,19 +82,15 @@ SRC			:=  src/00_check_quote_balance/quote_check.c \
 				src/utils/mode_check.c \
 				src/utils/print_msh_banner.c \
 				src/utils/signal_handling/signal.c \
-				src/utils/tty.c 
+				src/utils/tty.c
 OBJ         := $(SRC:.c=.o)
-
-# Libft
-LIBFT_DIR   := libft
-LIBFT       := $(LIBFT_DIR)/libft.a
 
 .PHONY: all clean fclean re
 
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) $(INCS) $(LIBS) -o $@
+	$(CC) $(CFLAGS) $(OBJ) $(LIBS) $(LDFLAGS) $(LDLIBS) -o $@
 
 %.o: %.c
 	@mkdir -p $(dir $@)
